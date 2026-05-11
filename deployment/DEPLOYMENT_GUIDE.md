@@ -24,13 +24,16 @@ PORT=5000
 MONGODB_URI=mongodb://...
 NODE_ENV=production
 # This ensures images are served correctly if the backend generates URLs
-BASE_URL=https://northparadise.com
+BASE_URL=https://northparadisetreksandtours.com
+
+# Important for CORS - origins must NOT have trailing slashes
+CLIENT_URL=https://northparadisetreksandtours.com,https://admin.northparadisetreksandtours.com
 ```
 
 ### Step B: Frontend/Admin `.env`
 Update your build-time environment variables before running `npm run build`:
 ```env
-VITE_API_URL=https://northparadise.com
+VITE_API_URL=https://api.northparadisetreksandtours.com
 ```
 
 ### Step C: Folder Permissions

@@ -25,10 +25,9 @@ const CLIENT_URL = process.env.CLIENT_URL || "*";
 const DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
-    "https://northparadisetreksandtours.com/",
-    "https://admin.northparadisetreksandtours.com/",
-    "https://www.northparadisetreksandtours.com/",
-
+    "https://northparadisetreksandtours.com",
+    "https://admin.northparadisetreksandtours.com",
+    "https://www.northparadisetreksandtours.com"
 ];
 
 const allowedOrigins =
@@ -115,8 +114,8 @@ app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     const message =
         NODE_ENV === "production" && statusCode === 500 ?
-        "Internal server error" :
-        err.message || "Something went wrong";
+            "Internal server error" :
+            err.message || "Something went wrong";
 
     if (NODE_ENV !== "production") {
         console.error(err);
@@ -129,7 +128,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-const startServer = async() => {
+const startServer = async () => {
     try {
         await connectDB();
 
