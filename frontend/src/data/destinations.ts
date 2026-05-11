@@ -12,7 +12,7 @@ export const destinations = [
       "https://images.unsplash.com/photo-1554559551-789f1fb25b4b?auto=format&fit=crop&q=80&w=1200",
     ],
     highlights: ["Positano Village", "Ravello Gardens", "Path of the Gods Hike", "Capri Boat Tour"],
-    price: "From $3,200",
+    price: "From Rs. 3,200",
     duration: "7 Days",
     expertTip: "Rent an iconic vintage Vespa early in the morning to beat the coastal traffic and secure the best photo spots.",
     cuisine: "Indulge in fresh seafood, handmade Scialatielli pasta, and the world-famous Limoncello made from local Sorrento lemons.",

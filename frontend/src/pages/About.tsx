@@ -1,65 +1,29 @@
 import { Link } from "react-router-dom";
 import { Compass, ShieldCheck, Headset, Star, ChevronDown } from "lucide-react";
 import logo from "../assets/logo.png";
+import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 
 export default function About() {
   return (
     <div className="bg-lux-bg text-lux-primary font-body min-h-screen flex flex-col">
-      <header className="w-full z-10 flex flex-col sm:flex-row justify-between items-center px-6 sm:px-12 py-3 bg-lux-primary text-white gap-4">
-        <div className="flex items-center">
-          <Link to="/">
-            <img src={logo} alt="North Paradise" className="-my-4 h-24 w-auto object-contain" />
-          </Link>
-        </div>
-        <nav className="flex gap-4 sm:gap-8 text-sm uppercase tracking-widest flex-wrap justify-center">
-          <Link to="/destinations" className="hover:text-lux-accent transition-colors">Destinations</Link>
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
-              Tour Packages <ChevronDown className="w-4 h-4" />
-            </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
-              <Link to="/tour-packages?type=Adventure" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Adventure Tours</Link>
-              <Link to="/tour-packages?type=Cultural" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Cultural Tours</Link>
-              <Link to="/tour-packages?type=Honeymoon" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Honeymoon Packages</Link>
-              <Link to="/tour-packages?type=Family" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Family Tours</Link>
-              <Link to="/tour-packages?type=Religious" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Religious Tours</Link>
-              <Link to="/tour-packages" className="px-4 py-3 bg-lux-accent/20 hover:bg-lux-accent/30 transition-colors uppercase tracking-[0.2em] text-[10px] font-bold text-center">View All Packages</Link>
-            </div>
-          </div>
-          <Link to="/about" className="text-lux-accent transition-colors hover:text-lux-accent">About</Link>
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
-              Services <ChevronDown className="w-4 h-4" />
-            </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
-              <Link to="/services/air-ticketing" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Air Ticketing</Link>
-              <Link to="/services/jeep-safari" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Jeep Safari</Link>
-              <Link to="/services/accommodation" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Accommodation</Link>
-              <Link to="/services/tour-guide" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Tour Guide</Link>
-              <Link to="/services/car-rent" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs">Jeep/Car Rent</Link>
-            </div>
-          </div>
-          <Link to="/contact" className="hover:text-lux-accent transition-colors">Contact</Link>
-        </nav>
-        <Link to="/request-quote" className="bg-lux-accent text-white px-6 py-2 rounded-sm text-sm uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer">
-          Customize Trip
-        </Link>
-      </header>
+      <SEO 
+        title="About Us | North Paradise Treks and Tours"
+        description="Learn more about North Paradise Treks and Tours, a leading travel agency dedicated to providing exceptional travel experiences in Northern Pakistan."
+        keywords="about North Paradise, Pakistan travel agency, luxury tour operator Pakistan, Gilgit Baltistan travel experts"
+      />
+      <Navbar />
 
-      <section
-        className="relative h-[60vh] min-h-[500px] flex items-center justify-center bg-cover bg-center"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=2000')" }}
-      >
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div className="relative z-10 text-center text-white px-4">
-          <div className="text-lux-accent text-sm uppercase tracking-widest mb-4 font-medium">
-            Our Story
-          </div>
-          <h1 className="font-headings text-5xl sm:text-7xl mb-6">
-            Beyond the Ordinary
+
+      {/* Hero */}
+      <section className="relative pt-40 pb-20 bg-lux-bg text-lux-primary text-center px-6">
+        <div className="max-w-4xl mx-auto relative z-10">
+          <div className="text-lux-accent text-xs uppercase tracking-[0.3em] font-bold mb-6">Our Story</div>
+          <h1 className="font-headings text-4xl sm:text-5xl lg:text-7xl mb-8">
+            Beyond the <span className="text-lux-accent italic font-light font-body">Ordinary</span>
           </h1>
-          <p className="text-lg opacity-90 max-w-2xl mx-auto font-light leading-relaxed">
-            Elevating travel into an art form. We design bespoke, immersive journeys for the world's most discerning explorers taking you to the untouched edges of our beautiful world.
+          <p className="text-lg opacity-60 leading-relaxed max-w-2xl mx-auto font-light">
+            Elevating travel into an art form. We design bespoke, immersive journeys for the world's most discerning explorers, taking you to the untouched edges of our beautiful world.
           </p>
         </div>
       </section>

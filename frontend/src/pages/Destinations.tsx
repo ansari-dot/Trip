@@ -2,6 +2,8 @@ import { Search, MapPin, ChevronLeft, ChevronRight, X, LoaderCircle, SlidersHori
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { useEffect, useMemo, useState } from "react";
+import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 
 type Destination = {
   _id?: string;
@@ -254,62 +256,36 @@ export default function Destinations() {
 
   return (
     <div className="bg-lux-bg text-lux-primary font-body min-h-screen flex flex-col">
-      <header className="w-full z-10 flex flex-col sm:flex-row justify-between items-center px-6 sm:px-12 py-3 bg-lux-primary text-white gap-4">
-        <div className="flex items-center">
-          <Link to="/">
-            <img src={logo} alt="North Paradise" className="-my-4 h-24 w-auto object-contain" />
-          </Link>
-        </div>
-        <nav className="flex gap-4 sm:gap-8 text-sm uppercase tracking-widest flex-wrap justify-center">
-          <Link to="/destinations" className="text-lux-accent transition-colors hover:text-lux-accent">Destinations</Link>
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
-              Tour Packages <ChevronDown className="w-4 h-4" />
-            </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
-              <Link to="/tour-packages?type=Adventure" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Adventure Tours</Link>
-              <Link to="/tour-packages?type=Cultural" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Cultural Tours</Link>
-              <Link to="/tour-packages?type=Honeymoon" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Honeymoon Packages</Link>
-              <Link to="/tour-packages?type=Family" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Family Tours</Link>
-              <Link to="/tour-packages?type=Religious" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Religious Tours</Link>
-              <Link to="/tour-packages" className="px-4 py-3 bg-lux-accent/20 hover:bg-lux-accent/30 transition-colors uppercase tracking-[0.2em] text-[10px] font-bold text-center">View All Packages</Link>
-            </div>
-          </div>
-          <Link to="/about" className="hover:text-lux-accent transition-colors">About</Link>
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
-              Services <ChevronDown className="w-4 h-4" />
-            </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
-              <Link to="/services/air-ticketing" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Air Ticketing</Link>
-              <Link to="/services/jeep-safari" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Jeep Safari</Link>
-              <Link to="/services/accommodation" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Accommodation</Link>
-              <Link to="/services/tour-guide" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Tour Guide</Link>
-              <Link to="/services/car-rent" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs">Jeep/Car Rent</Link>
-            </div>
-          </div>
-          <Link to="/contact" className="hover:text-lux-accent transition-colors">Contact</Link>
-        </nav>
-        <Link to="/request-quote" className="bg-lux-accent text-white px-6 py-2 rounded-sm text-sm uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer">
-          Customize Trip
-        </Link>
-      </header>
+      <SEO 
+        title="Top Destinations in Northern Pakistan | Hunza, Skardu, Gilgit"
+        description="Discover the most beautiful destinations in Northern Pakistan. From the majestic Hunza Valley to the serene lakes of Skardu and the rugged beauty of Gilgit."
+        keywords="Hunza Valley, Skardu, Gilgit, Fairy Meadows, Deosai Plains, Naran Kaghan, Swat Valley, Northern Pakistan destinations"
+      />
+      <Navbar />
 
-      <section
-        className="relative h-[400px] flex items-center justify-center bg-cover bg-center"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=2000')" }}
-      >
-        <div className="absolute inset-0 bg-black/50"></div>
-        <div className="relative z-10 text-center text-white px-4">
-          <div className="text-lux-accent text-sm uppercase tracking-widest mb-4">Explore the World</div>
-          <h1 className="font-headings text-4xl sm:text-5xl mb-4">Our Destinations</h1>
-          <p className="text-lg opacity-90 max-w-2xl mx-auto font-light">
-            Curated collections of the world's most extraordinary places.
-          </p>
+
+      {/* Hero */}
+      <section className="relative pt-32 pb-12 bg-lux-bg text-lux-primary px-6 sm:px-12">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
+            <div>
+              <div className="text-lux-accent text-xs uppercase tracking-[0.4em] font-bold mb-4">World Collection</div>
+              <h1 className="font-headings text-4xl sm:text-6xl lg:text-7xl mb-6 leading-[1.1]">
+                Iconic <br />
+                <span className="text-lux-accent italic font-light font-body">Escapes</span>
+              </h1>
+            </div>
+            <div className="lg:pb-4">
+              <p className="text-base opacity-70 max-w-xl font-light leading-relaxed mb-6">
+                From the glacial valleys of Skardu to the legendary peaks of Gilgit, explore our curated selection of Northern Pakistan's most awe-inspiring destinations. Each location is a masterpiece of nature, waiting to be discovered.
+              </p>
+              <div className="w-20 h-px bg-lux-accent" />
+            </div>
+          </div>
         </div>
       </section>
 
-      <div className="w-full py-12 flex-1 flex flex-col lg:flex-row gap-0">
+      <div className="w-full pt-16 pb-12 flex-1 flex flex-col lg:flex-row gap-0 border-t border-border/50">
 
         {/* mobile filter toggle */}
         <div className="lg:hidden flex items-center justify-between mb-2 px-6 sm:px-12">

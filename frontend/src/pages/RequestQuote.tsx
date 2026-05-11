@@ -2,6 +2,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { ChevronLeft, Send, LoaderCircle, MapPin, Calendar, Users, Phone, Mail, User, Compass, Clock } from "lucide-react";
 import logo from "../assets/logo.png";
 import { useEffect, useState } from "react";
+import SEO from "../components/SEO";
 
 const API_BASE = (
   import.meta.env.VITE_API_URL ||
@@ -88,6 +89,11 @@ export default function RequestQuote() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-lux-bg font-body text-lux-primary">
+      <SEO 
+        title="Request a Quote | Customize Your Northern Pakistan Trip"
+        description="Plan your custom itinerary with North Paradise Treks and Tours. Request a quote for your dream trip to Hunza, Skardu, Gilgit, and more."
+        keywords="request quote Pakistan tour, custom trip Pakistan, book Hunza tour, Skardu travel inquiry"
+      />
       {/* Left side - Image & Branding */}
       <div className="md:w-5/12 lg:w-1/2 relative min-h-[40vh] md:min-h-screen flex flex-col justify-between p-8 md:p-12 lg:p-16 text-white overflow-hidden">
           <div 

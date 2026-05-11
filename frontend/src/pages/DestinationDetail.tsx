@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 import { MapPin, ChevronLeft, ChevronRight, Calendar, Clock, Check, Utensils, Lightbulb, LoaderCircle } from "lucide-react";
 
 type Destination = {
@@ -71,17 +72,9 @@ export default function DestinationDetail() {
   const { id } = useParams();
   const [destination, setDestination] = useState<Destination | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     const loadDestination = async () => {
@@ -165,7 +158,13 @@ export default function DestinationDetail() {
       : [];
 
   return (
-    <div className="bg-lux-bg text-lux-primary font-body min-h-screen flex flex-col pt-16">
+    <div className="bg-lux-bg text-lux-primary font-body min-h-screen flex flex-col">
+      <SEO 
+        title={`${destination.name} Travel Guide | Northern Pakistan`}
+        description={`Explore ${destination.name} in Northern Pakistan. Discover the best time to visit, top attractions, and premium tour packages for ${destination.name}.`}
+        keywords={`${destination.name}, ${destination.name} tour, visit ${destination.name}, ${destination.name} travel guide, Northern Pakistan tourism`}
+        image={destination.images?.[0]}
+      />
       <Navbar />
 
       <section

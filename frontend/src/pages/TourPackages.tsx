@@ -1,7 +1,9 @@
 import { Search, Clock, Map, ChevronLeft, ChevronRight, X, LoaderCircle, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo1.png";
 import { useState, useMemo, useEffect } from "react";
+import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 
 type TourPackage = {
   id: string;
@@ -376,72 +378,36 @@ export default function TourPackages() {
 
   return (
     <div className="bg-lux-bg text-lux-primary font-body min-h-screen flex flex-col">
-      <header className="w-full z-10 flex flex-col sm:flex-row justify-between items-center px-6 sm:px-12 py-3 bg-lux-primary text-white gap-4">
-        <div className="flex items-center">
-          <Link to="/">
-            <img src={logo} alt="North Paradise" className="-my-4 h-24 w-auto object-contain" />
-          </Link>
-        </div>
-        <nav className="flex gap-4 sm:gap-8 text-sm uppercase tracking-widest flex-wrap justify-center">
-          <Link to="/destinations" className="hover:text-lux-accent transition-colors">Destinations</Link>
-          <div className="relative group">
-            <button className="flex items-center gap-1 text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
-              Tour Packages <ChevronDown className="w-4 h-4" />
-            </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
-              {dynamicTourTypes.length > 0 ? dynamicTourTypes.map((type) => (
-                <Link
-                  key={type._id}
-                  to={`/tour-packages?type=${encodeURIComponent(type.name)}`}
-                  className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5"
-                >
-                  {type.name} Tours
-                </Link>
-              )) : (
-                <>
-                  <Link to="/tour-packages?type=Adventure" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Adventure Tours</Link>
-                  <Link to="/tour-packages?type=Cultural" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Cultural Tours</Link>
-                  <Link to="/tour-packages?type=Honeymoon" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Honeymoon Packages</Link>
-                </>
-              )}
-              <Link to="/tour-packages" className="px-4 py-3 bg-lux-accent/20 hover:bg-lux-accent/30 transition-colors uppercase tracking-[0.2em] text-[10px] font-bold text-center">View All Packages</Link>
-            </div>
-          </div>
-          <Link to="/about" className="hover:text-lux-accent transition-colors">About</Link>
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
-              Services <ChevronDown className="w-4 h-4" />
-            </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
-              <Link to="/services/air-ticketing" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Air Ticketing</Link>
-              <Link to="/services/jeep-safari" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Jeep Safari</Link>
-              <Link to="/services/accommodation" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Accommodation</Link>
-              <Link to="/services/tour-guide" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Tour Guide</Link>
-              <Link to="/services/car-rent" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs">Jeep/Car Rent</Link>
-            </div>
-          </div>
-          <Link to="/contact" className="hover:text-lux-accent transition-colors">Contact</Link>
-          <Link to="/request-quote" className="bg-lux-accent text-white px-6 py-2 rounded-sm text-sm uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer">
-            Customize Trip
-          </Link>
-        </nav>
-      </header>
+      <SEO 
+        title="Luxury & Adventure Tour Packages | Northern Pakistan Trips"
+        description="Browse our curated selection of tour packages for Northern Pakistan. Adventure tours, cultural journeys, honeymoon packages, and family trips available."
+        keywords="adventure tours Pakistan, honeymoon packages Hunza, family tour packages Skardu, cultural tours Gilgit, Pakistan trekking packages, group tours Northern Pakistan, corporate retreats Gilgit, school trips Northern Areas"
+      />
+      <Navbar />
 
-      <section
-        className="relative h-[400px] flex items-center justify-center bg-cover bg-center"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=2000')" }}
-      >
-        <div className="absolute inset-0 bg-black/50"></div>
-        <div className="relative z-10 text-center text-white px-4">
-          <div className="text-lux-accent text-sm uppercase tracking-widest mb-4">Curated Experiences</div>
-          <h1 className="font-headings text-4xl sm:text-5xl mb-4">Our Tour Packages</h1>
-          <p className="text-lg opacity-90 max-w-2xl mx-auto font-light">
-            Meticulously crafted itineraries ensuring an unforgettable voyage.
-          </p>
+
+      {/* Hero */}
+      <section className="relative pt-32 pb-12 bg-lux-bg text-lux-primary px-6 sm:px-12">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
+            <div>
+              <div className="text-lux-accent text-xs uppercase tracking-[0.4em] font-bold mb-4">Signature Expeditions</div>
+              <h1 className="font-headings text-4xl sm:text-6xl lg:text-7xl mb-6 leading-[1.1]">
+                Unveil the <br />
+                <span className="text-lux-accent italic font-light font-body">Extraordinary</span>
+              </h1>
+            </div>
+            <div className="lg:pb-4">
+              <p className="text-base opacity-70 max-w-xl font-light leading-relaxed mb-6">
+                From the jagged peaks of the Karakoram to the serene valleys of Hunza, our curated tour packages are designed for those who seek more than just a trip—they seek a legacy. Discover itineraries that blend raw adventure with unparalleled luxury.
+              </p>
+              <div className="w-20 h-px bg-lux-accent" />
+            </div>
+          </div>
         </div>
       </section>
 
-      <div className="w-full py-12 flex-1 flex flex-col lg:flex-row gap-0">
+      <div className="w-full pt-16 pb-12 flex-1 flex flex-col lg:flex-row gap-0 border-t border-border/50">
 
         {/* mobile filter toggle */}
         <div className="lg:hidden flex items-center justify-between mb-2 px-6 sm:px-12">

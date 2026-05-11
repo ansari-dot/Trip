@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import Landing from "./pages/Landing";
 import Destinations from "./pages/Destinations";
 import DestinationDetail from "./pages/DestinationDetail";
@@ -12,33 +13,44 @@ import Accommodation from "./pages/services/Accommodation";
 import TourGuide from "./pages/services/TourGuide";
 import CarRent from "./pages/services/CarRent";
 import Contact from "./pages/Contact";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import FAQ from "./pages/FAQ";
 import Footer from "./components/Footer";
 import PromoModal from "./components/PromoModal";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen flex flex-col">
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/destinations" element={<Destinations />} />
-            <Route path="/destinations/:id" element={<DestinationDetail />} />
-            <Route path="/tour-packages" element={<TourPackages />} />
-            <Route path="/tour-packages/:id" element={<TourPackageDetail />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/request-quote" element={<RequestQuote />} />
-            <Route path="/services/air-ticketing" element={<AirTicketing />} />
-            <Route path="/services/jeep-safari" element={<JeepSafari />} />
-            <Route path="/services/accommodation" element={<Accommodation />} />
-            <Route path="/services/tour-guide" element={<TourGuide />} />
-            <Route path="/services/car-rent" element={<CarRent />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-        </main>
-        <Footer />
-        <PromoModal />
-      </div>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <div className="min-h-screen flex flex-col">
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/destinations" element={<Destinations />} />
+              <Route path="/destinations/:id" element={<DestinationDetail />} />
+              <Route path="/tour-packages" element={<TourPackages />} />
+              <Route path="/tour-packages/:id" element={<TourPackageDetail />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/request-quote" element={<RequestQuote />} />
+              <Route path="/services/air-ticketing" element={<AirTicketing />} />
+              <Route path="/services/jeep-safari" element={<JeepSafari />} />
+              <Route path="/services/accommodation" element={<Accommodation />} />
+              <Route path="/services/tour-guide" element={<TourGuide />} />
+              <Route path="/services/car-rent" element={<CarRent />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-conditions" element={<TermsConditions />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/help-center" element={<FAQ />} />
+            </Routes>
+          </main>
+          <Footer />
+          <PromoModal />
+          <WhatsAppButton />
+        </div>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }

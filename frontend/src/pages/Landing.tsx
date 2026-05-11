@@ -2,6 +2,8 @@ import { Search, MapPin, ChevronDown, ChevronLeft, ChevronRight, Package, Star, 
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { useEffect, useMemo, useState } from "react";
+import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 
 type Destination = {
   _id?: string;
@@ -37,14 +39,14 @@ const FEATURED_FALLBACKS = [
     id: "fallback-kyoto",
     name: "Kyoto",
     location: "Japan",
-    price: "From PKR 1,800",
+    price: "From Rs. 1,800",
     image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&q=80&w=800",
   },
   {
     id: "fallback-zermatt",
     name: "Zermatt",
     location: "Switzerland",
-    price: "From PKR 3,100",
+    price: "From Rs. 3,100",
     image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&q=80&w=800",
   },
 ];
@@ -118,15 +120,6 @@ export default function Landing() {
 
   // hero search state
   const [searchDestination, setSearchDestination] = useState("");
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
   const [searchType, setSearchType] = useState("");
   const [allTourPackages, setAllTourPackages] = useState<{ type: string; destinations: string[] }[]>([]);
   const [showDestSuggestions, setShowDestSuggestions] = useState(false);
@@ -305,58 +298,14 @@ export default function Landing() {
 
   return (
     <div className="bg-lux-bg text-lux-primary font-body min-h-screen flex flex-col">
-      <header className={`fixed top-0 left-0 right-0 w-full z-50 flex flex-col sm:flex-row justify-between items-center px-6 sm:px-12 transition-all duration-300 text-white gap-4 ${isScrolled ? 'py-2 bg-lux-primary/95 backdrop-blur-md shadow-md' : 'py-3 bg-transparent'}`}>
-        <div className="flex items-center">
-          <Link to="/">
-            <img src={logo} alt="North Paradise" className="-my-4 h-24 w-auto object-contain" />
-          </Link>
-        </div>
-        <nav className="flex gap-4 sm:gap-8 text-sm uppercase tracking-widest flex-wrap justify-center">
-          <Link to="/destinations" className="hover:text-lux-accent transition-colors">Destinations</Link>
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
-              Tour Packages <ChevronDown className="w-4 h-4" />
-            </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
-              {dynamicTourTypes.length > 0 ? dynamicTourTypes.map((type) => (
-                <Link
-                  key={type._id}
-                  to={`/tour-packages?type=${encodeURIComponent(type.name)}`}
-                  className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5"
-                >
-                  {type.name} Tours
-                </Link>
-              )) : (
-                <>
-                  <Link to="/tour-packages?type=Adventure" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Adventure Tours</Link>
-                  <Link to="/tour-packages?type=Cultural" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Cultural Tours</Link>
-                  <Link to="/tour-packages?type=Honeymoon" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Honeymoon Packages</Link>
-                </>
-              )}
-              <Link to="/tour-packages" className="px-4 py-3 bg-lux-accent/20 hover:bg-lux-accent/30 transition-colors uppercase tracking-[0.2em] text-[10px] font-bold text-center">View All Packages</Link>
-            </div>
-          </div>
-          <Link to="/about" className="hover:text-lux-accent transition-colors">About</Link>
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
-              Services <ChevronDown className="w-4 h-4" />
-            </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
-              <Link to="/services/air-ticketing" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Air Ticketing</Link>
-              <Link to="/services/jeep-safari" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Jeep Safari</Link>
-              <Link to="/services/accommodation" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Accommodation</Link>
-              <Link to="/services/tour-guide" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Tour Guide</Link>
-              <Link to="/services/car-rent" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs">Jeep/Car Rent</Link>
-            </div>
-          </div>
-          <Link to="/contact" className="hover:text-lux-accent transition-colors">Contact</Link>
-        </nav>
-        <Link to="/request-quote" className="bg-lux-accent text-white px-6 py-2 rounded-sm text-sm uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer">
-          Customize Trip
-        </Link>
-      </header>
+      <SEO 
+        title="North Paradise Treks and Tours | Best Northern Pakistan Tour Packages"
+        description="Explore the breathtaking beauty of Northern Pakistan with North Paradise Treks and Tours. We offer premium and luxury tour packages to Hunza, Skardu, Gilgit, and more."
+        keywords="Northern Pakistan tours, Hunza Valley tour, Skardu trip, Gilgit tourism, Pakistan luxury travel, adventure tours Pakistan, tours from Karachi, tours from Lahore, tours from Islamabad, Khunjerab Pass trip, Attabad Lake tour"
+      />
+      <Navbar />
 
-      <section className="relative h-[80vh] min-h-[600px] overflow-hidden">
+      <section className="relative h-[50vh] sm:h-[70vh] min-h-[350px] sm:min-h-[500px] overflow-hidden">
         {/* slides */}
         {heroSlides.length > 0 ? heroSlides.map((slide, idx) => (
           <div
@@ -425,14 +374,14 @@ export default function Landing() {
         ) : null}
       </section>
 
-      <div className="max-w-5xl mx-auto w-full px-6 -mt-12 relative z-20 mb-24">
-        <div className="bg-white rounded-sm shadow-xl p-4 flex flex-col md:flex-row gap-4 justify-between items-center w-full">
+      <div className="max-w-5xl mx-auto w-full px-6 -mt-8 sm:-mt-12 relative z-20 mb-16 sm:mb-24">
+        <div className="bg-white rounded-sm shadow-xl p-3 sm:p-4 flex flex-col md:flex-row gap-3 sm:gap-4 justify-between items-center w-full">
 
           {/* Destination input with suggestions */}
-          <div className="relative flex items-center gap-4 w-full md:w-auto px-4 border-b md:border-b-0 md:border-r border-border pb-4 md:pb-0 flex-1">
-            <MapPin className="text-lux-accent w-6 h-6 shrink-0" />
+          <div className="relative flex items-center gap-3 sm:gap-4 w-full md:w-auto px-2 sm:px-4 border-b md:border-b-0 md:border-r border-border pb-3 sm:pb-0 flex-1">
+            <MapPin className="text-lux-accent w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
             <div className="flex-1">
-              <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-0.5">Destination</div>
+              <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-0.5">Destination</div>
               <input
                 type="text"
                 value={searchDestination}
@@ -440,7 +389,7 @@ export default function Landing() {
                 onFocus={() => setShowDestSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowDestSuggestions(false), 150)}
                 placeholder="Where to?"
-                className="text-sm font-medium outline-none text-lux-primary w-full bg-transparent"
+                className="text-xs sm:text-sm font-medium outline-none text-lux-primary w-full bg-transparent"
               />
             </div>
             {showDestSuggestions && filteredDestSuggestions.length > 0 && (
@@ -461,15 +410,15 @@ export default function Landing() {
           </div>
 
           {/* Tour type dropdown */}
-          <div className="relative flex items-center gap-4 w-full md:w-auto px-4 border-b md:border-b-0 md:border-r border-border pb-4 md:pb-0 flex-1">
-            <Package className="text-lux-accent w-6 h-6 shrink-0" />
+          <div className="relative flex items-center gap-3 sm:gap-4 w-full md:w-auto px-2 sm:px-4 border-b md:border-b-0 md:border-r border-border pb-3 sm:pb-0 flex-1">
+            <Package className="text-lux-accent w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
             <div className="flex-1">
-              <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-0.5">Tour Type</div>
+              <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-0.5">Tour Type</div>
               <div className="relative">
                 <select
                   value={searchType}
                   onChange={(e) => setSearchType(e.target.value)}
-                  className="text-sm font-medium outline-none text-lux-primary w-full bg-transparent appearance-none cursor-pointer pr-5"
+                  className="text-xs sm:text-sm font-medium outline-none text-lux-primary w-full bg-transparent appearance-none cursor-pointer pr-5"
                 >
                   <option value="">All Types</option>
                   {dynamicTourTypes.length > 0 ? dynamicTourTypes.map((type) => (
@@ -485,7 +434,7 @@ export default function Landing() {
 
           <button
             onClick={handleSearch}
-            className="bg-lux-primary text-white px-8 py-4 rounded-sm text-sm font-medium hover:bg-lux-primary/90 transition-colors w-full md:w-auto flex items-center justify-center gap-2 cursor-pointer"
+            className="bg-lux-primary text-white px-6 sm:px-8 py-3 sm:py-4 rounded-sm text-xs sm:text-sm font-medium hover:bg-lux-primary/90 transition-colors w-full md:w-auto flex items-center justify-center gap-2 cursor-pointer"
           >
             Search <Search className="w-4 h-4" />
           </button>
@@ -506,21 +455,21 @@ export default function Landing() {
             </div>
           </div>
         ) : (
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-0 h-auto md:h-[500px]">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:flex md:flex-row gap-6 md:gap-0 h-auto md:h-[500px]">
             {displayedFeaturedDestinations.map((destination, index) => (
               <Link
                 to={`/destinations/${destination.id}`}
                 key={destination.id}
-                className={`flex-1 relative group overflow-hidden cursor-pointer h-[300px] md:h-auto ${index === 1 ? "border-y md:border-y-0 md:border-x border-white/20" : ""}`}
+                className={`relative group overflow-hidden cursor-pointer h-[350px] md:h-auto md:flex-1 ${index === 1 ? "md:border-x border-white/20" : ""}`}
               >
                 <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
-                  style={{ backgroundImage: `url('${destination.image || FEATURED_FALLBACKS[index]?.image || FEATURED_FALLBACKS[0].image}')` }}
+                  style={{ backgroundImage: `url('${destination.image || (index < FEATURED_FALLBACKS.length ? FEATURED_FALLBACKS[index].image : FEATURED_FALLBACKS[0].image)}')` }}
                 ></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 p-8 text-white">
-                  <h3 className="font-headings text-3xl mb-2">{destination.name}, {destination.location}</h3>
-                  <p className="text-sm font-medium opacity-90">{destination.price || "Contact for pricing"}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 p-8 text-white w-full">
+                  <h3 className="font-headings text-2xl sm:text-3xl mb-2">{destination.name}, {destination.location}</h3>
+                  <p className="text-sm font-medium text-lux-accent">{destination.price || "Contact for pricing"}</p>
                 </div>
               </Link>
             ))}
