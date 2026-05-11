@@ -1,0 +1,311 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-lux-bg: #fdfbf7;
+  --color-lux-primary: #0f172a;
+  --color-lux-accent: #b45309;
+  --font-body: 'DM Sans', sans-serif;
+  --font-headings: 'PT Serif', serif;
+}
+
+body {
+  background-color: var(--color-lux-bg);
+  color: var(--color-lux-primary);
+  font-family: var(--font-body);
+}
+
+.admin-login {
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+  background: var(--color-lux-bg);
+  color: var(--color-lux-primary);
+}
+
+.admin-login__bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.95;
+  background:
+    radial-gradient(circle at top, rgba(180, 83, 9, 0.18), transparent 40%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.06), transparent 55%);
+}
+
+.admin-login__shell::before,
+.admin-login__shell::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.admin-login__shell {
+  position: relative;
+  min-height: 100vh;
+  padding: 2.5rem 1rem;
+}
+
+.admin-login__shell::before {
+  width: 26rem;
+  height: 26rem;
+  top: 4rem;
+  right: -8rem;
+  background:
+    radial-gradient(circle at center, rgba(180, 83, 9, 0.14), rgba(180, 83, 9, 0));
+}
+
+.admin-login__shell::after {
+  width: 22rem;
+  height: 22rem;
+  left: -7rem;
+  bottom: 1rem;
+  background:
+    radial-gradient(circle at center, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0));
+}
+
+.admin-login__grid {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 32rem);
+  min-height: calc(100vh - 5rem);
+  margin: 0 auto;
+  display: grid;
+  align-items: center;
+  gap: 2.5rem;
+  justify-items: center;
+}
+
+.admin-login__panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 2rem;
+  padding: 2rem;
+}
+
+.admin-login__panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.45), transparent 42%);
+}
+
+.admin-login__panel--form {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(251, 248, 242, 0.96));
+  width: min(100%, 32rem);
+  margin: 0 auto;
+  box-shadow: 0 25px 80px rgba(15, 23, 42, 0.14);
+}
+
+.admin-login__title {
+  text-wrap: balance;
+  font-family: var(--font-headings);
+}
+
+.admin-login__copy {
+  text-wrap: pretty;
+}
+
+.admin-login__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+  background: var(--color-lux-primary);
+  box-shadow:
+    0 18px 32px rgba(15, 23, 42, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.admin-login__icon-svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+}
+
+.admin-login__kicker {
+  letter-spacing: 0.32em;
+  color: var(--color-lux-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-login__title {
+  margin-top: 0.75rem;
+  font-size: 1.875rem;
+}
+
+.admin-login__copy {
+  margin-top: 0.75rem;
+  color: rgba(15, 23, 42, 0.65);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.admin-login__form-head {
+  margin-bottom: 2rem;
+}
+
+.admin-login__form {
+  position: relative;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.admin-login__field {
+  display: block;
+}
+
+.admin-login__label {
+  display: block;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.22em;
+  color: rgba(15, 23, 42, 0.6);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-login__input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  border-radius: 1rem;
+  background: var(--color-lux-bg);
+  font-size: 0.95rem;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.admin-login__input:focus {
+  outline: none;
+  border-color: var(--color-lux-accent);
+  background: white;
+  box-shadow:
+    0 0 0 4px rgba(180, 83, 9, 0.12),
+    inset 0 1px 2px rgba(15, 23, 42, 0.02);
+}
+
+.admin-login__input::placeholder {
+  color: rgba(15, 23, 42, 0.38);
+}
+
+.admin-login__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-rose-200);
+  border-radius: 1rem;
+  background: var(--color-rose-50);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  color: var(--color-rose-700);
+  font-size: 0.92rem;
+}
+
+.admin-login__error-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+.admin-login__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 0;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, #0f172a 0%, #1e293b 45%, #b45309 140%);
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow:
+    0 18px 34px rgba(15, 23, 42, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.admin-login__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.admin-login__button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.18) 45%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+}
+
+.admin-login__button:hover::before {
+  transform: translateX(120%);
+}
+
+.admin-login__button-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.admin-login__button-icon--spin {
+  animation: spin 1s linear infinite;
+}
+
+@media (min-width: 1024px) {
+  .admin-login__panel--form {
+    padding: 2.5rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .admin-login__shell {
+    padding: 1.5rem 1rem;
+  }
+
+  .admin-login__shell::before {
+    width: 20rem;
+    height: 20rem;
+    top: -1rem;
+    right: -9rem;
+  }
+
+  .admin-login__shell::after {
+    width: 16rem;
+    height: 16rem;
+    left: -6rem;
+    bottom: -2rem;
+  }
+
+  .admin-login__panel {
+    padding: 1.5rem;
+  }
+
+  .admin-login__panel--form {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-login__grid {
+    width: 100%;
+  }
+}

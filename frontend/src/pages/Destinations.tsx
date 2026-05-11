@@ -1,0 +1,465 @@
+import { Search, MapPin, ChevronLeft, ChevronRight, X, LoaderCircle, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import logo from "../assets/logo.png";
+import { useEffect, useMemo, useState } from "react";
+
+type Destination = {
+  _id?: string;
+  id: string;
+  name: string;
+  location: string;
+  tours?: string;
+  description?: string;
+  image?: string;
+  gallery?: string[];
+  highlights?: string[];
+  price?: string;
+  duration?: string;
+  expertTip?: string;
+  cuisine?: string;
+  whenToGo?: string;
+};
+
+const API_BASE = (
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? "http://localhost:5000" : "")
+).replace(/\/$/, "");
+
+function getApiUrl(path: string) {
+  return `${API_BASE}${path}`;
+}
+
+async function parseJsonSafely(response: Response) {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+function normalizeDestination(input: unknown): Destination | null {
+  if (!input || typeof input !== "object") return null;
+  const destination = input as Destination;
+  if (!destination.id || !destination.name || !destination.location) return null;
+  return {
+    _id: destination._id,
+    id: destination.id,
+    name: destination.name,
+    location: destination.location,
+    tours: destination.tours || "",
+    description: destination.description || "",
+    image: destination.image || "",
+    gallery: Array.isArray(destination.gallery) ? destination.gallery : [],
+    highlights: Array.isArray(destination.highlights) ? destination.highlights : [],
+    price: destination.price || "",
+    duration: destination.duration || "",
+    expertTip: destination.expertTip || "",
+    cuisine: destination.cuisine || "",
+    whenToGo: destination.whenToGo || "",
+  };
+}
+
+const PAGE_SIZE = 6;
+
+function FilterSection({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center justify-between w-full text-left py-4 px-6 border-b border-white/8 hover:bg-white/5 transition-colors"
+      >
+        <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-lux-accent">{title}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-white/40 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && <div className="px-6 py-4 border-b border-white/8">{children}</div>}
+    </div>
+  );
+}
+
+export default function Destinations() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [tourCountFilter, setTourCountFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [allDestinations, setAllDestinations] = useState<Destination[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const loadAll = async () => {
+      setIsLoading(true);
+      setError("");
+      try {
+        const first = await fetch(getApiUrl("/api/destinations?page=1"));
+        const firstData = await parseJsonSafely(first);
+        if (!first.ok) { setError(firstData?.message || "Failed to load destinations."); setAllDestinations([]); return; }
+        const totalPages: number = Math.max(Number(firstData?.totalPages) || 1, 1);
+        const collected: Destination[] = (Array.isArray(firstData?.data) ? firstData.data.map(normalizeDestination).filter(Boolean) : []) as Destination[];
+        if (totalPages > 1) {
+          const rest = await Promise.all(
+            Array.from({ length: totalPages - 1 }, (_, i) =>
+              fetch(getApiUrl(`/api/destinations?page=${i + 2}`)).then(parseJsonSafely)
+            )
+          );
+          rest.forEach((data) => {
+            if (Array.isArray(data?.data)) {
+              (data.data.map(normalizeDestination).filter(Boolean) as Destination[]).forEach((d) => collected.push(d));
+            }
+          });
+        }
+        setAllDestinations(collected);
+      } catch {
+        setError("Unable to load destinations from the server.");
+        setAllDestinations([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    void loadAll();
+  }, []);
+
+  useEffect(() => { setCurrentPage(1); }, [searchQuery, selectedLocations, tourCountFilter]);
+
+  const allLocations = useMemo(() =>
+    Array.from(new Set(allDestinations.map((d) => d.location.trim()).filter(Boolean))).sort()
+    , [allDestinations]);
+
+  const filteredDestinations = useMemo(() => {
+    return allDestinations.filter((dest) => {
+      if (selectedLocations.length > 0 && !selectedLocations.includes(dest.location.trim())) return false;
+
+      if (
+        searchQuery &&
+        !dest.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !dest.location.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !(dest.description || "").toLowerCase().includes(searchQuery.toLowerCase())
+      ) return false;
+
+      if (tourCountFilter !== "All") {
+        const toursVal = parseInt(dest.tours || "0", 10);
+        if (tourCountFilter === "1-5 Tours" && (toursVal < 1 || toursVal > 5)) return false;
+        if (tourCountFilter === "6-10 Tours" && (toursVal < 6 || toursVal > 10)) return false;
+        if (tourCountFilter === "11+ Tours" && toursVal < 11) return false;
+      }
+
+      return true;
+    });
+  }, [allDestinations, selectedLocations, searchQuery, tourCountFilter]);
+
+  const totalPages = Math.max(Math.ceil(filteredDestinations.length / PAGE_SIZE), 1);
+  const paginatedDestinations = filteredDestinations.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const activeFilterCount = selectedLocations.length + (tourCountFilter !== "All" ? 1 : 0) + (searchQuery ? 1 : 0);
+
+  const clearFilters = () => {
+    setSelectedLocations([]);
+    setTourCountFilter("All");
+    setSearchQuery("");
+  };
+
+  const toggleLocation = (loc: string) =>
+    setSelectedLocations((prev) => prev.includes(loc) ? prev.filter((l) => l !== loc) : [...prev, loc]);
+
+  const tourCountOptions = ["All", "1-5 Tours", "6-10 Tours", "11+ Tours"];
+
+  const FilterPanel = (
+    <div>
+      {/* search */}
+      <div className="px-6 py-4 border-b border-white/8">
+        <div className="flex items-center gap-2 bg-white/8 border border-white/15 px-3 py-2.5 focus-within:border-lux-accent transition-colors">
+          <Search className="w-3.5 h-3.5 text-white/40 shrink-0" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search destinations..."
+            className="text-sm bg-transparent outline-none text-white placeholder:text-white/30 w-full"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery("")}><X className="w-3 h-3 text-white/40 hover:text-white transition-colors" /></button>
+          )}
+        </div>
+      </div>
+
+      {/* location */}
+      {allLocations.length > 0 && (
+        <FilterSection title="Location">
+          <div className="space-y-1">
+            {allLocations.map((loc) => {
+              const count = allDestinations.filter((d) => d.location.trim() === loc).length;
+              const active = selectedLocations.includes(loc);
+              return (
+                <button
+                  key={loc}
+                  onClick={() => toggleLocation(loc)}
+                  className={`w-full flex items-center justify-between px-3 py-2 transition-all cursor-pointer group ${active ? "bg-lux-accent/20 border-l-2 border-lux-accent" : "border-l-2 border-transparent hover:bg-white/5 hover:border-white/20"
+                    }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className={`w-3.5 h-3.5 border flex items-center justify-center shrink-0 transition-colors ${active ? "bg-lux-accent border-lux-accent" : "border-white/30 group-hover:border-white/60"
+                      }`}>
+                      {active && <div className="w-1.5 h-1.5 bg-white" />}
+                    </div>
+                    <span className={`text-sm transition-colors ${active ? "text-white font-medium" : "text-white/65 group-hover:text-white"}`}>{loc}</span>
+                  </div>
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 transition-colors ${active ? "bg-lux-accent text-white" : "bg-white/10 text-white/40"
+                    }`}>{count}</span>
+                </button>
+              );
+            })}
+          </div>
+        </FilterSection>
+      )}
+
+      {/* tour count */}
+      <FilterSection title="Available Tours">
+        <div className="space-y-1">
+          {tourCountOptions.map((opt) => {
+            const active = tourCountFilter === opt;
+            return (
+              <button
+                key={opt}
+                onClick={() => setTourCountFilter(opt)}
+                className={`w-full flex items-center justify-between px-3 py-2 transition-all cursor-pointer group ${active ? "bg-lux-accent/20 border-l-2 border-lux-accent" : "border-l-2 border-transparent hover:bg-white/5 hover:border-white/20"
+                  }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${active ? "border-lux-accent" : "border-white/30 group-hover:border-white/60"
+                    }`}>
+                    {active && <div className="w-1.5 h-1.5 rounded-full bg-lux-accent" />}
+                  </div>
+                  <span className={`text-sm transition-colors ${active ? "text-white font-medium" : "text-white/65 group-hover:text-white"}`}>{opt}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </FilterSection>
+
+      {/* clear */}
+      {activeFilterCount > 0 && (
+        <div className="px-6 py-4">
+          <button
+            onClick={clearFilters}
+            className="w-full flex items-center justify-center gap-2 border border-white/20 text-white/60 hover:text-white hover:border-white/50 py-2.5 text-[10px] font-bold uppercase tracking-[0.25em] transition-all cursor-pointer"
+          >
+            <X className="w-3 h-3" /> Clear All ({activeFilterCount})
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="bg-lux-bg text-lux-primary font-body min-h-screen flex flex-col">
+      <header className="w-full z-10 flex flex-col sm:flex-row justify-between items-center px-6 sm:px-12 py-3 bg-lux-primary text-white gap-4">
+        <div className="flex items-center">
+          <Link to="/">
+            <img src={logo} alt="North Paradise" className="-my-4 h-24 w-auto object-contain" />
+          </Link>
+        </div>
+        <nav className="flex gap-4 sm:gap-8 text-sm uppercase tracking-widest flex-wrap justify-center">
+          <Link to="/destinations" className="text-lux-accent transition-colors hover:text-lux-accent">Destinations</Link>
+          <div className="relative group">
+            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
+              Tour Packages <ChevronDown className="w-4 h-4" />
+            </button>
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
+              <Link to="/tour-packages?type=Adventure" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Adventure Tours</Link>
+              <Link to="/tour-packages?type=Cultural" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Cultural Tours</Link>
+              <Link to="/tour-packages?type=Honeymoon" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Honeymoon Packages</Link>
+              <Link to="/tour-packages?type=Family" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Family Tours</Link>
+              <Link to="/tour-packages?type=Religious" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Religious Tours</Link>
+              <Link to="/tour-packages" className="px-4 py-3 bg-lux-accent/20 hover:bg-lux-accent/30 transition-colors uppercase tracking-[0.2em] text-[10px] font-bold text-center">View All Packages</Link>
+            </div>
+          </div>
+          <Link to="/about" className="hover:text-lux-accent transition-colors">About</Link>
+          <div className="relative group">
+            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
+              Services <ChevronDown className="w-4 h-4" />
+            </button>
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
+              <Link to="/services/air-ticketing" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Air Ticketing</Link>
+              <Link to="/services/jeep-safari" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Jeep Safari</Link>
+              <Link to="/services/accommodation" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Accommodation</Link>
+              <Link to="/services/tour-guide" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Tour Guide</Link>
+              <Link to="/services/car-rent" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs">Jeep/Car Rent</Link>
+            </div>
+          </div>
+          <Link to="/contact" className="hover:text-lux-accent transition-colors">Contact</Link>
+        </nav>
+        <Link to="/request-quote" className="bg-lux-accent text-white px-6 py-2 rounded-sm text-sm uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer">
+          Customize Trip
+        </Link>
+      </header>
+
+      <section
+        className="relative h-[400px] flex items-center justify-center bg-cover bg-center"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=2000')" }}
+      >
+        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="relative z-10 text-center text-white px-4">
+          <div className="text-lux-accent text-sm uppercase tracking-widest mb-4">Explore the World</div>
+          <h1 className="font-headings text-4xl sm:text-5xl mb-4">Our Destinations</h1>
+          <p className="text-lg opacity-90 max-w-2xl mx-auto font-light">
+            Curated collections of the world's most extraordinary places.
+          </p>
+        </div>
+      </section>
+
+      <div className="w-full py-12 flex-1 flex flex-col lg:flex-row gap-0">
+
+        {/* mobile filter toggle */}
+        <div className="lg:hidden flex items-center justify-between mb-2 px-6 sm:px-12">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest">
+            {filteredDestinations.length} destination{filteredDestinations.length !== 1 ? "s" : ""}
+          </p>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="flex items-center gap-2 border border-border rounded-sm px-4 py-2 text-sm font-medium text-lux-primary hover:bg-white transition-colors cursor-pointer"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            Filters {activeFilterCount > 0 && <span className="bg-lux-accent text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm">{activeFilterCount}</span>}
+          </button>
+        </div>
+
+        {/* mobile sidebar overlay */}
+        {sidebarOpen && (
+          <div className="lg:hidden fixed inset-0 z-40 flex">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
+            <div className="relative z-50 w-80 bg-lux-primary h-full overflow-y-auto shadow-xl ml-auto">
+              <div className="px-6 py-6 border-b border-white/10 flex items-center justify-between">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.35em] text-lux-accent mb-1">Refine Results</p>
+                  <h3 className="font-headings text-2xl text-white">Filters</h3>
+                </div>
+                <button onClick={() => setSidebarOpen(false)} className="text-white/40 hover:text-white transition-colors"><X className="w-5 h-5" /></button>
+              </div>
+              {FilterPanel}
+            </div>
+          </div>
+        )}
+
+        {/* desktop sidebar */}
+        <aside className="hidden lg:block w-80 shrink-0">
+          <div className="bg-lux-primary sticky top-0 min-h-screen overflow-y-auto">
+            <div className="px-6 py-6 border-b border-white/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.35em] text-lux-accent mb-1">Refine Results</p>
+                  <h3 className="font-headings text-2xl text-white">Filters</h3>
+                </div>
+                {activeFilterCount > 0 && (
+                  <div className="flex flex-col items-center justify-center w-9 h-9 bg-lux-accent">
+                    <span className="text-white text-sm font-bold">{activeFilterCount}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            {FilterPanel}
+          </div>
+        </aside>
+
+        {/* main content */}
+        <div className="flex-1 min-w-0 px-6 sm:px-10 py-0">
+          {!isLoading && !error && (
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
+              <p className="text-xs text-muted-foreground uppercase tracking-[0.2em]">
+                {filteredDestinations.length} destination{filteredDestinations.length !== 1 ? "s" : ""} found
+              </p>
+              {activeFilterCount > 0 && (
+                <button onClick={clearFilters} className="text-[10px] uppercase tracking-widest text-lux-accent hover:text-lux-primary transition-colors font-bold">
+                  Clear filters
+                </button>
+              )}
+            </div>
+          )}
+
+          {isLoading ? (
+            <div className="text-center py-24">
+              <div className="inline-flex items-center gap-3 bg-white border border-border rounded-sm px-5 py-4 shadow-sm">
+                <LoaderCircle className="w-5 h-5 animate-spin text-lux-accent" />
+                <span className="text-sm">Loading destinations...</span>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-24">
+              <h3 className="font-headings text-2xl mb-2">Unable to Load Destinations</h3>
+              <p className="text-muted-foreground mb-6">{error}</p>
+              <button onClick={() => window.location.reload()} className="bg-lux-primary text-white px-6 py-2 rounded-sm text-sm uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer">
+                Try Again
+              </button>
+            </div>
+          ) : paginatedDestinations.length === 0 ? (
+            <div className="text-center py-24">
+              <h3 className="font-headings text-2xl mb-2">No Destinations Found</h3>
+              <p className="text-muted-foreground mb-6">Try adjusting your filters.</p>
+              <button onClick={clearFilters} className="bg-lux-primary text-white px-6 py-2 rounded-sm text-sm uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer">
+                Clear All Filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedDestinations.map((dest, i) => (
+                <Link
+                  to={`/destinations/${dest.id}`}
+                  key={dest.id}
+                  className="group cursor-pointer relative overflow-hidden h-80 block animate-in fade-in zoom-in-95 duration-300"
+                  style={{ animationDelay: `${i * 60}ms` }}
+                >
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    style={{ backgroundImage: `url('${dest.image || "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=1200"}')` }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                  {/* top accent line on hover */}
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-lux-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <div className="flex justify-between items-end gap-4">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.25em] text-lux-accent font-bold mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          Explore
+                        </p>
+                        <h3 className="font-headings text-3xl mb-1 leading-tight">{dest.name}</h3>
+                        <p className="text-sm opacity-70 flex items-center gap-1">
+                          <MapPin className="text-lux-accent w-3.5 h-3.5 shrink-0" />
+                          {dest.location}
+                        </p>
+                      </div>
+                      {dest.tours && (
+                        <div className="text-xs font-bold bg-white/10 backdrop-blur-sm border border-white/20 px-3 py-1.5 shrink-0">
+                          {dest.tours}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {!isLoading && !error && totalPages > 1 && (
+            <div className="flex justify-center mt-16">
+              <div className="flex gap-2">
+                <button onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1} className="w-10 h-10 flex items-center justify-center border border-border rounded-sm hover:bg-lux-primary hover:text-white transition-colors text-muted-foreground cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button key={page} onClick={() => setCurrentPage(page)} className={`w-10 h-10 flex items-center justify-center border rounded-sm transition-colors cursor-pointer ${currentPage === page ? "border-lux-primary bg-lux-primary text-white" : "border-border hover:bg-lux-primary hover:text-white"}`}>
+                    {page}
+                  </button>
+                ))}
+                <button onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages} className="w-10 h-10 flex items-center justify-center border border-border rounded-sm hover:bg-lux-primary hover:text-white transition-colors text-muted-foreground cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+    </div>
+  );
+}

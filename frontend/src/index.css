@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-lux-bg: #fdfbf7;
+  --color-lux-primary: #0f172a;
+  --color-lux-accent: #b45309;
+  --color-border: #e8e8e8;
+  --color-muted-foreground: #6b7280;
+
+  --font-body: "DM Sans", sans-serif;
+  --font-headings: "PT Serif", serif;
+}
+
