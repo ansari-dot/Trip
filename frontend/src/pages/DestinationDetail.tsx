@@ -165,47 +165,8 @@ export default function DestinationDetail() {
       : [];
 
   return (
-    <div className="bg-lux-bg text-lux-primary font-body min-h-screen flex flex-col">
-      <header className={`w-full z-50 fixed top-0 left-0 right-0 flex justify-between items-center px-6 sm:px-12 transition-all duration-300 text-white ${isScrolled ? 'py-2 bg-lux-primary/95 backdrop-blur-md shadow-md' : 'py-3 bg-transparent'}`}>
-        <div className="flex items-center drop-shadow-md">
-          <Link to="/">
-            <img src={logo} alt="North Paradise" className="-my-4 h-24 w-auto object-contain" />
-          </Link>
-        </div>
-        <nav className="hidden sm:flex gap-8 text-sm uppercase tracking-widest drop-shadow-md">
-          <Link to="/destinations" className="hover:text-lux-accent transition-colors">Destinations</Link>
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
-              Tour Packages <ChevronDown className="w-4 h-4" />
-            </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
-              <Link to="/tour-packages?type=Adventure" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Adventure Tours</Link>
-              <Link to="/tour-packages?type=Cultural" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Cultural Tours</Link>
-              <Link to="/tour-packages?type=Honeymoon" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Honeymoon Packages</Link>
-              <Link to="/tour-packages?type=Family" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Family Tours</Link>
-              <Link to="/tour-packages?type=Religious" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Religious Tours</Link>
-              <Link to="/tour-packages" className="px-4 py-3 bg-lux-accent/20 hover:bg-lux-accent/30 transition-colors uppercase tracking-[0.2em] text-[10px] font-bold text-center">View All Packages</Link>
-            </div>
-          </div>
-          <Link to="/about" className="hover:text-lux-accent transition-colors">About</Link>
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
-              Services <ChevronDown className="w-4 h-4" />
-            </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-lux-primary/95 backdrop-blur-sm border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 flex flex-col shadow-xl z-50 text-white text-left">
-              <Link to="/services/air-ticketing" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Air Ticketing</Link>
-              <Link to="/services/jeep-safari" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Jeep Safari</Link>
-              <Link to="/services/accommodation" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Accommodation</Link>
-              <Link to="/services/tour-guide" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs border-b border-white/5">Tour Guide</Link>
-              <Link to="/services/car-rent" className="px-4 py-3 hover:bg-white/10 transition-colors uppercase tracking-widest text-xs">Jeep/Car Rent</Link>
-            </div>
-          </div>
-          <Link to="/contact" className="hover:text-lux-accent transition-colors">Contact</Link>
-        </nav>
-        <Link to="/request-quote" className="hidden sm:inline-flex bg-lux-accent text-white px-6 py-2 text-sm uppercase tracking-wider hover:opacity-90 transition-opacity items-center">
-          Customize Trip
-        </Link>
-      </header>
+    <div className="bg-lux-bg text-lux-primary font-body min-h-screen flex flex-col pt-16">
+      <Navbar />
 
       <section
         className="relative h-[60vh] min-h-[500px] flex items-end pb-16 bg-cover bg-center"

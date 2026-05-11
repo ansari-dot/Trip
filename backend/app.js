@@ -25,6 +25,10 @@ const CLIENT_URL = process.env.CLIENT_URL || "*";
 const DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
+    "https://northparadisetreksandtours.com/",
+    "https://admin.northparadisetreksandtours.com/",
+    "https://www.northparadisetreksandtours.com/",
+
 ];
 
 const allowedOrigins =
