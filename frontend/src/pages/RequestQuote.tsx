@@ -95,7 +95,7 @@ export default function RequestQuote() {
         keywords="request quote Pakistan tour, custom trip Pakistan, book Hunza tour, Skardu travel inquiry"
       />
       {/* Left side - Image & Branding */}
-      <div className="md:w-5/12 lg:w-1/2 relative min-h-[40vh] md:min-h-screen flex flex-col justify-between p-8 md:p-12 lg:p-16 text-white overflow-hidden">
+      <div className="md:w-5/12 lg:w-1/2 relative min-h-[34vh] sm:min-h-[40vh] md:min-h-screen flex flex-col justify-between p-6 sm:p-12 lg:p-16 text-white overflow-hidden rounded-b-[2rem] md:rounded-none">
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('https://images.unsplash.com/photo-1454391304352-2bf4678b1a7a?auto=format&fit=crop&q=80&w=2000')" }}
@@ -103,12 +103,12 @@ export default function RequestQuote() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/80" />
           
           <div className="relative z-10 max-w-xl mx-auto">
-            <h1 className="font-headings text-4xl lg:text-6xl mb-6">
+            <h1 className="font-headings text-2xl sm:text-4xl lg:text-6xl mb-4 sm:mb-6 leading-tight">
               {serviceFromUrl ? `Book Our ${serviceFromUrl}` : "Design Your"} <br />
               <span className="text-lux-accent italic font-light">{serviceFromUrl ? "Service" : "Dream Journey"}</span>
             </h1>
             
-            <p className="text-lg opacity-90 max-w-md font-light leading-relaxed mb-12">
+            <p className="text-sm sm:text-lg opacity-90 max-w-md font-light leading-relaxed mb-6 sm:mb-12">
               Every great adventure begins with a conversation. Share your travel aspirations with us, and our luxury concierges will curate an itinerary perfectly tailored to you.
             </p>
           </div>
@@ -128,7 +128,7 @@ export default function RequestQuote() {
       </div>
 
       {/* Right side - Form */}
-      <div className="md:w-7/12 lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20 bg-white">
+      <div className="md:w-7/12 lg:w-1/2 flex items-center justify-center p-4 sm:p-12 lg:p-20 bg-white pb-[max(2rem,env(safe-area-inset-bottom))] md:pb-12">
         <div className="w-full max-w-xl">
           {successMessage ? (
             <div className="text-center py-16 animate-in fade-in zoom-in duration-500">

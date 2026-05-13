@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, Menu, X, ArrowRight } from "lucide-react";
+import { ChevronDown, ArrowRight } from "lucide-react";
 import logo from "../assets/logo_old.png";
 
 const API_BASE = (
@@ -14,6 +14,29 @@ async function parseJsonSafely(response: Response) {
   } catch {
     return null;
   }
+}
+
+/** Hamburger → X; minimal motion (instant). */
+function LuxMenuIcon({ open }: { open: boolean }) {
+  return (
+    <span className="relative block h-5 w-6 shrink-0" aria-hidden>
+      <span
+        className={`absolute left-0 h-[2.5px] w-full rounded-full ${open
+          ? "top-[9px] rotate-45 bg-lux-accent"
+          : "top-0.5 bg-gradient-to-r from-lux-accent via-amber-200 to-lux-bg"
+          }`}
+      />
+      <span
+        className={`absolute left-0 top-[9px] h-[2.5px] w-full -translate-y-1/2 rounded-full bg-lux-bg/90 ${open ? "scale-x-0 opacity-0" : "scale-x-100 opacity-100"}`}
+      />
+      <span
+        className={`absolute left-0 h-[2.5px] w-full rounded-full ${open
+          ? "bottom-[9px] -rotate-45 bg-gradient-to-r from-lux-bg to-lux-accent"
+          : "bottom-0.5 bg-gradient-to-r from-lux-bg to-white/70"
+          }`}
+      />
+    </span>
+  );
 }
 
 export default function Navbar() {
@@ -51,13 +74,22 @@ export default function Navbar() {
     setActiveDropdown(null);
   }, [location]);
 
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isMenuOpen]);
+
   return (
-    <header className={`fixed top-0 left-0 right-0 w-full z-[999] transition-all duration-300 text-white ${(isScrolled || isContactPage || isMenuOpen) ? 'py-1.5 sm:py-2 bg-lux-primary shadow-md border-b border-white/5' : 'py-2 sm:py-3 bg-transparent'}`}>
-      <div className="max-w-full px-6 sm:px-12 grid grid-cols-2 sm:grid-cols-3 items-center">
-        {/* Logo (Left) */}
-        <div className="flex items-center">
+    <header className={`fixed top-0 left-0 right-0 w-full z-[999] transition-[background-color,box-shadow] duration-300 text-white pt-[max(0px,env(safe-area-inset-top))] border-b ${(isScrolled || isContactPage || isMenuOpen) ? 'py-2 sm:py-2 bg-lux-primary shadow-md border-white/5' : 'py-2 sm:py-3 bg-transparent border-transparent'}`}>
+      <div className="max-w-full px-4 sm:px-8 lg:px-12 grid grid-cols-2 sm:grid-cols-3 items-center gap-2 min-h-[4rem] sm:min-h-0">
+        {/* Logo (Left) — taller on mobile so it reads clearly next to the menu control */}
+        <div className="flex items-center min-w-0">
           <Link to="/" className="relative z-[110]">
-            <img src={logo} alt="North Paradise" className="h-14 sm:h-20 w-auto object-contain transition-transform duration-500 hover:scale-105" />
+            <img src={logo} alt="North Paradise" className="h-14 w-auto max-w-[12.5rem] sm:h-16 sm:max-w-none md:h-20 object-contain object-left transition-transform duration-500 hover:scale-105" />
           </Link>
         </div>
 
@@ -118,84 +150,120 @@ export default function Navbar() {
             Customize Trip
           </Link>
 
-          {/* Mobile Toggle */}
-          <button 
+          <button
+            type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="sm:hidden relative z-[110] w-10 h-10 flex items-center justify-center bg-white/5 border border-white/10 hover:bg-lux-accent transition-all duration-300 group"
+            aria-expanded={isMenuOpen}
+            aria-label={isMenuOpen ? "Close navigation" : "Open navigation"}
+            className={`sm:hidden relative z-[110] flex h-11 w-11 items-center justify-center rounded-full border touch-manipulation ${isMenuOpen
+              ? "border-lux-accent/60 bg-lux-accent/20"
+              : "border-white/20 bg-white/10 hover:border-lux-accent/40 hover:bg-white/15"
+              }`}
           >
-            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5 group-hover:scale-110 transition-transform" />}
+            <LuxMenuIcon open={isMenuOpen} />
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      <div className={`sm:hidden fixed inset-0 bg-lux-primary z-[100] transition-all duration-700 ease-in-out ${isMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}`}>
-        <div className="pt-32 pb-12 px-8 h-full flex flex-col overflow-y-auto">
-          <nav className="flex flex-col gap-8 mb-12">
-            {[
-              { name: "Destinations", path: "/destinations", type: "link" },
-              { name: "Tours", type: "dropdown", id: "tours" },
-              { name: "About", path: "/about", type: "link" },
-              { name: "Services", type: "dropdown", id: "services" },
-              { name: "Contact", path: "/contact", type: "link" }
-            ].map((item, i) => (
-              <div 
-                key={item.name} 
-                style={{ transitionDelay: `${i * 100}ms` }}
-                className={`transition-all duration-500 ${isMenuOpen ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'}`}
-              >
-                {item.type === "link" ? (
-                  <Link to={item.path!} className="text-base font-headings border border-white/10 bg-white/5 px-5 py-3.5 flex items-center justify-between hover:bg-lux-accent/20 transition-all group">
-                    {item.name}
-                    <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                  </Link>
-                ) : (
-                  <div className="space-y-2">
-                    <button 
-                      onClick={() => setActiveDropdown(activeDropdown === item.id ? null : item.id!)}
-                      className={`w-full flex justify-between items-center text-base font-headings border px-5 py-3.5 transition-all ${activeDropdown === item.id ? 'bg-lux-accent/20 border-lux-accent' : 'bg-white/5 border-white/10'}`}
+      {isMenuOpen ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+          className="sm:hidden fixed inset-0 z-[100] flex flex-col bg-lux-primary"
+        >
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[calc(5rem+env(safe-area-inset-top))]">
+            <p className="mb-6 text-center font-body text-[10px] font-semibold uppercase tracking-[0.35em] text-lux-accent/90">
+              Menu
+            </p>
+            <nav className="flex flex-col gap-2.5">
+              {[
+                { name: "Destinations", path: "/destinations", type: "link" as const },
+                { name: "Tours", type: "dropdown" as const, id: "tours" },
+                { name: "About", path: "/about", type: "link" as const },
+                { name: "Services", type: "dropdown" as const, id: "services" },
+                { name: "Contact", path: "/contact", type: "link" as const },
+              ].map((item) => (
+                <div key={item.name}>
+                  {item.type === "link" ? (
+                    <Link
+                      to={item.path!}
+                      className="group flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3.5 font-headings text-base text-lux-bg/95 hover:border-lux-accent/45 hover:bg-lux-accent/15"
                     >
-                      {item.name} <ChevronDown className={`w-4 h-4 transition-transform ${activeDropdown === item.id ? 'rotate-180' : ''}`} />
-                    </button>
-                    {activeDropdown === item.id && (
-                      <div className="pl-4 flex flex-col gap-2 pt-2 animate-in slide-in-from-left-4 duration-300">
-                        {item.id === "tours" ? (
-                          <>
-                            <Link to="/tour-packages" className="bg-lux-accent/10 border border-lux-accent/20 px-5 py-3 text-lux-accent flex items-center justify-between text-sm">
-                              All Packages <ArrowRight className="w-4 h-4" />
-                            </Link>
-                            {dynamicTourTypes.map(t => (
-                              <Link key={t._id} to={`/tour-packages?type=${encodeURIComponent(t.name)}`} className="bg-white/5 border border-white/5 px-5 py-3 opacity-70 text-sm">{t.name} Tours</Link>
-                            ))}
-                          </>
-                        ) : (
-                          <>
-                            {[
-                              { name: "Air Ticketing", path: "/services/air-ticketing" },
-                              { name: "Jeep Safari", path: "/services/jeep-safari" },
-                              { name: "Accommodation", path: "/services/accommodation" },
-                              { name: "Tour Guide", path: "/services/tour-guide" },
-                              { name: "Car Rental", path: "/services/car-rent" }
-                            ].map(s => (
-                              <Link key={s.path} to={s.path} className="bg-white/5 border border-white/5 px-5 py-3 opacity-70 text-sm">{s.name}</Link>
-                            ))}
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </nav>
+                      {item.name}
+                      <ArrowRight className="h-4 w-4 text-lux-accent opacity-0 group-hover:opacity-100" />
+                    </Link>
+                  ) : (
+                    <div className="space-y-2">
+                      <button
+                        type="button"
+                        onClick={() => setActiveDropdown(activeDropdown === item.id ? null : item.id!)}
+                        className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left font-headings text-base ${activeDropdown === item.id
+                          ? "border-lux-accent/60 bg-lux-accent/20 text-lux-bg"
+                          : "border-white/10 bg-white/[0.06] text-lux-bg/95 hover:border-lux-accent/35 hover:bg-white/[0.1]"
+                          }`}
+                      >
+                        {item.name}
+                        <ChevronDown className={`h-4 w-4 shrink-0 text-lux-accent ${activeDropdown === item.id ? "rotate-180" : ""}`} />
+                      </button>
+                      {activeDropdown === item.id ? (
+                        <div className="ml-1 flex flex-col gap-1.5 rounded-2xl border border-white/10 bg-white/5 p-2">
+                          {item.id === "tours" ? (
+                            <>
+                              <Link
+                                to="/tour-packages"
+                                className="flex items-center justify-between rounded-xl bg-lux-accent/20 px-3 py-2.5 font-body text-xs font-semibold uppercase tracking-wider text-lux-bg hover:bg-lux-accent/30"
+                              >
+                                All packages <ArrowRight className="h-3.5 w-3.5" />
+                              </Link>
+                              {dynamicTourTypes.map((t) => (
+                                <Link
+                                  key={t._id}
+                                  to={`/tour-packages?type=${encodeURIComponent(t.name)}`}
+                                  className="rounded-xl px-3 py-2 font-body text-sm text-lux-bg/75 hover:bg-white/10 hover:text-lux-bg"
+                                >
+                                  {t.name} tours
+                                </Link>
+                              ))}
+                            </>
+                          ) : (
+                            <>
+                              {[
+                                { name: "Air Ticketing", path: "/services/air-ticketing" },
+                                { name: "Jeep Safari", path: "/services/jeep-safari" },
+                                { name: "Accommodation", path: "/services/accommodation" },
+                                { name: "Tour Guide", path: "/services/tour-guide" },
+                                { name: "Car Rental", path: "/services/car-rent" },
+                              ].map((s) => (
+                                <Link
+                                  key={s.path}
+                                  to={s.path}
+                                  className="rounded-xl px-3 py-2 font-body text-sm text-lux-bg/75 hover:bg-white/10 hover:text-lux-bg"
+                                >
+                                  {s.name}
+                                </Link>
+                              ))}
+                            </>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </nav>
 
-          <div className={`mt-auto transition-all duration-700 delay-500 ${isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-            <Link to="/request-quote" className="bg-lux-accent text-white py-6 block text-center text-sm uppercase tracking-[0.3em] font-bold">
-              Plan Your Journey
-            </Link>
+            <div className="relative mt-auto pt-6">
+              <Link
+                to="/request-quote"
+                className="block rounded-2xl bg-lux-accent py-4 text-center font-body text-xs font-bold uppercase tracking-[0.28em] text-white hover:brightness-110"
+              >
+                Plan your journey
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </header>
   );
 }

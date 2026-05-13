@@ -1,5 +1,4 @@
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import SEO from "../components/SEO";
 import { ShieldCheck, Lock, Eye, FileText } from "lucide-react";
 
@@ -13,13 +12,13 @@ export default function PrivacyPolicy() {
       />
       <Navbar />
 
-      <section className="relative pt-32 pb-24 bg-lux-primary text-white overflow-hidden text-center px-6">
+      <section className="relative pt-28 sm:pt-32 pb-16 sm:pb-24 bg-lux-primary text-white overflow-hidden text-center px-4 sm:px-6">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-0 left-0 w-96 h-96 bg-lux-accent rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2" />
         </div>
         <div className="max-w-4xl mx-auto relative z-10">
           <ShieldCheck className="w-12 h-12 text-lux-accent mx-auto mb-6" />
-          <h1 className="font-headings text-4xl sm:text-5xl lg:text-6xl mb-6">
+          <h1 className="font-headings text-3xl sm:text-5xl lg:text-6xl mb-4 sm:mb-6 leading-tight px-1">
             Privacy <span className="text-lux-accent italic font-light">Policy</span>
           </h1>
           <p className="text-lg opacity-80 leading-relaxed max-w-2xl mx-auto font-light">
@@ -28,8 +27,8 @@ export default function PrivacyPolicy() {
         </div>
       </section>
 
-      <section className="py-24 px-6">
-        <div className="max-w-4xl mx-auto bg-white p-8 sm:p-16 rounded-sm shadow-xl border border-gray-100">
+      <section className="py-14 sm:py-24 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto bg-white p-6 sm:p-16 rounded-2xl sm:rounded-sm shadow-xl border border-gray-100">
           <div className="space-y-12">
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -70,7 +69,6 @@ export default function PrivacyPolicy() {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import SEO from "../components/SEO";
 import { HelpCircle, ChevronDown, ChevronUp, MessageCircle, Phone, Mail } from "lucide-react";
 
@@ -39,13 +38,13 @@ export default function FAQ() {
       />
       <Navbar />
 
-      <section className="relative pt-32 pb-24 bg-lux-primary text-white overflow-hidden text-center px-6">
+      <section className="relative pt-28 sm:pt-32 pb-16 sm:pb-24 bg-lux-primary text-white overflow-hidden text-center px-4 sm:px-6">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-0 right-0 w-96 h-96 bg-lux-accent rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2" />
         </div>
         <div className="max-w-4xl mx-auto relative z-10">
           <HelpCircle className="w-12 h-12 text-lux-accent mx-auto mb-6" />
-          <h1 className="font-headings text-4xl sm:text-5xl lg:text-6xl mb-6">
+          <h1 className="font-headings text-3xl sm:text-5xl lg:text-6xl mb-4 sm:mb-6 leading-tight px-1">
             Help <span className="text-lux-accent italic font-light">Center</span>
           </h1>
           <p className="text-lg opacity-80 leading-relaxed max-w-2xl mx-auto font-light">
@@ -54,7 +53,7 @@ export default function FAQ() {
         </div>
       </section>
 
-      <section className="py-24 px-6 flex-1">
+      <section className="py-14 sm:py-24 px-4 sm:px-6 flex-1">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-16">
           
           {/* FAQ Accordion */}
@@ -68,9 +67,9 @@ export default function FAQ() {
                 >
                   <button 
                     onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                    className="w-full flex items-center justify-between p-6 text-left hover:bg-lux-bg transition-colors focus:outline-none"
+                    className="w-full flex items-start justify-between gap-4 p-4 sm:p-6 text-left hover:bg-lux-bg transition-colors focus:outline-none touch-manipulation"
                   >
-                    <span className="font-bold text-lg">{item.question}</span>
+                    <span className="font-bold text-base sm:text-lg leading-snug pr-2">{item.question}</span>
                     {openIndex === index ? <ChevronUp className="w-5 h-5 text-lux-accent" /> : <ChevronDown className="w-5 h-5 text-lux-accent" />}
                   </button>
                   {openIndex === index && (
@@ -116,7 +115,6 @@ export default function FAQ() {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 }

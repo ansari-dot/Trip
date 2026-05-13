@@ -16,19 +16,19 @@ export default function About() {
 
 
       {/* Hero */}
-      <section className="relative pt-40 pb-20 bg-lux-bg text-lux-primary text-center px-6">
+      <section className="relative pt-32 sm:pt-40 pb-16 sm:pb-20 bg-lux-bg text-lux-primary text-center px-4 sm:px-6">
         <div className="max-w-4xl mx-auto relative z-10">
-          <div className="text-lux-accent text-xs uppercase tracking-[0.3em] font-bold mb-6">Our Story</div>
-          <h1 className="font-headings text-4xl sm:text-5xl lg:text-7xl mb-8">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold mb-4 sm:mb-6">Our Story</div>
+          <h1 className="font-headings text-3xl sm:text-5xl lg:text-7xl mb-6 sm:mb-8 leading-tight">
             Beyond the <span className="text-lux-accent italic font-light font-body">Ordinary</span>
           </h1>
-          <p className="text-lg opacity-60 leading-relaxed max-w-2xl mx-auto font-light">
+          <p className="text-base sm:text-lg opacity-60 leading-relaxed max-w-2xl mx-auto font-light px-1">
             Elevating travel into an art form. We design bespoke, immersive journeys for the world's most discerning explorers, taking you to the untouched edges of our beautiful world.
           </p>
         </div>
       </section>
 
-      <section className="py-20 sm:py-28 px-6 sm:px-12 max-w-7xl mx-auto w-full flex-1">
+      <section className="py-16 sm:py-28 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto w-full flex-1">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center mb-24">
           <div>
             <h2 className="font-headings text-3xl sm:text-4xl mb-6">Redefining Luxury Travel</h2>
@@ -95,7 +95,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="bg-lux-primary text-white py-24 px-6 sm:px-12 text-center relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]">
+      <section className="bg-lux-primary text-white py-14 sm:py-24 px-4 sm:px-8 lg:px-12 text-center relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]">
         <div className="relative z-10 max-w-3xl mx-auto">
           <h2 className="font-headings text-3xl sm:text-5xl mb-6">Ready to Experience the Extraordinary?</h2>
           <p className="text-lg opacity-80 mb-10 font-light max-w-2xl mx-auto leading-relaxed">

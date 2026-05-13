@@ -18,14 +18,14 @@ export default function TourGuide() {
 
       {/* Hero */}
       <section
-        className="relative pt-32 pb-24 px-6 overflow-hidden bg-cover bg-center"
+        className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 px-4 sm:px-6 overflow-hidden bg-cover bg-center"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1530521954074-e64f6810b32d?auto=format&fit=crop&q=80&w=2000')" }}
       >
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10 text-white">
           <Compass className="w-12 h-12 text-lux-accent mx-auto mb-6" />
           <div className="text-lux-accent text-xs uppercase tracking-[0.2em] font-bold mb-4">Local Expertise</div>
-          <h1 className="font-headings text-4xl sm:text-5xl lg:text-6xl mb-6">
+          <h1 className="font-headings text-3xl sm:text-5xl lg:text-6xl mb-6 leading-tight">
             Expert <span className="text-lux-accent italic font-light">Tour Guides</span>
           </h1>
           <p className="text-lg opacity-90 leading-relaxed max-w-2xl mx-auto mb-10">
@@ -38,8 +38,8 @@ export default function TourGuide() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-14 sm:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <h2 className="font-headings text-4xl sm:text-5xl text-lux-primary">Beyond the Guidebook</h2>
             <div className="w-24 h-1 bg-lux-accent mx-auto mt-6"></div>
@@ -72,11 +72,11 @@ export default function TourGuide() {
       </section>
 
       {/* Info Section */}
-      <section className="py-24 bg-lux-bg">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <section className="py-14 sm:py-24 bg-lux-bg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="order-2 lg:order-1 relative">
             <div className="absolute inset-0 bg-lux-accent/20 translate-x-4 translate-y-4 rounded-sm"></div>
-            <img src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=1600" alt="Tour Guide" className="relative rounded-sm shadow-2xl w-full h-[600px] object-cover" />
+            <img src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=1600" alt="Tour Guide" className="relative rounded-sm shadow-2xl w-full min-h-[200px] h-[min(52vh,24rem)] sm:h-[600px] object-cover" />
           </div>
           <div className="order-1 lg:order-2">
             <div className="text-lux-accent text-sm uppercase tracking-[0.2em] font-bold mb-4">Your Personal Host</div>
@@ -112,8 +112,8 @@ export default function TourGuide() {
       </section>
 
       {/* Other Services */}
-      <section className="py-24 bg-white border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 text-center">
+      <section className="py-14 sm:py-24 bg-white border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="font-headings text-3xl sm:text-4xl text-lux-primary mb-12">Explore Other Services</h2>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
             <Link to="/services/air-ticketing" className="px-8 py-4 border border-lux-primary text-lux-primary hover:bg-lux-primary hover:text-white transition-colors uppercase tracking-widest text-xs font-medium">Air Ticketing</Link>
@@ -125,7 +125,7 @@ export default function TourGuide() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-lux-primary text-white text-center px-6 mt-auto">
+      <section className="py-14 sm:py-24 bg-lux-primary text-white text-center px-6 mt-auto">
         <div className="max-w-3xl mx-auto">
           <h2 className="font-headings text-4xl sm:text-5xl mb-6">Enrich Your Journey</h2>
           <p className="text-lg opacity-90 font-light mb-10">

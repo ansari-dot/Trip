@@ -10,3 +10,28 @@
   --font-body: "DM Sans", sans-serif;
   --font-headings: "PT Serif", serif;
 }
+
+/* Mobile: prevent horizontal bleed, respect safe areas, comfortable taps */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: clip;
+  font-synthesis: none;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+/* Utility: safe-area padding for notched phones (use with Tailwind arbitrary values where needed) */
+@supports (padding: max(0px)) {
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  }
+  .pt-safe {
+    padding-top: max(0px, env(safe-area-inset-top, 0px));
+  }
+}

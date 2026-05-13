@@ -72,8 +72,8 @@ export default function QuoteModal() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm pb-[env(safe-area-inset-bottom)] sm:pb-4">
+      <div className="bg-white rounded-t-2xl sm:rounded-sm shadow-2xl w-full sm:max-w-lg overflow-hidden flex flex-col max-h-[min(92dvh,40rem)] sm:max-h-[90vh]">
         <div className="flex justify-between items-center p-6 border-b border-border bg-lux-bg">
           <h2 className="font-headings text-2xl text-lux-primary">Request a Quote</h2>
           <button

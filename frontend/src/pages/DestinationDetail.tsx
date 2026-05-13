@@ -168,26 +168,26 @@ export default function DestinationDetail() {
       <Navbar />
 
       <section
-        className="relative h-[60vh] min-h-[500px] flex items-end pb-16 bg-cover bg-center"
+        className="relative h-[min(42vh,20rem)] sm:h-[60vh] min-h-[280px] sm:min-h-[500px] flex items-end pb-8 sm:pb-16 bg-cover bg-center pt-20 sm:pt-0"
         style={{ backgroundImage: `url('${destination.image || "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=2000"}')` }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
-        <div className="relative z-10 text-white px-6 sm:px-12 max-w-7xl mx-auto w-full">
-          <Link to="/destinations" className="inline-flex items-center text-sm uppercase tracking-wider mb-6 hover:text-lux-accent transition-colors">
+        <div className="relative z-10 text-white px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto w-full">
+          <Link to="/destinations" className="inline-flex items-center text-xs sm:text-sm uppercase tracking-wider mb-4 sm:mb-6 hover:text-lux-accent transition-colors">
             <ChevronLeft className="w-4 h-4 mr-1" />
             Back to Destinations
           </Link>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              <p className="text-lux-accent text-sm uppercase tracking-widest mb-2 flex items-center gap-1 font-medium">
-                <MapPin className="w-4 h-4" />
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6">
+            <div className="min-w-0">
+              <p className="text-lux-accent text-xs sm:text-sm uppercase tracking-widest mb-2 flex items-center gap-1 font-medium">
+                <MapPin className="w-4 h-4 shrink-0" />
                 {destination.location}
               </p>
-              <h1 className="font-headings text-5xl sm:text-7xl mb-2">
+              <h1 className="font-headings text-3xl sm:text-5xl lg:text-7xl mb-2 leading-[1.08]">
                 {destination.name}
               </h1>
             </div>
-            <div className="flex gap-6 border-l border-white/20 pl-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 border-l-0 sm:border-l border-white/20 pl-0 sm:pl-6 w-full sm:w-auto">
               <div>
                 <p className="text-xs uppercase tracking-widest opacity-70 mb-1">Duration</p>
                 <p className="font-medium text-lg flex items-center gap-2"><Clock className="w-4 h-4 text-lux-accent" /> {destination.duration || "Custom"}</p>
@@ -201,8 +201,8 @@ export default function DestinationDetail() {
         </div>
       </section>
 
-      <section className="py-16 sm:py-24 px-6 sm:px-12 max-w-7xl mx-auto w-full flex-1">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+      <section className="py-12 sm:py-24 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto w-full flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 sm:gap-16">
           <div className="lg:col-span-2">
             <h2 className="font-headings text-3xl mb-6">About {destination.name}</h2>
             <p className="text-lg leading-relaxed text-muted-foreground font-light mb-12">
@@ -280,7 +280,7 @@ export default function DestinationDetail() {
 
                   {gallery.length > 1 ? (
                     <>
-                      <div className="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute inset-0 flex items-center justify-between p-3 sm:p-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={prevImage}
                           className="bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
@@ -315,7 +315,7 @@ export default function DestinationDetail() {
           </div>
 
           <div>
-            <div className="bg-white border border-border p-8 rounded-sm sticky top-24 shadow-sm">
+            <div className="bg-white border border-border p-6 sm:p-8 rounded-2xl sm:rounded-sm static lg:sticky lg:top-28 shadow-sm">
               <h3 className="font-headings text-2xl mb-2">Plan Your Voyage</h3>
               <p className="text-muted-foreground text-sm mb-6">Discover the magic of {destination.name} with our curated selection of {(destination.tours || "available tours").toLowerCase()}.</p>
 

@@ -305,7 +305,9 @@ export default function Landing() {
       />
       <Navbar />
 
-      <section className="relative h-[50vh] sm:h-[70vh] min-h-[350px] sm:min-h-[500px] overflow-hidden">
+      {/* Mobile: search sits below hero (full width). Desktop: overlaps hero with -mt-12. */}
+      <div className="relative z-10 mb-12 sm:mb-24">
+      <section className="relative h-[22rem] min-h-[300px] sm:h-[70vh] sm:min-h-[500px] overflow-hidden">
         {/* slides */}
         {heroSlides.length > 0 ? heroSlides.map((slide, idx) => (
           <div
@@ -322,25 +324,25 @@ export default function Landing() {
         )}
 
         {/* content */}
-        <div className="relative z-20 h-full flex items-center justify-center">
-          <div className="text-center text-white px-4 max-w-4xl mx-auto flex flex-col items-center mt-[-40px]">
+        <div className="relative z-20 h-full flex items-center justify-center px-3">
+          <div className="text-center text-white max-w-4xl mx-auto flex flex-col items-center mt-0 sm:mt-[-40px] py-6 sm:py-0">
             {heroSlides.length > 0 ? (
               <>
                 {heroSlides[heroIndex].subheading ? (
-                  <p className="text-lux-accent text-sm uppercase tracking-[0.25em] font-medium mb-4">{heroSlides[heroIndex].subheading}</p>
+                  <p className="text-lux-accent text-[10px] sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.25em] font-medium mb-3 sm:mb-4">{heroSlides[heroIndex].subheading}</p>
                 ) : null}
-                <h1 className="font-headings text-5xl sm:text-7xl mb-6">{heroSlides[heroIndex].heading}</h1>
+                <h1 className="font-headings text-[clamp(1.65rem,6.5vw,2.5rem)] sm:text-5xl lg:text-7xl mb-4 sm:mb-6 leading-[1.12] sm:leading-tight px-1">{heroSlides[heroIndex].heading}</h1>
                 {heroSlides[heroIndex].description ? (
-                  <p className="text-lg opacity-90 max-w-2xl mx-auto font-light">{heroSlides[heroIndex].description}</p>
+                  <p className="text-sm sm:text-lg opacity-90 max-w-2xl mx-auto font-light leading-relaxed">{heroSlides[heroIndex].description}</p>
                 ) : null}
               </>
             ) : (
               <>
-                <h1 className="font-headings text-5xl sm:text-7xl mb-6">
+                <h1 className="font-headings text-[clamp(1.65rem,6.5vw,2.5rem)] sm:text-5xl lg:text-7xl mb-4 sm:mb-6 leading-[1.12] sm:leading-tight px-1">
                   Discover the World, <br />
                   <span className="italic font-light opacity-90">Make Memories</span>
                 </h1>
-                <p className="text-lg opacity-90 max-w-2xl mx-auto font-light">
+                <p className="text-sm sm:text-lg opacity-90 max-w-2xl mx-auto font-light leading-relaxed px-1">
                   Explore amazing destinations, unforgettable experiences and incredible tour packages curated just for you.
                 </p>
               </>
@@ -350,12 +352,14 @@ export default function Landing() {
 
         {/* dots */}
         {heroSlides.length > 1 ? (
-          <div className="absolute bottom-6 left-0 right-0 z-20 flex justify-center gap-2">
+          <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 z-20 flex justify-center gap-2 pb-[env(safe-area-inset-bottom)]">
             {heroSlides.map((_, idx) => (
               <button
                 key={idx}
+                type="button"
                 onClick={() => setHeroIndex(idx)}
                 className={`transition-all duration-300 rounded-full bg-white ${idx === heroIndex ? 'w-6 h-2 opacity-100' : 'w-2 h-2 opacity-50'}`}
+                aria-label={`Go to slide ${idx + 1}`}
               />
             ))}
           </div>
@@ -364,21 +368,21 @@ export default function Landing() {
         {/* prev/next arrows */}
         {heroSlides.length > 1 ? (
           <>
-            <button onClick={() => setHeroIndex((i) => (i - 1 + heroSlides.length) % heroSlides.length)} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/60 text-white p-2 rounded-full transition-colors">
+            <button type="button" onClick={() => setHeroIndex((i) => (i - 1 + heroSlides.length) % heroSlides.length)} className="hidden sm:flex absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/60 text-white p-2 rounded-full transition-colors touch-manipulation" aria-label="Previous slide">
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <button onClick={() => setHeroIndex((i) => (i + 1) % heroSlides.length)} className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/60 text-white p-2 rounded-full transition-colors">
+            <button type="button" onClick={() => setHeroIndex((i) => (i + 1) % heroSlides.length)} className="hidden sm:flex absolute right-3 md:right-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/60 text-white p-2 rounded-full transition-colors touch-manipulation" aria-label="Next slide">
               <ChevronRight className="w-6 h-6" />
             </button>
           </>
         ) : null}
       </section>
 
-      <div className="max-w-5xl mx-auto w-full px-6 -mt-8 sm:-mt-12 relative z-20 mb-16 sm:mb-24">
-        <div className="bg-white rounded-sm shadow-xl p-3 sm:p-4 flex flex-col md:flex-row gap-3 sm:gap-4 justify-between items-center w-full">
+      <div className="relative z-30 w-full max-w-5xl max-sm:max-w-none mx-auto px-0 sm:px-6 max-sm:mt-0 sm:-mt-12">
+        <div className="bg-white w-full max-sm:rounded-none max-sm:border-x-0 max-sm:border-y max-sm:border-border/40 max-sm:shadow-md sm:rounded-sm shadow-xl sm:shadow-xl border border-border/40 p-3 sm:p-4 flex flex-row items-end gap-2 sm:gap-4 overflow-x-auto overscroll-x-contain [-webkit-overflow-scrolling:touch] md:items-center md:overflow-visible">
 
           {/* Destination input with suggestions */}
-          <div className="relative flex items-center gap-3 sm:gap-4 w-full md:w-auto px-2 sm:px-4 border-b md:border-b-0 md:border-r border-border pb-3 sm:pb-0 flex-1">
+          <div className="relative flex min-w-0 flex-1 basis-[30%] items-center gap-2 sm:gap-4 px-2 sm:px-4 border-r border-border">
             <MapPin className="text-lux-accent w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
             <div className="flex-1">
               <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-0.5">Destination</div>
@@ -410,7 +414,7 @@ export default function Landing() {
           </div>
 
           {/* Tour type dropdown */}
-          <div className="relative flex items-center gap-3 sm:gap-4 w-full md:w-auto px-2 sm:px-4 border-b md:border-b-0 md:border-r border-border pb-3 sm:pb-0 flex-1">
+          <div className="relative flex min-w-0 flex-1 basis-[28%] items-center gap-2 sm:gap-4 px-2 sm:px-4 border-r border-border">
             <Package className="text-lux-accent w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
             <div className="flex-1">
               <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-0.5">Tour Type</div>
@@ -433,54 +437,80 @@ export default function Landing() {
           </div>
 
           <button
+            type="button"
             onClick={handleSearch}
-            className="bg-lux-primary text-white px-6 sm:px-8 py-3 sm:py-4 rounded-sm text-xs sm:text-sm font-medium hover:bg-lux-primary/90 transition-colors w-full md:w-auto flex items-center justify-center gap-2 cursor-pointer"
+            className="bg-lux-primary text-white px-4 sm:px-8 py-2.5 sm:py-4 rounded-sm text-xs sm:text-sm font-medium hover:bg-lux-primary/90 transition-colors shrink-0 whitespace-nowrap flex items-center justify-center gap-2 cursor-pointer self-end mb-0.5 sm:mb-0"
           >
             Search <Search className="w-4 h-4" />
           </button>
         </div>
       </div>
+      </div>
 
-      <section className="py-16 px-6 sm:px-12 bg-lux-bg">
-        <div className="text-center mb-12">
-          <div className="text-lux-accent text-xs uppercase tracking-[0.2em] font-bold mb-3">Curated Experiences</div>
-          <h2 className="font-headings text-4xl text-lux-primary">Featured Destinations</h2>
+      <section className="py-12 sm:py-16 px-0 sm:px-8 lg:px-12 bg-lux-bg overflow-hidden">
+        <div className="text-center mb-8 sm:mb-12 px-4">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Curated Experiences</div>
+          <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary">Featured Destinations</h2>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-md mx-auto md:hidden">Swipe to explore — tap a card for the full guide.</p>
         </div>
 
         {isFeaturedLoading ? (
-          <div className="max-w-7xl mx-auto flex items-center justify-center py-20">
-            <div className="inline-flex items-center gap-3 bg-white border border-border rounded-sm px-5 py-4 shadow-sm">
+          <div className="max-w-7xl mx-auto flex items-center justify-center py-16 sm:py-20 px-4">
+            <div className="inline-flex items-center gap-3 bg-white border border-border rounded-2xl sm:rounded-sm px-5 py-4 shadow-sm">
               <LoaderCircle className="w-5 h-5 animate-spin text-lux-accent" />
               <span className="text-sm">Loading featured destinations...</span>
             </div>
           </div>
         ) : (
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:flex md:flex-row gap-6 md:gap-0 h-auto md:h-[500px]">
-            {displayedFeaturedDestinations.map((destination, index) => (
-              <Link
-                to={`/destinations/${destination.id}`}
-                key={destination.id}
-                className={`relative group overflow-hidden cursor-pointer h-[350px] md:h-auto md:flex-1 ${index === 1 ? "md:border-x border-white/20" : ""}`}
-              >
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
-                  style={{ backgroundImage: `url('${destination.image || (index < FEATURED_FALLBACKS.length ? FEATURED_FALLBACKS[index].image : FEATURED_FALLBACKS[0].image)}')` }}
-                ></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 p-8 text-white w-full">
-                  <h3 className="font-headings text-2xl sm:text-3xl mb-2">{destination.name}, {destination.location}</h3>
-                  <p className="text-sm font-medium text-lux-accent">{destination.price || "Contact for pricing"}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <>
+            {/* Mobile: horizontal snap carousel */}
+            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain touch-pan-x pb-2 px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              {displayedFeaturedDestinations.map((destination, index) => (
+                <Link
+                  to={`/destinations/${destination.id}`}
+                  key={`m-${destination.id}`}
+                  className="relative group shrink-0 snap-center w-[min(88vw,20.5rem)] overflow-hidden cursor-pointer h-[22rem] rounded-2xl shadow-lg ring-1 ring-black/10"
+                >
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 active:scale-[1.02]"
+                    style={{ backgroundImage: `url('${destination.image || (index < FEATURED_FALLBACKS.length ? FEATURED_FALLBACKS[index].image : FEATURED_FALLBACKS[0].image)}')` }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+                  <div className="absolute bottom-0 left-0 p-5 text-white w-full">
+                    <h3 className="font-headings text-xl leading-snug mb-1.5">{destination.name}, {destination.location}</h3>
+                    <p className="text-xs font-semibold text-lux-accent tracking-wide">{destination.price || "Contact for pricing"}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            {/* Desktop / tablet: editorial strip */}
+            <div className="hidden md:flex max-w-7xl mx-auto flex-row gap-0 h-[500px] px-4 lg:px-0">
+              {displayedFeaturedDestinations.map((destination, index) => (
+                <Link
+                  to={`/destinations/${destination.id}`}
+                  key={destination.id}
+                  className={`relative group overflow-hidden cursor-pointer flex-1 ${index === 1 ? "border-x border-white/20" : ""}`}
+                >
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
+                    style={{ backgroundImage: `url('${destination.image || (index < FEATURED_FALLBACKS.length ? FEATURED_FALLBACKS[index].image : FEATURED_FALLBACKS[0].image)}')` }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  <div className="absolute bottom-0 left-0 p-8 text-white w-full">
+                    <h3 className="font-headings text-2xl sm:text-3xl mb-2">{destination.name}, {destination.location}</h3>
+                    <p className="text-sm font-medium text-lux-accent">{destination.price || "Contact for pricing"}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
         )}
       </section>
 
-      <section className="py-24 px-6 sm:px-12 bg-white">
-        <div className="text-center mb-16">
-          <div className="text-lux-accent text-xs uppercase tracking-[0.2em] font-bold mb-3">Popular Tours</div>
-          <h2 className="font-headings text-4xl text-lux-primary">Our Most Popular Tours</h2>
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-white">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Popular Tours</div>
+          <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">Our Most Popular Tours</h2>
         </div>
 
         {isToursLoading ? (
@@ -495,22 +525,24 @@ export default function Landing() {
             No tour packages available yet.
           </div>
         ) : (
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {featuredTours.map((tour) => (
-              <Link to={`/tour-packages/${tour.id}`} key={tour.id} className="group cursor-pointer">
-                <div className="relative h-64 overflow-hidden rounded-t-sm mb-4">
+              <Link to={`/tour-packages/${tour.id}`} key={tour.id} className="group cursor-pointer rounded-2xl sm:rounded-none overflow-hidden bg-white sm:bg-transparent border border-border/70 sm:border-0 shadow-sm sm:shadow-none">
+                <div className="relative h-52 sm:h-64 overflow-hidden sm:rounded-t-sm mb-0 sm:mb-4">
                   <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${tour.image || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=600"}')` }}></div>
                   <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-sm text-xs font-bold text-lux-primary">
                     {tour.price} <span className="font-normal text-muted-foreground">/person</span>
                   </div>
                 </div>
-                <h3 className="font-headings text-xl mb-1 group-hover:text-lux-accent transition-colors">{tour.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{tour.description}</p>
-                <div className="flex justify-between items-center border-t border-border pt-4 text-sm text-lux-primary font-medium">
+                <div className="p-4 sm:p-0 sm:block">
+                <h3 className="font-headings text-lg sm:text-xl mb-1 sm:mb-1 group-hover:text-lux-accent transition-colors">{tour.title}</h3>
+                <p className="text-sm text-muted-foreground mb-3 sm:mb-4 line-clamp-2">{tour.description}</p>
+                <div className="flex justify-between items-center border-t border-border pt-3 sm:pt-4 text-sm text-lux-primary font-medium">
                   <span>{tour.duration}</span>
                   <div className="flex items-center gap-1">
                     4.8 <Star className="w-3 h-3 text-lux-accent fill-lux-accent" />
                   </div>
+                </div>
                 </div>
               </Link>
             ))}
@@ -524,11 +556,11 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="py-24 px-6 sm:px-12 bg-lux-bg">
-        <div className="text-center mb-16">
-          <div className="text-lux-accent text-xs uppercase tracking-[0.2em] font-bold mb-3">Limited Time</div>
-          <h2 className="font-headings text-4xl text-lux-primary">Seasonal Packages</h2>
-          <p className="text-muted-foreground mt-4 max-w-xl mx-auto font-light text-sm">
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-lux-bg">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Limited Time</div>
+          <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">Seasonal Packages</h2>
+          <p className="text-muted-foreground mt-3 sm:mt-4 max-w-xl mx-auto font-light text-xs sm:text-sm px-2">
             Experience the unique beauty of each season with our specially curated limited-time offers.
           </p>
         </div>
@@ -545,10 +577,10 @@ export default function Landing() {
             No seasonal packages available at the moment.
           </div>
         ) : (
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
             {seasonalTours.map((tour) => (
-              <Link to={`/tour-packages/${tour.id}`} key={tour.id} className="group bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-all duration-500 flex flex-col">
-                <div className="relative h-72 overflow-hidden">
+              <Link to={`/tour-packages/${tour.id}`} key={tour.id} className="group bg-white rounded-2xl sm:rounded-sm overflow-hidden shadow-md sm:shadow-sm hover:shadow-md transition-all duration-500 flex flex-col border border-border/50 sm:border-0">
+                <div className="relative h-56 sm:h-72 overflow-hidden">
                   <div className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: `url('${tour.image || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800"}')` }}></div>
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
                   <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
@@ -561,8 +593,8 @@ export default function Landing() {
                     </div>
                   </div>
                 </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="font-headings text-2xl mb-2 group-hover:text-lux-accent transition-colors">{tour.title}</h3>
+                <div className="p-5 sm:p-6 flex-1 flex flex-col">
+                  <h3 className="font-headings text-xl sm:text-2xl mb-2 group-hover:text-lux-accent transition-colors">{tour.title}</h3>
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{tour.description}</p>
                   <div className="mt-auto pt-6 border-t border-border flex justify-between items-center">
                     <div>
@@ -581,53 +613,61 @@ export default function Landing() {
       </section>
 
 
-      <section className="py-24 px-6 sm:px-12 bg-lux-bg border-y border-border">
-        <div className="text-center mb-16">
-          <div className="text-lux-accent text-xs uppercase tracking-[0.2em] font-bold mb-3">Why Choose Us</div>
-          <h2 className="font-headings text-4xl text-lux-primary">Travel with Confidence</h2>
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-lux-bg border-y border-border">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Why Choose Us</div>
+          <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">Travel with Confidence</h2>
         </div>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          <div className="flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-6 text-lux-accent shadow-sm">
-              <Compass className="w-10 h-10" strokeWidth={1.5} />
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 lg:gap-12">
+          <div className="flex flex-row sm:flex-col items-start sm:items-center gap-4 sm:gap-0 bg-white/70 sm:bg-transparent rounded-2xl p-4 sm:p-0 border border-border/50 sm:border-0 shadow-sm sm:shadow-none">
+            <div className="w-14 h-14 sm:w-20 sm:h-20 shrink-0 rounded-full bg-white flex items-center justify-center text-lux-accent shadow-sm">
+              <Compass className="w-8 h-8 sm:w-10 sm:h-10" strokeWidth={1.5} />
             </div>
-            <h3 className="font-headings text-xl mb-3">Expert Guides</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">Professional guides for an amazing experience.</p>
+            <div className="min-w-0 flex-1 text-left sm:text-center">
+              <h3 className="font-headings text-lg sm:text-xl mb-1 sm:mb-3">Expert Guides</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">Professional guides for an amazing experience.</p>
+            </div>
           </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-6 text-lux-accent shadow-sm">
-              <ShieldCheck className="w-10 h-10" strokeWidth={1.5} />
+          <div className="flex flex-row sm:flex-col items-start sm:items-center gap-4 sm:gap-0 bg-white/70 sm:bg-transparent rounded-2xl p-4 sm:p-0 border border-border/50 sm:border-0 shadow-sm sm:shadow-none">
+            <div className="w-14 h-14 sm:w-20 sm:h-20 shrink-0 rounded-full bg-white flex items-center justify-center text-lux-accent shadow-sm">
+              <ShieldCheck className="w-8 h-8 sm:w-10 sm:h-10" strokeWidth={1.5} />
             </div>
-            <h3 className="font-headings text-xl mb-3">Best Price Guarantee</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">Get the best prices for your dream trips.</p>
+            <div className="min-w-0 flex-1 text-left sm:text-center">
+              <h3 className="font-headings text-lg sm:text-xl mb-1 sm:mb-3">Best Price Guarantee</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">Get the best prices for your dream trips.</p>
+            </div>
           </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-6 text-lux-accent shadow-sm">
-              <Headset className="w-10 h-10" strokeWidth={1.5} />
+          <div className="flex flex-row sm:flex-col items-start sm:items-center gap-4 sm:gap-0 bg-white/70 sm:bg-transparent rounded-2xl p-4 sm:p-0 border border-border/50 sm:border-0 shadow-sm sm:shadow-none">
+            <div className="w-14 h-14 sm:w-20 sm:h-20 shrink-0 rounded-full bg-white flex items-center justify-center text-lux-accent shadow-sm">
+              <Headset className="w-8 h-8 sm:w-10 sm:h-10" strokeWidth={1.5} />
             </div>
-            <h3 className="font-headings text-xl mb-3">24/7 Support</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">We are here to help you anytime, anywhere.</p>
+            <div className="min-w-0 flex-1 text-left sm:text-center">
+              <h3 className="font-headings text-lg sm:text-xl mb-1 sm:mb-3">24/7 Support</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">We are here to help you anytime, anywhere.</p>
+            </div>
           </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-6 text-lux-accent shadow-sm">
-              <CheckCircle className="w-10 h-10" strokeWidth={1.5} />
+          <div className="flex flex-row sm:flex-col items-start sm:items-center gap-4 sm:gap-0 bg-white/70 sm:bg-transparent rounded-2xl p-4 sm:p-0 border border-border/50 sm:border-0 shadow-sm sm:shadow-none">
+            <div className="w-14 h-14 sm:w-20 sm:h-20 shrink-0 rounded-full bg-white flex items-center justify-center text-lux-accent shadow-sm">
+              <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10" strokeWidth={1.5} />
             </div>
-            <h3 className="font-headings text-xl mb-3">Easy Booking</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">Book your tour easily in just a few minutes.</p>
+            <div className="min-w-0 flex-1 text-left sm:text-center">
+              <h3 className="font-headings text-lg sm:text-xl mb-1 sm:mb-3">Easy Booking</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">Book your tour easily in just a few minutes.</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Our Services Section */}
-      <section className="py-24 px-6 sm:px-12 bg-lux-bg">
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-lux-bg">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="text-lux-accent text-xs uppercase tracking-[0.2em] font-bold mb-3">Featured Services</div>
-            <h2 className="font-headings text-4xl sm:text-5xl text-lux-primary max-w-2xl mx-auto leading-tight">
+          <div className="text-center mb-10 sm:mb-16 px-2">
+            <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Featured Services</div>
+            <h2 className="font-headings text-2xl sm:text-4xl lg:text-5xl text-lux-primary max-w-2xl mx-auto leading-tight">
               A wide range of travel services
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
               { icon: Plane, title: "Air Ticketing", description: "Domestic and international flight bookings at the best available rates, handled with care and expertise.", href: "/services/air-ticketing" },
               { icon: Truck, title: "Jeep Safari", description: "Thrilling off-road adventures through Pakistan's most breathtaking mountain passes and terrains.", href: "/services/jeep-safari" },
@@ -638,7 +678,7 @@ export default function Landing() {
               <Link
                 key={service.title}
                 to={service.href}
-                className="group bg-white rounded-2xl shadow-sm border border-border p-8 flex flex-col gap-6 hover:shadow-lg hover:border-lux-accent/30 transition-all duration-300"
+                className="group bg-white rounded-2xl shadow-sm border border-border p-6 sm:p-8 flex flex-col gap-4 sm:gap-6 hover:shadow-lg hover:border-lux-accent/30 transition-all duration-300 active:scale-[0.99]"
               >
                 <div className="w-16 h-16 bg-lux-accent/10 rounded-xl flex items-center justify-center group-hover:bg-lux-accent/20 transition-colors duration-300">
                   <service.icon className="w-8 h-8 text-lux-accent" strokeWidth={1.5} />
@@ -657,10 +697,10 @@ export default function Landing() {
       </section>
 
 
-      <section className="py-24 px-6 sm:px-12 bg-white">
-        <div className="text-center mb-16">
-          <div className="text-lux-accent text-xs uppercase tracking-[0.2em] font-bold mb-3">Testimonials</div>
-          <h2 className="font-headings text-4xl text-lux-primary">What Our Travelers Say</h2>
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-white">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Testimonials</div>
+          <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">What Our Travelers Say</h2>
         </div>
         {isTestimonialsLoading ? (
           <div className="max-w-7xl mx-auto flex items-center justify-center py-20">
@@ -670,9 +710,9 @@ export default function Landing() {
             </div>
           </div>
         ) : testimonials.length === 0 ? null : (
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8">
             {testimonials.slice(0, 3).map((t) => (
-              <div key={t._id} className="border border-border p-8 rounded-sm bg-lux-bg/50">
+              <div key={t._id} className="border border-border p-6 sm:p-8 rounded-2xl sm:rounded-sm bg-lux-bg/50">
                 <p className="italic text-muted-foreground mb-8">"{t.quote}"</p>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
@@ -693,16 +733,16 @@ export default function Landing() {
         )}
       </section>
 
-      <section className="py-24 px-6 sm:px-12 bg-lux-bg flex justify-center pb-32">
-        <div className="max-w-5xl mx-auto w-full relative overflow-hidden rounded-sm h-[400px] flex items-center justify-center">
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-lux-bg flex justify-center pb-24 sm:pb-32">
+        <div className="max-w-5xl mx-auto w-full relative overflow-hidden rounded-2xl sm:rounded-sm min-h-[320px] sm:h-[400px] h-auto flex items-center justify-center py-14 sm:py-0">
           <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1454391304352-2bf4678b1a7a?auto=format&fit=crop&q=80&w=2000')" }}></div>
           <div className="absolute inset-0 bg-black/50"></div>
-          <div className="relative z-10 text-center text-white px-8">
-            <h2 className="font-headings text-4xl sm:text-5xl mb-6">Let's make your next journey <br /> unforgettable</h2>
-            <p className="text-lg opacity-90 mb-10 max-w-xl mx-auto font-light">
+          <div className="relative z-10 text-center text-white px-5 sm:px-8 max-w-lg sm:max-w-none mx-auto">
+            <h2 className="font-headings text-2xl sm:text-4xl lg:text-5xl mb-4 sm:mb-6 leading-tight">Let's make your next journey unforgettable</h2>
+            <p className="text-sm sm:text-lg opacity-90 mb-8 sm:mb-10 max-w-xl mx-auto font-light">
               Discover the world with our exclusive tour packages and special offers.
             </p>
-            <Link to="/request-quote" className="bg-lux-accent hover:bg-lux-accent/90 text-white font-bold tracking-widest uppercase text-sm px-10 py-4 rounded-sm transition-colors cursor-pointer inline-flex items-center">
+            <Link to="/request-quote" className="bg-lux-accent hover:bg-lux-accent/90 text-white font-bold tracking-widest uppercase text-xs sm:text-sm px-8 sm:px-10 py-3.5 sm:py-4 rounded-full sm:rounded-sm transition-colors cursor-pointer inline-flex items-center touch-manipulation">
               Plan Your Tour
             </Link>
           </div>

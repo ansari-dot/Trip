@@ -4,11 +4,11 @@ import logo from "../assets/logo_old.png";
 
 export default function Footer() {
   return (
-    <footer className="bg-lux-primary text-white pt-20 pb-10 px-6 sm:px-12 border-t flex-shrink-0">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+    <footer className="bg-lux-primary text-white pt-12 pb-[max(2.5rem,env(safe-area-inset-bottom))] px-4 sm:px-8 lg:px-12 border-t flex-shrink-0 sm:pt-20 sm:pb-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 mb-12 sm:mb-16">
         <div>
-          <Link to="/" className="inline-block mb-6">
-            <img src={logo} alt="North Paradise" className="h-24 w-auto object-contain" />
+          <Link to="/" className="inline-block mb-4 sm:mb-6">
+            <img src={logo} alt="North Paradise" className="h-16 sm:h-24 w-auto object-contain object-left" />
           </Link>
           <p className="text-white/60 text-sm leading-relaxed mb-6">
             Explore the world with our tailored travel packages. Discover hidden gems, embrace new cultures, and make unforgettable memories.

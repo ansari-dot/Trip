@@ -39,8 +39,8 @@ export default function PromoModal() {
   const waMessage = encodeURIComponent("Hi, I'm interested in the " + promoData.title + " offer. Can you provide more details?");
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-lux-primary/80 backdrop-blur-sm animate-in fade-in duration-500">
-      <div className="bg-lux-bg w-full max-w-2xl rounded-sm shadow-2xl relative overflow-hidden flex flex-col md:flex-row animate-in zoom-in-95 duration-500 border border-white/10">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-lux-primary/80 backdrop-blur-sm animate-in fade-in duration-500 pb-[env(safe-area-inset-bottom)] sm:pb-4">
+      <div className="bg-lux-bg w-full max-w-2xl rounded-t-2xl sm:rounded-sm shadow-2xl relative overflow-hidden flex flex-col md:flex-row animate-in zoom-in-95 duration-500 border border-white/10 max-h-[92dvh] sm:max-h-none overflow-y-auto sm:overflow-visible">
         
         {/* Sleek Close Button */}
         <button 
@@ -50,7 +50,7 @@ export default function PromoModal() {
           <X className="w-5 h-5" strokeWidth={1.5} />
         </button>
         
-        <div className="md:w-1/2 h-48 md:h-auto relative">
+        <div className="md:w-1/2 h-40 sm:h-48 md:h-auto min-h-[10rem] md:min-h-0 relative shrink-0">
           <img 
             src={promoData.image} 
             alt={promoData.title} 
@@ -59,7 +59,7 @@ export default function PromoModal() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:hidden"></div>
         </div>
         
-        <div className="md:w-1/2 p-8 flex flex-col justify-center text-lux-primary bg-lux-bg relative z-10">
+        <div className="md:w-1/2 p-5 sm:p-8 flex flex-col justify-center text-lux-primary bg-lux-bg relative z-10">
           <span className="text-lux-accent text-xs font-bold tracking-widest uppercase mb-2 block">{promoData.subtitle}</span>
           <h2 className="font-headings text-3xl mb-4">{promoData.title}</h2>
           <p className="text-sm text-muted-foreground mb-8 leading-relaxed">

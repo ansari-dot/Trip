@@ -265,12 +265,12 @@ export default function Destinations() {
 
 
       {/* Hero */}
-      <section className="relative pt-32 pb-12 bg-lux-bg text-lux-primary px-6 sm:px-12">
+      <section className="relative pt-28 sm:pt-32 pb-10 sm:pb-12 bg-lux-bg text-lux-primary px-4 sm:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
             <div>
               <div className="text-lux-accent text-xs uppercase tracking-[0.4em] font-bold mb-4">World Collection</div>
-              <h1 className="font-headings text-4xl sm:text-6xl lg:text-7xl mb-6 leading-[1.1]">
+              <h1 className="font-headings text-3xl sm:text-5xl lg:text-7xl mb-4 sm:mb-6 leading-[1.1]">
                 Iconic <br />
                 <span className="text-lux-accent italic font-light font-body">Escapes</span>
               </h1>
@@ -285,10 +285,10 @@ export default function Destinations() {
         </div>
       </section>
 
-      <div className="w-full pt-16 pb-12 flex-1 flex flex-col lg:flex-row gap-0 border-t border-border/50">
+      <div className="w-full pt-8 sm:pt-16 pb-12 flex-1 flex flex-col lg:flex-row gap-0 border-t border-border/50">
 
         {/* mobile filter toggle */}
-        <div className="lg:hidden flex items-center justify-between mb-2 px-6 sm:px-12">
+        <div className="lg:hidden flex items-center justify-between mb-3 px-4 sm:px-8">
           <p className="text-xs text-muted-foreground uppercase tracking-widest">
             {filteredDestinations.length} destination{filteredDestinations.length !== 1 ? "s" : ""}
           </p>
@@ -303,17 +303,24 @@ export default function Destinations() {
 
         {/* mobile sidebar overlay */}
         {sidebarOpen && (
-          <div className="lg:hidden fixed inset-0 z-40 flex">
-            <div className="absolute inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
-            <div className="relative z-50 w-80 bg-lux-primary h-full overflow-y-auto shadow-xl ml-auto">
-              <div className="px-6 py-6 border-b border-white/10 flex items-center justify-between">
+          <div className="lg:hidden fixed inset-0 z-[100] flex flex-col justify-end">
+            <button type="button" className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={() => setSidebarOpen(false)} aria-label="Close filters" />
+            <div className="relative z-50 bg-lux-primary rounded-t-[1.75rem] max-h-[min(88dvh,40rem)] flex flex-col shadow-2xl border-t border-white/10 animate-in slide-in-from-bottom duration-300 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="shrink-0 pt-3 flex justify-center">
+                <div className="w-10 h-1 rounded-full bg-white/25" aria-hidden />
+              </div>
+              <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between shrink-0">
                 <div>
                   <p className="text-[9px] font-bold uppercase tracking-[0.35em] text-lux-accent mb-1">Refine Results</p>
-                  <h3 className="font-headings text-2xl text-white">Filters</h3>
+                  <h3 className="font-headings text-xl text-white">Filters</h3>
                 </div>
-                <button onClick={() => setSidebarOpen(false)} className="text-white/40 hover:text-white transition-colors"><X className="w-5 h-5" /></button>
+                <button type="button" onClick={() => setSidebarOpen(false)} className="p-2 -mr-1 text-white/50 hover:text-white transition-colors touch-manipulation" aria-label="Close">
+                  <X className="w-6 h-6" />
+                </button>
               </div>
-              {FilterPanel}
+              <div className="overflow-y-auto overscroll-contain flex-1 min-h-0">
+                {FilterPanel}
+              </div>
             </div>
           </div>
         )}
@@ -339,7 +346,7 @@ export default function Destinations() {
         </aside>
 
         {/* main content */}
-        <div className="flex-1 min-w-0 px-6 sm:px-10 py-0">
+        <div className="flex-1 min-w-0 px-4 sm:px-8 lg:px-10 py-0">
           {!isLoading && !error && (
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
               <p className="text-xs text-muted-foreground uppercase tracking-[0.2em]">
@@ -382,7 +389,7 @@ export default function Destinations() {
                 <Link
                   to={`/destinations/${dest.id}`}
                   key={dest.id}
-                  className="group cursor-pointer relative overflow-hidden h-80 block animate-in fade-in zoom-in-95 duration-300"
+                  className="group cursor-pointer relative overflow-hidden h-72 sm:h-80 block animate-in fade-in zoom-in-95 duration-300 rounded-2xl sm:rounded-none ring-1 ring-black/5 sm:ring-0"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
                   <div

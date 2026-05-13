@@ -35,17 +35,17 @@ export default function Contact() {
 
 
       {/* Hero */}
-      <section className="relative pt-40 pb-20 bg-lux-bg text-lux-primary text-center px-6">
+      <section className="relative pt-32 sm:pt-40 pb-16 sm:pb-20 bg-lux-bg text-lux-primary text-center px-4 sm:px-6">
         <div className="max-w-4xl mx-auto relative z-10">
-          <div className="text-lux-accent text-xs uppercase tracking-[0.3em] font-bold mb-6">Contact Us</div>
-          <h1 className="font-headings text-4xl sm:text-5xl lg:text-7xl mb-8">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold mb-4 sm:mb-6">Contact Us</div>
+          <h1 className="font-headings text-3xl sm:text-5xl lg:text-7xl mb-6 sm:mb-8 leading-tight">
             Let's Start Your <span className="text-lux-accent italic font-light font-body">Journey</span>
           </h1>
-          <p className="text-lg opacity-60 leading-relaxed max-w-2xl mx-auto font-light mb-12">
+          <p className="text-base sm:text-lg opacity-60 leading-relaxed max-w-2xl mx-auto font-light mb-8 sm:mb-12 px-1">
             Have questions about our tours or need a custom itinerary? Our team of travel experts is here to help you plan the perfect escape.
           </p>
 
-          <div className="flex justify-center gap-12 sm:gap-16">
+          <div className="flex justify-center gap-8 sm:gap-16 flex-wrap">
             <div className="flex flex-col items-center gap-3 group">
               <div className="w-12 h-12 rounded-full border border-lux-accent/20 flex items-center justify-center group-hover:bg-lux-accent group-hover:border-lux-accent transition-all duration-300">
                 <Mail className="w-5 h-5 text-lux-accent group-hover:text-white transition-colors" />
@@ -70,7 +70,7 @@ export default function Contact() {
 
 
       {/* Form and Map */}
-      <section className="py-12 pb-24 px-6">
+      <section className="py-10 sm:py-12 pb-20 sm:pb-24 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             {/* Form */}
