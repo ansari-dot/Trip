@@ -38,6 +38,7 @@ export default function Footer() {
           <h4 className="font-bold mb-6">Quick Links</h4>
           <ul className="space-y-4 text-white/60 text-sm">
             <li><Link to="/about" className="hover:text-lux-accent transition-colors">About Us</Link></li>
+            <li><Link to="/blogs" className="hover:text-lux-accent transition-colors">Blogs</Link></li>
             <li><Link to="/destinations" className="hover:text-lux-accent transition-colors">Destinations</Link></li>
             <li><Link to="/tour-packages" className="hover:text-lux-accent transition-colors">Tour Packages</Link></li>
             <li><Link to="/contact" className="hover:text-lux-accent transition-colors">Contact Us</Link></li>

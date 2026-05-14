@@ -1,4 +1,4 @@
-import { Search, MapPin, ChevronDown, ChevronLeft, ChevronRight, Package, Star, Compass, ShieldCheck, Headset, CheckCircle, LoaderCircle, Plane, BedDouble, UserCheck, Car, Truck } from "lucide-react";
+import { Search, MapPin, ChevronDown, ChevronLeft, ChevronRight, Package, Star, Compass, ShieldCheck, Headset, CheckCircle, LoaderCircle, Plane, BedDouble, UserCheck, Car, Truck, Calendar, Tag } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { useEffect, useMemo, useState } from "react";
@@ -20,6 +20,18 @@ type Destination = {
   expertTip?: string;
   cuisine?: string;
   whenToGo?: string;
+};
+
+type Blog = {
+  _id?: string;
+  id: string;
+  title: string;
+  excerpt?: string;
+  content: string;
+  image?: string;
+  category?: string;
+  author?: string;
+  publishedAt?: string;
 };
 
 const API_BASE = (
@@ -93,6 +105,23 @@ function normalizeDestination(input: unknown): Destination | null {
   };
 }
 
+function normalizeBlog(input: unknown): Blog | null {
+  if (!input || typeof input !== "object") return null;
+  const blog = input as Blog;
+  if (!blog.id || !blog.title || !blog.content) return null;
+  return {
+    _id: blog._id,
+    id: blog.id,
+    title: blog.title,
+    excerpt: blog.excerpt || "",
+    content: blog.content,
+    image: blog.image || "",
+    category: blog.category || "",
+    author: blog.author || "",
+    publishedAt: blog.publishedAt || "",
+  };
+}
+
 export default function Landing() {
   const navigate = useNavigate();
   const [featuredDestinations, setFeaturedDestinations] = useState<Destination[]>([]);
@@ -111,6 +140,8 @@ export default function Landing() {
     _id: string; quote: string; name: string; location: string; image: string;
   }[]>([]);
   const [isTestimonialsLoading, setIsTestimonialsLoading] = useState(true);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [isBlogsLoading, setIsBlogsLoading] = useState(true);
 
   // hero slider state
   const [heroSlides, setHeroSlides] = useState<{
@@ -265,6 +296,26 @@ export default function Landing() {
       } catch { /* silent */ }
     };
     void loadTourTypes();
+  }, []);
+
+  useEffect(() => {
+    const loadBlogs = async () => {
+      setIsBlogsLoading(true);
+      try {
+        const response = await fetch(getApiUrl('/api/blogs?limit=4'));
+        const data = await parseJsonSafely(response);
+        if (response.ok && Array.isArray(data?.data)) {
+          setBlogs(data.data.map(normalizeBlog).filter(Boolean) as Blog[]);
+        } else {
+          setBlogs([]);
+        }
+      } catch {
+        setBlogs([]);
+      } finally {
+        setIsBlogsLoading(false);
+      }
+    };
+    void loadBlogs();
   }, []);
 
   const displayedFeaturedDestinations = featuredDestinations.length > 0
@@ -511,6 +562,7 @@ export default function Landing() {
         <div className="text-center mb-10 sm:mb-16">
           <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Popular Tours</div>
           <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">Our Most Popular Tours</h2>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-md mx-auto md:hidden">Swipe to explore our featured tours.</p>
         </div>
 
         {isToursLoading ? (
@@ -525,28 +577,52 @@ export default function Landing() {
             No tour packages available yet.
           </div>
         ) : (
-          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {featuredTours.map((tour) => (
-              <Link to={`/tour-packages/${tour.id}`} key={tour.id} className="group cursor-pointer rounded-2xl sm:rounded-none overflow-hidden bg-white sm:bg-transparent border border-border/70 sm:border-0 shadow-sm sm:shadow-none">
-                <div className="relative h-52 sm:h-64 overflow-hidden sm:rounded-t-sm mb-0 sm:mb-4">
-                  <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${tour.image || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=600"}')` }}></div>
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-sm text-xs font-bold text-lux-primary">
-                    {tour.price} <span className="font-normal text-muted-foreground">/person</span>
+          <>
+            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain touch-pan-x pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              {featuredTours.map((tour) => (
+                <Link to={`/tour-packages/${tour.id}`} key={`m-${tour.id}`} className="group relative shrink-0 snap-center w-[min(88vw,20.5rem)] overflow-hidden rounded-2xl bg-white border border-border/70 shadow-sm">
+                  <div className="relative h-56 overflow-hidden">
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${tour.image || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=600"}')` }}></div>
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-sm text-xs font-bold text-lux-primary">
+                      {tour.price} <span className="font-normal text-muted-foreground">/person</span>
+                    </div>
                   </div>
-                </div>
-                <div className="p-4 sm:p-0 sm:block">
-                <h3 className="font-headings text-lg sm:text-xl mb-1 sm:mb-1 group-hover:text-lux-accent transition-colors">{tour.title}</h3>
-                <p className="text-sm text-muted-foreground mb-3 sm:mb-4 line-clamp-2">{tour.description}</p>
-                <div className="flex justify-between items-center border-t border-border pt-3 sm:pt-4 text-sm text-lux-primary font-medium">
-                  <span>{tour.duration}</span>
-                  <div className="flex items-center gap-1">
-                    4.8 <Star className="w-3 h-3 text-lux-accent fill-lux-accent" />
+                  <div className="p-4">
+                    <h3 className="font-headings text-lg mb-1 group-hover:text-lux-accent transition-colors">{tour.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{tour.description}</p>
+                    <div className="flex justify-between items-center border-t border-border pt-3 text-sm text-lux-primary font-medium">
+                      <span>{tour.duration}</span>
+                      <div className="flex items-center gap-1">
+                        4.8 <Star className="w-3 h-3 text-lux-accent fill-lux-accent" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+            <div className="hidden md:grid max-w-7xl mx-auto grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+              {featuredTours.map((tour) => (
+                <Link to={`/tour-packages/${tour.id}`} key={tour.id} className="group cursor-pointer rounded-none overflow-hidden bg-transparent border-0 shadow-none">
+                  <div className="relative h-64 overflow-hidden rounded-t-sm mb-4">
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${tour.image || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=600"}')` }}></div>
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-sm text-xs font-bold text-lux-primary">
+                      {tour.price} <span className="font-normal text-muted-foreground">/person</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="font-headings text-xl mb-1 group-hover:text-lux-accent transition-colors">{tour.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{tour.description}</p>
+                    <div className="flex justify-between items-center border-t border-border pt-4 text-sm text-lux-primary font-medium">
+                      <span>{tour.duration}</span>
+                      <div className="flex items-center gap-1">
+                        4.8 <Star className="w-3 h-3 text-lux-accent fill-lux-accent" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
         )}
 
         <div className="flex justify-center mt-12">
@@ -563,6 +639,7 @@ export default function Landing() {
           <p className="text-muted-foreground mt-3 sm:mt-4 max-w-xl mx-auto font-light text-xs sm:text-sm px-2">
             Experience the unique beauty of each season with our specially curated limited-time offers.
           </p>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-md mx-auto md:hidden">Swipe to browse seasonal tours.</p>
         </div>
 
         {isSeasonalLoading ? (
@@ -577,38 +654,72 @@ export default function Landing() {
             No seasonal packages available at the moment.
           </div>
         ) : (
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
-            {seasonalTours.map((tour) => (
-              <Link to={`/tour-packages/${tour.id}`} key={tour.id} className="group bg-white rounded-2xl sm:rounded-sm overflow-hidden shadow-md sm:shadow-sm hover:shadow-md transition-all duration-500 flex flex-col border border-border/50 sm:border-0">
-                <div className="relative h-56 sm:h-72 overflow-hidden">
-                  <div className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: `url('${tour.image || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800"}')` }}></div>
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                  <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
-                    Seasonal
-                  </div>
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <div className="flex items-center gap-1.5 text-xs font-medium mb-1 drop-shadow-md">
-                      <MapPin className="w-3 h-3 text-lux-accent" />
-                      {tour.destinations.join(", ")}
+          <>
+            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain touch-pan-x pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              {seasonalTours.map((tour) => (
+                <Link to={`/tour-packages/${tour.id}`} key={`m-${tour.id}`} className="group shrink-0 snap-center w-[min(88vw,20.5rem)] bg-white rounded-2xl overflow-hidden shadow-md border border-border/50 flex flex-col">
+                  <div className="relative h-56 overflow-hidden">
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: `url('${tour.image || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800"}')` }}></div>
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                    <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+                      Seasonal
+                    </div>
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <div className="flex items-center gap-1.5 text-xs font-medium mb-1 drop-shadow-md">
+                        <MapPin className="w-3 h-3 text-lux-accent" />
+                        {tour.destinations.join(", ")}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="p-5 sm:p-6 flex-1 flex flex-col">
-                  <h3 className="font-headings text-xl sm:text-2xl mb-2 group-hover:text-lux-accent transition-colors">{tour.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{tour.description}</p>
-                  <div className="mt-auto pt-6 border-t border-border flex justify-between items-center">
-                    <div>
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">Starting From</span>
-                      <span className="text-lg font-bold text-lux-primary">{tour.price}</span>
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
-                      <ChevronRight className="w-5 h-5" />
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-headings text-xl mb-2 group-hover:text-lux-accent transition-colors">{tour.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{tour.description}</p>
+                    <div className="mt-auto pt-6 border-t border-border flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">Starting From</span>
+                        <span className="text-lg font-bold text-lux-primary">{tour.price}</span>
+                      </div>
+                      <div className="w-10 h-10 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
+                        <ChevronRight className="w-5 h-5" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+            <div className="hidden md:grid max-w-7xl mx-auto grid-cols-3 gap-6 sm:gap-10">
+              {seasonalTours.map((tour) => (
+                <Link to={`/tour-packages/${tour.id}`} key={tour.id} className="group bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-all duration-500 flex flex-col border-0">
+                  <div className="relative h-72 overflow-hidden">
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: `url('${tour.image || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800"}')` }}></div>
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                    <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+                      Seasonal
+                    </div>
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <div className="flex items-center gap-1.5 text-xs font-medium mb-1 drop-shadow-md">
+                        <MapPin className="w-3 h-3 text-lux-accent" />
+                        {tour.destinations.join(", ")}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h3 className="font-headings text-2xl mb-2 group-hover:text-lux-accent transition-colors">{tour.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{tour.description}</p>
+                    <div className="mt-auto pt-6 border-t border-border flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">Starting From</span>
+                        <span className="text-lg font-bold text-lux-primary">{tour.price}</span>
+                      </div>
+                      <div className="w-10 h-10 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
+                        <ChevronRight className="w-5 h-5" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
         )}
       </section>
 
@@ -731,6 +842,92 @@ export default function Landing() {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-lux-bg border-t border-border/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-10 sm:mb-16">
+            <div>
+              <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">From Our Blog</div>
+              <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary">Travel stories and planning guides</h2>
+            </div>
+            <Link to="/blogs" className="text-[10px] sm:text-xs uppercase tracking-[0.24em] font-bold text-lux-accent hover:text-lux-primary transition-colors">
+              View all blogs
+            </Link>
+          </div>
+
+          {isBlogsLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="inline-flex items-center gap-3 bg-white border border-border rounded-sm px-5 py-4 shadow-sm">
+                <LoaderCircle className="w-5 h-5 animate-spin text-lux-accent" />
+                <span className="text-sm">Loading blogs...</span>
+              </div>
+            </div>
+          ) : blogs.length === 0 ? null : (
+            <>
+              <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain touch-pan-x pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                {blogs.map((blog) => (
+                  <Link
+                    key={`m-${blog.id}`}
+                    to={`/blogs/${blog.id}`}
+                    className="group shrink-0 snap-center w-[min(88vw,20.5rem)] overflow-hidden rounded-2xl bg-white border border-border shadow-sm hover:shadow-lg transition-all duration-300"
+                  >
+                    <div
+                      className="h-52 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                      style={{ backgroundImage: `url('${blog.image || "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&q=80&w=1200"}')` }}
+                    />
+                    <div className="p-5">
+                      <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-lux-accent mb-3">
+                        <Tag className="w-3.5 h-3.5" />
+                        {blog.category || "Blog"}
+                      </div>
+                      <h3 className="font-headings text-xl text-lux-primary mb-3 leading-snug group-hover:text-lux-accent transition-colors">
+                        {blog.title}
+                      </h3>
+                      <div className="mt-5 pt-4 border-t border-border flex items-center justify-between gap-3 text-[11px] text-lux-primary/55">
+                        <span className="truncate">{blog.author || "North Paradise Team"}</span>
+                        <span className="inline-flex items-center gap-1.5 shrink-0">
+                          <Calendar className="w-3.5 h-3.5 text-lux-accent" />
+                          {blog.publishedAt ? new Date(blog.publishedAt).toLocaleDateString() : "Recent"}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {blogs.map((blog) => (
+                  <Link
+                    key={blog.id}
+                    to={`/blogs/${blog.id}`}
+                    className="group overflow-hidden rounded-sm bg-white border border-border shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                  >
+                    <div
+                      className="h-52 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                      style={{ backgroundImage: `url('${blog.image || "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&q=80&w=1200"}')` }}
+                    />
+                    <div className="p-6">
+                      <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-lux-accent mb-3">
+                        <Tag className="w-3.5 h-3.5" />
+                        {blog.category || "Blog"}
+                      </div>
+                      <h3 className="font-headings text-xl text-lux-primary mb-3 leading-snug group-hover:text-lux-accent transition-colors">
+                        {blog.title}
+                      </h3>
+                      <div className="mt-5 pt-4 border-t border-border flex items-center justify-between gap-3 text-[11px] text-lux-primary/55">
+                        <span className="truncate">{blog.author || "North Paradise Team"}</span>
+                        <span className="inline-flex items-center gap-1.5 shrink-0">
+                          <Calendar className="w-3.5 h-3.5 text-lux-accent" />
+                          {blog.publishedAt ? new Date(blog.publishedAt).toLocaleDateString() : "Recent"}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </section>
 
       <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-lux-bg flex justify-center pb-24 sm:pb-32">

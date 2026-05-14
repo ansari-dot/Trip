@@ -41,7 +41,7 @@ function LuxMenuIcon({ open }: { open: boolean }) {
 
 export default function Navbar() {
   const location = useLocation();
-  const isContactPage = location.pathname === "/contact" || location.pathname === "/about" || location.pathname === "/tour-packages" || location.pathname === "/destinations";
+  const isContactPage = location.pathname === "/contact" || location.pathname === "/about" || location.pathname === "/tour-packages" || location.pathname === "/destinations" || location.pathname === "/blogs";
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -95,6 +95,7 @@ export default function Navbar() {
 
         {/* Desktop Navigation (Center) */}
         <nav className="hidden sm:flex gap-8 text-sm uppercase tracking-widest items-center justify-center">
+          <Link to="/about" className="hover:text-lux-accent transition-colors">About</Link>
           <Link to="/destinations" className="hover:text-lux-accent transition-colors">Destinations</Link>
           <div className="relative group">
             <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
@@ -118,7 +119,6 @@ export default function Navbar() {
               <Link to="/tour-packages" className="px-4 py-3 bg-lux-accent/20 hover:bg-lux-accent/30 transition-colors uppercase tracking-[0.2em] text-[10px] font-bold text-center">View All Packages</Link>
             </div>
           </div>
-          <Link to="/about" className="hover:text-lux-accent transition-colors">About</Link>
           <div className="relative group">
             <button className="flex items-center gap-1 hover:text-lux-accent transition-colors uppercase tracking-widest text-sm focus:outline-none">
               Services <ChevronDown className="w-4 h-4" />
@@ -141,6 +141,7 @@ export default function Navbar() {
               ))}
             </div>
           </div>
+          <Link to="/blogs" className="hover:text-lux-accent transition-colors">Blogs</Link>
           <Link to="/contact" className="hover:text-lux-accent transition-colors">Contact</Link>
         </nav>
 
@@ -178,10 +179,11 @@ export default function Navbar() {
             </p>
             <nav className="flex flex-col gap-2.5">
               {[
+                { name: "About", path: "/about", type: "link" as const },
                 { name: "Destinations", path: "/destinations", type: "link" as const },
                 { name: "Tours", type: "dropdown" as const, id: "tours" },
-                { name: "About", path: "/about", type: "link" as const },
                 { name: "Services", type: "dropdown" as const, id: "services" },
+                { name: "Blogs", path: "/blogs", type: "link" as const },
                 { name: "Contact", path: "/contact", type: "link" as const },
               ].map((item) => (
                 <div key={item.name}>

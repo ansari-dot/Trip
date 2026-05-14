@@ -4,6 +4,8 @@ import { HelmetProvider } from "react-helmet-async";
 import Landing from "./pages/Landing";
 import Destinations from "./pages/Destinations";
 import DestinationDetail from "./pages/DestinationDetail";
+import Blogs from "./pages/Blogs";
+import BlogDetail from "./pages/BlogDetail";
 import TourPackages from "./pages/TourPackages";
 import TourPackageDetail from "./pages/TourPackageDetail";
 import About from "./pages/About";
@@ -41,6 +43,8 @@ export default function App() {
               <Route path="/" element={<Landing />} />
               <Route path="/destinations" element={<Destinations />} />
               <Route path="/destinations/:id" element={<DestinationDetail />} />
+              <Route path="/blogs" element={<Blogs />} />
+              <Route path="/blogs/:id" element={<BlogDetail />} />
               <Route path="/tour-packages" element={<TourPackages />} />
               <Route path="/tour-packages/:id" element={<TourPackageDetail />} />
               <Route path="/about" element={<About />} />

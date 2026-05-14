@@ -4,6 +4,9 @@ import {
   AlertCircle,
   ArrowUpRight,
   Bell,
+  BookOpen,
+  Briefcase,
+  Car,
   LayoutDashboard,
   LoaderCircle,
   Lock,
@@ -33,11 +36,14 @@ const SIDEBAR_ITEMS = [
   {id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard},
   {id: 'heroes', label: 'Hero Slides', icon: ArrowUpRight},
   {id: 'destinations', label: 'Destinations', icon: MapPin},
+  {id: 'blogs', label: 'Blogs', icon: BookOpen},
+  {id: 'rental-vehicles', label: 'Rental Vehicles', icon: Car},
   {id: 'packages', label: 'Tour Packages', icon: Package},
   {id: 'tour-types', label: 'Tour Types', icon: Tags},
   {id: 'featured-tours', label: 'Featured Tours', icon: Star},
   {id: 'seasonal-tours', label: 'Seasonal Selection', icon: Snowflake},
   {id: 'testimonials', label: 'Testimonials', icon: Users},
+  {id: 'team', label: 'Team Members', icon: Briefcase},
   {id: 'promo-modal', label: 'Promo Modal', icon: AlertCircle},
   {id: 'quotes', label: 'Quote Requests', icon: MessageSquare},
   {id: 'settings', label: 'Settings', icon: Settings},
@@ -498,6 +504,87 @@ type TestimonialFormState = {
   image: string;
 };
 
+type TeamMember = {
+  _id: string;
+  name: string;
+  role: string;
+  bio: string;
+  image: string;
+  specialties: string[];
+  displayOrder: number;
+};
+
+type TeamMemberFormState = {
+  name: string;
+  role: string;
+  bio: string;
+  image: string;
+  specialties: string;
+  displayOrder: string;
+};
+
+type Blog = {
+  _id?: string;
+  id: string;
+  title: string;
+  excerpt?: string;
+  content: string;
+  image?: string;
+  category?: string;
+  author?: string;
+  tags?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
+  publishedAt?: string;
+};
+
+type BlogFormState = {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  image: string;
+  category: string;
+  author: string;
+  tags: string;
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string;
+  publishedAt: string;
+};
+
+type RentalVehicle = {
+  _id?: string;
+  id: string;
+  name: string;
+  type?: string;
+  price?: string;
+  image?: string;
+  description?: string;
+  seats?: string;
+  transmission?: string;
+  fuelType?: string;
+  withDriver?: boolean;
+  features?: string[];
+  displayOrder?: number;
+};
+
+type RentalVehicleFormState = {
+  id: string;
+  name: string;
+  type: string;
+  price: string;
+  image: string;
+  description: string;
+  seats: string;
+  transmission: string;
+  fuelType: string;
+  withDriver: boolean;
+  features: string;
+  displayOrder: string;
+};
+
 const EMPTY_TESTIMONIAL_FORM: TestimonialFormState = {
   quote: '',
   name: '',
@@ -505,11 +592,141 @@ const EMPTY_TESTIMONIAL_FORM: TestimonialFormState = {
   image: '',
 };
 
+const EMPTY_TEAM_MEMBER_FORM: TeamMemberFormState = {
+  name: '',
+  role: '',
+  bio: '',
+  image: '',
+  specialties: '',
+  displayOrder: '0',
+};
+
+const EMPTY_BLOG_FORM: BlogFormState = {
+  id: '',
+  title: '',
+  excerpt: '',
+  content: '',
+  image: '',
+  category: '',
+  author: '',
+  tags: '',
+  seoTitle: '',
+  seoDescription: '',
+  seoKeywords: '',
+  publishedAt: '',
+};
+
+const EMPTY_RENTAL_VEHICLE_FORM: RentalVehicleFormState = {
+  id: '',
+  name: '',
+  type: '',
+  price: '',
+  image: '',
+  description: '',
+  seats: '',
+  transmission: '',
+  fuelType: '',
+  withDriver: false,
+  features: '',
+  displayOrder: '0',
+};
+
 function normalizeTestimonial(input: unknown): Testimonial | null {
   if (!input || typeof input !== 'object') return null;
   const t = input as Testimonial;
   if (!t._id || !t.quote || !t.name) return null;
   return { _id: t._id, quote: t.quote, name: t.name, location: t.location || '', image: t.image || '' };
+}
+
+function normalizeTeamMember(input: unknown): TeamMember | null {
+  if (!input || typeof input !== 'object') return null;
+  const member = input as TeamMember;
+  if (!member._id || !member.name || !member.role) return null;
+  return {
+    _id: member._id,
+    name: member.name,
+    role: member.role,
+    bio: member.bio || '',
+    image: member.image || '',
+    specialties: Array.isArray(member.specialties) ? member.specialties : [],
+    displayOrder: Number.isFinite(Number(member.displayOrder)) ? Number(member.displayOrder) : 0,
+  };
+}
+
+function normalizeBlog(input: unknown): Blog | null {
+  if (!input || typeof input !== 'object') return null;
+  const blog = input as Blog;
+  if (!blog.id || !blog.title || !blog.content) return null;
+  return {
+    _id: blog._id,
+    id: blog.id,
+    title: blog.title,
+    excerpt: blog.excerpt || '',
+    content: blog.content,
+    image: blog.image || '',
+    category: blog.category || '',
+    author: blog.author || '',
+    tags: Array.isArray(blog.tags) ? blog.tags : [],
+    seoTitle: blog.seoTitle || '',
+    seoDescription: blog.seoDescription || '',
+    seoKeywords: blog.seoKeywords || '',
+    publishedAt: blog.publishedAt || '',
+  };
+}
+
+function blogToFormState(blog: Blog): BlogFormState {
+  return {
+    id: blog.id,
+    title: blog.title,
+    excerpt: blog.excerpt || '',
+    content: blog.content,
+    image: blog.image || '',
+    category: blog.category || '',
+    author: blog.author || '',
+    tags: (blog.tags || []).join('\n'),
+    seoTitle: blog.seoTitle || '',
+    seoDescription: blog.seoDescription || '',
+    seoKeywords: blog.seoKeywords || '',
+    publishedAt: blog.publishedAt ? new Date(blog.publishedAt).toISOString().slice(0, 16) : '',
+  };
+}
+
+function normalizeRentalVehicle(input: unknown): RentalVehicle | null {
+  if (!input || typeof input !== 'object') return null;
+  const vehicle = input as RentalVehicle;
+  if (!vehicle.id || !vehicle.name) return null;
+  return {
+    _id: vehicle._id,
+    id: vehicle.id,
+    name: vehicle.name,
+    type: vehicle.type || '',
+    price: vehicle.price || '',
+    image: vehicle.image || '',
+    description: vehicle.description || '',
+    seats: vehicle.seats || '',
+    transmission: vehicle.transmission || '',
+    fuelType: vehicle.fuelType || '',
+    withDriver: Boolean(vehicle.withDriver),
+    features: Array.isArray(vehicle.features) ? vehicle.features : [],
+    displayOrder: Number.isFinite(Number(vehicle.displayOrder)) ? Number(vehicle.displayOrder) : 0,
+  };
+}
+
+function rentalVehicleToFormState(vehicle: RentalVehicle): RentalVehicleFormState {
+  return {
+    id: vehicle.id,
+    name: vehicle.name,
+    type: vehicle.type || '',
+    price: vehicle.price || '',
+    image: vehicle.image || '',
+    description: vehicle.description || '',
+    seats: vehicle.seats || '',
+    transmission: vehicle.transmission || '',
+    fuelType: vehicle.fuelType || '',
+    withDriver: Boolean(vehicle.withDriver),
+    features: (vehicle.features || []).join('\n'),
+    displayOrder: String(vehicle.displayOrder ?? 0),
+  };
 }
 
 type HeroSlide = {
@@ -1138,6 +1355,831 @@ function TestimonialManager() {
                 </div>
                 <div className="px-5 py-5 text-sm text-lux-primary/75">
                   <p className="italic">"{t.quote}"</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </motion.section>
+    </div>
+  );
+}
+
+function TeamManager() {
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [form, setForm] = useState<TeamMemberFormState>(EMPTY_TEAM_MEMBER_FORM);
+
+  const loadTeamMembers = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const response = await fetch(getApiUrl('/api/team-members'), { credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to load team members.');
+        setTeamMembers([]);
+        return;
+      }
+      setTeamMembers((Array.isArray(data?.data) ? data.data.map(normalizeTeamMember).filter(Boolean) : []) as TeamMember[]);
+    } catch {
+      setError('Unable to fetch team members from the backend.');
+      setTeamMembers([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => { void loadTeamMembers(); }, []);
+
+  const updateField = (field: keyof TeamMemberFormState, value: string) =>
+    setForm((current) => ({ ...current, [field]: value }));
+
+  const resetForm = () => {
+    setForm(EMPTY_TEAM_MEMBER_FORM);
+    setEditingId(null);
+    setSelectedImage(null);
+    setIsFormOpen(false);
+  };
+
+  const startEditing = (member: TeamMember) => {
+    setForm({
+      name: member.name,
+      role: member.role,
+      bio: member.bio,
+      image: member.image,
+      specialties: member.specialties.join('\n'),
+      displayOrder: String(member.displayOrder ?? 0),
+    });
+    setEditingId(member._id);
+    setSelectedImage(null);
+    setIsFormOpen(true);
+    setSuccessMessage('');
+    setError('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const submitTeamMember = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSaving(true);
+    setError('');
+    setSuccessMessage('');
+    try {
+      const payload = new FormData();
+      payload.append('name', form.name.trim());
+      payload.append('role', form.role.trim());
+      payload.append('bio', form.bio.trim());
+      payload.append('image', form.image.trim());
+      payload.append('specialties', JSON.stringify(linesToArray(form.specialties)));
+      payload.append('displayOrder', form.displayOrder.trim() || '0');
+      if (selectedImage) payload.set('image', selectedImage);
+
+      const isEditing = Boolean(editingId);
+      const response = await fetch(
+        getApiUrl(isEditing ? `/api/team-members/${editingId}` : '/api/team-members'),
+        { method: isEditing ? 'PUT' : 'POST', credentials: 'include', body: payload }
+      );
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to save team member.');
+        return;
+      }
+      setSuccessMessage(isEditing ? 'Team member updated successfully.' : 'Team member created successfully.');
+      resetForm();
+      await loadTeamMembers();
+    } catch {
+      setError('Unable to save team member right now.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const removeTeamMember = async (id: string) => {
+    if (!window.confirm('Delete this team member?')) return;
+    setError('');
+    setSuccessMessage('');
+    try {
+      const response = await fetch(getApiUrl(`/api/team-members/${id}`), { method: 'DELETE', credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to delete team member.');
+        return;
+      }
+      setSuccessMessage('Team member deleted successfully.');
+      if (editingId === id) resetForm();
+      await loadTeamMembers();
+    } catch {
+      setError('Unable to delete team member right now.');
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-8">
+      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+        <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-lux-accent">Team API</p>
+              <h3 className="mt-2 font-headings text-2xl">Team Member Manager</h3>
+              <p className="mt-2 text-sm text-lux-primary/65">
+                Connected to `GET /api/team-members`, `POST /api/team-members`, `PUT /api/team-members/:id`, and `DELETE /api/team-members/:id`.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => { setForm(EMPTY_TEAM_MEMBER_FORM); setEditingId(null); setSelectedImage(null); setError(''); setSuccessMessage(''); setIsFormOpen(true); }}
+              className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent"
+            >
+              <Plus className="h-4 w-4" />
+              New Team Member
+            </button>
+          </div>
+        </div>
+
+        {isFormOpen ? (
+          <form className="grid gap-5 p-6 lg:grid-cols-2" onSubmit={submitTeamMember}>
+            <div className="flex items-center justify-between lg:col-span-2">
+              <div>
+                <h4 className="font-headings text-2xl">{editingId ? 'Edit Team Member' : 'Create Team Member'}</h4>
+                <p className="mt-2 text-sm text-lux-primary/65">Add the team profile that will appear on the About Us page.</p>
+              </div>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Close
+              </button>
+            </div>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Name</span>
+              <input value={form.name} onChange={(e) => updateField('name', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Aqeel Ahmed" required />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Role</span>
+              <input value={form.role} onChange={(e) => updateField('role', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Founder & Tour Director" required />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Image URL</span>
+              <input value={form.image} onChange={(e) => updateField('image', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="https://..." />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Display Order</span>
+              <input type="number" value={form.displayOrder} onChange={(e) => updateField('displayOrder', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="0" />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Upload Image</span>
+              <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm" />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Specialties</span>
+              <textarea value={form.specialties} onChange={(e) => updateField('specialties', e.target.value)} className="min-h-28 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="One specialty per line" />
+            </label>
+
+            <label className="block lg:col-span-2">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Bio</span>
+              <textarea value={form.bio} onChange={(e) => updateField('bio', e.target.value)} className="min-h-32 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Tell travelers about this team member..." />
+            </label>
+
+            {(error || successMessage) ? (
+              <div className="lg:col-span-2">
+                {error ? (
+                  <div className="flex items-start gap-3 rounded-sm border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                    <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                ) : null}
+                {successMessage ? (
+                  <div className="mt-3 rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{successMessage}</div>
+                ) : null}
+              </div>
+            ) : null}
+
+            <div className="flex flex-col gap-3 lg:col-span-2 sm:flex-row">
+              <button type="submit" disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-sm bg-lux-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-white transition hover:bg-lux-primary/90 disabled:cursor-not-allowed disabled:opacity-70">
+                {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                {editingId ? 'Update Team Member' : 'Create Team Member'}
+              </button>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="px-6 py-14 text-center text-sm text-lux-primary/65">
+            Click <span className="font-bold text-lux-primary">New Team Member</span> to open the form.
+          </div>
+        )}
+      </motion.section>
+
+      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.05}}>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="font-headings text-2xl">Saved Team Members</h3>
+            <p className="mt-2 text-sm text-lux-primary/65">Live data used on the frontend About page.</p>
+          </div>
+          <button type="button" onClick={() => void loadTeamMembers()} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+            <LoaderCircle className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-sm text-lux-primary/70">
+            <LoaderCircle className="mr-3 h-5 w-5 animate-spin text-lux-accent" /> Loading team members...
+          </div>
+        ) : teamMembers.length === 0 ? (
+          <div className="rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-center text-sm text-lux-primary/65">No team members found yet.</div>
+        ) : (
+          <div className="grid gap-5 lg:grid-cols-3">
+            {teamMembers.map((member) => (
+              <article key={member._id} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+                <div className="border-b border-lux-primary/10 bg-lux-bg/60 px-5 py-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      {member.image ? (
+                        <img src={member.image} alt={member.name} className="h-14 w-14 rounded-full object-cover" />
+                      ) : (
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-lux-primary/10 text-lg font-bold text-lux-primary/40">{member.name[0]}</div>
+                      )}
+                      <div>
+                        <div className="font-bold text-sm">{member.name}</div>
+                        <div className="text-xs text-lux-primary/55">{member.role}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button type="button" onClick={() => startEditing(member)} className="inline-flex items-center gap-1 rounded-sm border border-lux-primary/15 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                        <Pencil className="h-3.5 w-3.5" /> Edit
+                      </button>
+                      <button type="button" onClick={() => void removeTeamMember(member._id)} className="inline-flex items-center gap-1 rounded-sm border border-rose-200 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-50">
+                        <Trash2 className="h-3.5 w-3.5" /> Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4 px-5 py-5 text-sm text-lux-primary/75">
+                  <p>{member.bio || 'No bio added yet.'}</p>
+                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-lux-primary/50">
+                    <span>Display Order</span>
+                    <span>{member.displayOrder}</span>
+                  </div>
+                  <div>
+                    <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/55">Specialties</div>
+                    <div className="flex flex-wrap gap-2">
+                      {member.specialties.length > 0 ? (
+                        member.specialties.map((item) => (
+                          <span key={item} className="rounded-full bg-lux-bg px-3 py-1 text-[11px] text-lux-primary/75">{item}</span>
+                        ))
+                      ) : (
+                        <span className="rounded-full bg-lux-bg px-3 py-1 text-[11px] text-lux-primary/55">No specialties added</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </motion.section>
+    </div>
+  );
+}
+
+function BlogManager() {
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [form, setForm] = useState<BlogFormState>(EMPTY_BLOG_FORM);
+
+  const loadBlogs = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const response = await fetch(getApiUrl('/api/blogs?page=1'), { credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to load blogs.');
+        setBlogs([]);
+        return;
+      }
+
+      const totalPages = Math.max(Number(data?.totalPages) || 1, 1);
+      let allBlogs = Array.isArray(data?.data) ? data.data : [];
+
+      if (totalPages > 1) {
+        for (let page = 2; page <= totalPages; page += 1) {
+          const nextResponse = await fetch(getApiUrl(`/api/blogs?page=${page}`), { credentials: 'include' });
+          const nextData = await parseJsonSafely(nextResponse);
+          if (nextResponse.ok && Array.isArray(nextData?.data)) {
+            allBlogs = [...allBlogs, ...nextData.data];
+          }
+        }
+      }
+
+      setBlogs(allBlogs.map(normalizeBlog).filter(Boolean) as Blog[]);
+    } catch {
+      setError('Unable to fetch blogs from the backend.');
+      setBlogs([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => { void loadBlogs(); }, []);
+
+  const updateField = (field: keyof BlogFormState, value: string) =>
+    setForm((current) => ({ ...current, [field]: value }));
+
+  const resetForm = () => {
+    setForm(EMPTY_BLOG_FORM);
+    setEditingId(null);
+    setSelectedImage(null);
+    setIsFormOpen(false);
+  };
+
+  const startEditing = (blog: Blog) => {
+    setForm(blogToFormState(blog));
+    setEditingId(blog.id);
+    setSelectedImage(null);
+    setIsFormOpen(true);
+    setSuccessMessage('');
+    setError('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const submitBlog = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSaving(true);
+    setError('');
+    setSuccessMessage('');
+    try {
+      const payload = new FormData();
+      payload.append('id', form.id.trim());
+      payload.append('title', form.title.trim());
+      payload.append('excerpt', form.excerpt.trim());
+      payload.append('content', form.content.trim());
+      payload.append('image', form.image.trim());
+      payload.append('category', form.category.trim());
+      payload.append('author', form.author.trim());
+      payload.append('tags', JSON.stringify(linesToArray(form.tags)));
+      payload.append('seoTitle', form.seoTitle.trim());
+      payload.append('seoDescription', form.seoDescription.trim());
+      payload.append('seoKeywords', form.seoKeywords.trim());
+      payload.append('publishedAt', form.publishedAt ? new Date(form.publishedAt).toISOString() : new Date().toISOString());
+      if (selectedImage) payload.set('image', selectedImage);
+
+      const isEditing = Boolean(editingId);
+      const response = await fetch(
+        getApiUrl(isEditing ? `/api/blogs/${editingId}` : '/api/blogs'),
+        { method: isEditing ? 'PUT' : 'POST', credentials: 'include', body: payload }
+      );
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to save blog.');
+        return;
+      }
+      setSuccessMessage(isEditing ? 'Blog updated successfully.' : 'Blog created successfully.');
+      resetForm();
+      await loadBlogs();
+    } catch {
+      setError('Unable to save blog right now.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const removeBlog = async (blogId: string) => {
+    if (!window.confirm(`Delete blog "${blogId}"?`)) return;
+    setError('');
+    setSuccessMessage('');
+    try {
+      const response = await fetch(getApiUrl(`/api/blogs/${blogId}`), {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to delete blog.');
+        return;
+      }
+      setSuccessMessage('Blog deleted successfully.');
+      if (editingId === blogId) resetForm();
+      await loadBlogs();
+    } catch {
+      setError('Unable to delete blog right now.');
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-8">
+      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+        <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-lux-accent">Blog API</p>
+              <h3 className="mt-2 font-headings text-2xl">Blog Manager</h3>
+              <p className="mt-2 text-sm text-lux-primary/65">
+                Write SEO-friendly blog posts from admin and publish them to the frontend.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => { setForm(EMPTY_BLOG_FORM); setEditingId(null); setSelectedImage(null); setError(''); setSuccessMessage(''); setIsFormOpen(true); }}
+              className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent"
+            >
+              <Plus className="h-4 w-4" />
+              New Blog
+            </button>
+          </div>
+        </div>
+
+        {isFormOpen ? (
+          <form className="grid gap-5 p-6 lg:grid-cols-2" onSubmit={submitBlog}>
+            <div className="flex items-center justify-between lg:col-span-2">
+              <div>
+                <h4 className="font-headings text-2xl">{editingId ? 'Edit Blog' : 'Create Blog'}</h4>
+                <p className="mt-2 text-sm text-lux-primary/65">Fill in the content and SEO fields for better search performance.</p>
+              </div>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Close
+              </button>
+            </div>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Blog ID / Slug</span>
+              <input value={form.id} onChange={(e) => updateField('id', e.target.value)} disabled={Boolean(editingId)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="best-time-to-visit-hunza" required />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Title</span>
+              <input value={form.title} onChange={(e) => updateField('title', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Best Time to Visit Hunza Valley" required />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Category</span>
+              <input value={form.category} onChange={(e) => updateField('category', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Travel Guide" />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Author</span>
+              <input value={form.author} onChange={(e) => updateField('author', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="North Paradise Team" />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Published At</span>
+              <input type="datetime-local" value={form.publishedAt} onChange={(e) => updateField('publishedAt', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Image URL</span>
+              <input value={form.image} onChange={(e) => updateField('image', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="https://..." />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Upload Image</span>
+              <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm" />
+            </label>
+
+            <label className="block lg:col-span-2">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Excerpt</span>
+              <textarea value={form.excerpt} onChange={(e) => updateField('excerpt', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="A short summary for blog cards and SEO..." />
+            </label>
+
+            <label className="block lg:col-span-2">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Content</span>
+              <textarea value={form.content} onChange={(e) => updateField('content', e.target.value)} className="min-h-56 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Write the full blog content here..." required />
+            </label>
+
+            <label className="block lg:col-span-2">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Tags</span>
+              <textarea value={form.tags} onChange={(e) => updateField('tags', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="One tag per line" />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">SEO Title</span>
+              <input value={form.seoTitle} onChange={(e) => updateField('seoTitle', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Custom SEO title" />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">SEO Keywords</span>
+              <input value={form.seoKeywords} onChange={(e) => updateField('seoKeywords', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="hunza travel, skardu guide, northern pakistan" />
+            </label>
+
+            <label className="block lg:col-span-2">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">SEO Description</span>
+              <textarea value={form.seoDescription} onChange={(e) => updateField('seoDescription', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="SEO description for search results..." />
+            </label>
+
+            {(error || successMessage) ? (
+              <div className="lg:col-span-2">
+                {error ? <div className="flex items-start gap-3 rounded-sm border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"><AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" /><span>{error}</span></div> : null}
+                {successMessage ? <div className="mt-3 rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{successMessage}</div> : null}
+              </div>
+            ) : null}
+
+            <div className="flex flex-col gap-3 lg:col-span-2 sm:flex-row">
+              <button type="submit" disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-sm bg-lux-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-white transition hover:bg-lux-primary/90 disabled:cursor-not-allowed disabled:opacity-70">
+                {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                {editingId ? 'Update Blog' : 'Create Blog'}
+              </button>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="px-6 py-14 text-center text-sm text-lux-primary/65">Click <span className="font-bold text-lux-primary">New Blog</span> to open the form.</div>
+        )}
+      </motion.section>
+
+      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.05}}>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="font-headings text-2xl">Published Blogs</h3>
+            <p className="mt-2 text-sm text-lux-primary/65">Live content from the backend blog APIs.</p>
+          </div>
+          <button type="button" onClick={() => void loadBlogs()} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+            <LoaderCircle className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-sm text-lux-primary/70">
+            <LoaderCircle className="mr-3 h-5 w-5 animate-spin text-lux-accent" /> Loading blogs...
+          </div>
+        ) : blogs.length === 0 ? (
+          <div className="rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-center text-sm text-lux-primary/65">No blogs found yet.</div>
+        ) : (
+          <div className="grid gap-5 lg:grid-cols-3">
+            {blogs.map((blog) => (
+              <article key={blog.id} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+                {blog.image ? <img src={blog.image} alt={blog.title} className="h-48 w-full object-cover" /> : null}
+                <div className="space-y-4 p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-lux-accent">{blog.category || 'Blog'}</div>
+                      <h4 className="mt-2 font-headings text-xl">{blog.title}</h4>
+                    </div>
+                  </div>
+                  <p className="text-sm text-lux-primary/70">{blog.excerpt || 'No excerpt added.'}</p>
+                  <div className="text-xs text-lux-primary/50">{blog.author || 'North Paradise Team'} {blog.publishedAt ? `• ${new Date(blog.publishedAt).toLocaleDateString()}` : ''}</div>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => startEditing(blog)} className="inline-flex items-center gap-1 rounded-sm border border-lux-primary/15 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                      <Pencil className="h-3.5 w-3.5" /> Edit
+                    </button>
+                    <button type="button" onClick={() => void removeBlog(blog.id)} className="inline-flex items-center gap-1 rounded-sm border border-rose-200 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-50">
+                      <Trash2 className="h-3.5 w-3.5" /> Delete
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </motion.section>
+    </div>
+  );
+}
+
+function RentalVehicleManager() {
+  const [vehicles, setVehicles] = useState<RentalVehicle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [form, setForm] = useState<RentalVehicleFormState>(EMPTY_RENTAL_VEHICLE_FORM);
+
+  const loadVehicles = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const response = await fetch(getApiUrl('/api/rental-vehicles'), { credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to load rental vehicles.');
+        setVehicles([]);
+        return;
+      }
+      setVehicles((Array.isArray(data?.data) ? data.data.map(normalizeRentalVehicle).filter(Boolean) : []) as RentalVehicle[]);
+    } catch {
+      setError('Unable to fetch rental vehicles from the backend.');
+      setVehicles([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => { void loadVehicles(); }, []);
+
+  const updateField = (field: keyof RentalVehicleFormState, value: string | boolean) =>
+    setForm((current) => ({ ...current, [field]: value }));
+
+  const resetForm = () => {
+    setForm(EMPTY_RENTAL_VEHICLE_FORM);
+    setEditingId(null);
+    setSelectedImage(null);
+    setIsFormOpen(false);
+  };
+
+  const startEditing = (vehicle: RentalVehicle) => {
+    setForm(rentalVehicleToFormState(vehicle));
+    setEditingId(vehicle.id);
+    setSelectedImage(null);
+    setIsFormOpen(true);
+    setSuccessMessage('');
+    setError('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const submitVehicle = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSaving(true);
+    setError('');
+    setSuccessMessage('');
+    try {
+      const payload = new FormData();
+      payload.append('id', form.id.trim());
+      payload.append('name', form.name.trim());
+      payload.append('type', form.type.trim());
+      payload.append('price', form.price.trim());
+      payload.append('image', form.image.trim());
+      payload.append('description', form.description.trim());
+      payload.append('seats', form.seats.trim());
+      payload.append('transmission', form.transmission.trim());
+      payload.append('fuelType', form.fuelType.trim());
+      payload.append('withDriver', String(form.withDriver));
+      payload.append('features', JSON.stringify(linesToArray(form.features)));
+      payload.append('displayOrder', form.displayOrder.trim() || '0');
+      if (selectedImage) payload.set('image', selectedImage);
+
+      const isEditing = Boolean(editingId);
+      const response = await fetch(
+        getApiUrl(isEditing ? `/api/rental-vehicles/${editingId}` : '/api/rental-vehicles'),
+        { method: isEditing ? 'PUT' : 'POST', credentials: 'include', body: payload }
+      );
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to save rental vehicle.');
+        return;
+      }
+      setSuccessMessage(isEditing ? 'Rental vehicle updated successfully.' : 'Rental vehicle created successfully.');
+      resetForm();
+      await loadVehicles();
+    } catch {
+      setError('Unable to save rental vehicle right now.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const removeVehicle = async (vehicleId: string) => {
+    if (!window.confirm(`Delete rental vehicle "${vehicleId}"?`)) return;
+    setError('');
+    setSuccessMessage('');
+    try {
+      const response = await fetch(getApiUrl(`/api/rental-vehicles/${vehicleId}`), {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to delete rental vehicle.');
+        return;
+      }
+      setSuccessMessage('Rental vehicle deleted successfully.');
+      if (editingId === vehicleId) resetForm();
+      await loadVehicles();
+    } catch {
+      setError('Unable to delete rental vehicle right now.');
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-8">
+      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+        <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-lux-accent">Rental API</p>
+              <h3 className="mt-2 font-headings text-2xl">Rental Vehicle Manager</h3>
+              <p className="mt-2 text-sm text-lux-primary/65">Manage the cars and jeeps shown on the Car / Jeep Rent service page.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => { setForm(EMPTY_RENTAL_VEHICLE_FORM); setEditingId(null); setSelectedImage(null); setError(''); setSuccessMessage(''); setIsFormOpen(true); }}
+              className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent"
+            >
+              <Plus className="h-4 w-4" />
+              New Vehicle
+            </button>
+          </div>
+        </div>
+
+        {isFormOpen ? (
+          <form className="grid gap-5 p-6 lg:grid-cols-2" onSubmit={submitVehicle}>
+            <div className="flex items-center justify-between lg:col-span-2">
+              <div>
+                <h4 className="font-headings text-2xl">{editingId ? 'Edit Vehicle' : 'Create Vehicle'}</h4>
+                <p className="mt-2 text-sm text-lux-primary/65">Add your rental cars and jeeps from the admin panel.</p>
+              </div>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Close
+              </button>
+            </div>
+
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Vehicle ID</span><input value={form.id} onChange={(e) => updateField('id', e.target.value)} disabled={Boolean(editingId)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="toyota-prado" required /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Name</span><input value={form.name} onChange={(e) => updateField('name', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Toyota Prado" required /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Type</span><input value={form.type} onChange={(e) => updateField('type', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="4x4 Jeep / SUV / Sedan" /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Price</span><input value={form.price} onChange={(e) => updateField('price', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="PKR 18,000 / day" /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Seats</span><input value={form.seats} onChange={(e) => updateField('seats', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="7 Seats" /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Transmission</span><input value={form.transmission} onChange={(e) => updateField('transmission', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Automatic" /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Fuel Type</span><input value={form.fuelType} onChange={(e) => updateField('fuelType', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Diesel" /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Display Order</span><input type="number" value={form.displayOrder} onChange={(e) => updateField('displayOrder', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="0" /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Image URL</span><input value={form.image} onChange={(e) => updateField('image', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="https://..." /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Upload Image</span><input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm" /></label>
+            <label className="block lg:col-span-2"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Description</span><textarea value={form.description} onChange={(e) => updateField('description', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Describe this vehicle..." /></label>
+            <label className="block lg:col-span-2"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Features</span><textarea value={form.features} onChange={(e) => updateField('features', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="One feature per line" /></label>
+            <label className="flex items-center gap-3 lg:col-span-2"><input type="checkbox" checked={form.withDriver} onChange={(e) => updateField('withDriver', e.target.checked)} className="h-4 w-4" /><span className="text-sm text-lux-primary/70">Available with driver</span></label>
+
+            {(error || successMessage) ? (
+              <div className="lg:col-span-2">
+                {error ? <div className="flex items-start gap-3 rounded-sm border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"><AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" /><span>{error}</span></div> : null}
+                {successMessage ? <div className="mt-3 rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{successMessage}</div> : null}
+              </div>
+            ) : null}
+
+            <div className="flex flex-col gap-3 lg:col-span-2 sm:flex-row">
+              <button type="submit" disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-sm bg-lux-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-white transition hover:bg-lux-primary/90 disabled:cursor-not-allowed disabled:opacity-70">
+                {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                {editingId ? 'Update Vehicle' : 'Create Vehicle'}
+              </button>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="px-6 py-14 text-center text-sm text-lux-primary/65">Click <span className="font-bold text-lux-primary">New Vehicle</span> to open the form.</div>
+        )}
+      </motion.section>
+
+      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.05}}>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="font-headings text-2xl">Saved Rental Vehicles</h3>
+            <p className="mt-2 text-sm text-lux-primary/65">Live data for the Car / Jeep Rent service page.</p>
+          </div>
+          <button type="button" onClick={() => void loadVehicles()} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+            <LoaderCircle className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-sm text-lux-primary/70">
+            <LoaderCircle className="mr-3 h-5 w-5 animate-spin text-lux-accent" /> Loading rental vehicles...
+          </div>
+        ) : vehicles.length === 0 ? (
+          <div className="rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-center text-sm text-lux-primary/65">No rental vehicles found yet.</div>
+        ) : (
+          <div className="grid gap-5 lg:grid-cols-3">
+            {vehicles.map((vehicle) => (
+              <article key={vehicle.id} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+                {vehicle.image ? <img src={vehicle.image} alt={vehicle.name} className="h-48 w-full object-cover" /> : null}
+                <div className="space-y-4 p-5">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-lux-accent">{vehicle.type || 'Vehicle'}</div>
+                    <h4 className="mt-2 font-headings text-xl">{vehicle.name}</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm text-lux-primary/70">
+                    <div><span className="font-bold text-lux-primary">Price:</span> {vehicle.price || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Seats:</span> {vehicle.seats || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Transmission:</span> {vehicle.transmission || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Fuel:</span> {vehicle.fuelType || '—'}</div>
+                  </div>
+                  <p className="text-sm text-lux-primary/70">{vehicle.description || 'No description added.'}</p>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => startEditing(vehicle)} className="inline-flex items-center gap-1 rounded-sm border border-lux-primary/15 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                      <Pencil className="h-3.5 w-3.5" /> Edit
+                    </button>
+                    <button type="button" onClick={() => void removeVehicle(vehicle.id)} className="inline-flex items-center gap-1 rounded-sm border border-rose-200 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-50">
+                      <Trash2 className="h-3.5 w-3.5" /> Delete
+                    </button>
+                  </div>
                 </div>
               </article>
             ))}
@@ -2648,14 +3690,17 @@ function Dashboard({
           {activeTab === 'dashboard' ? <DashboardOverview /> : null}
           {activeTab === 'heroes' ? <HeroManager /> : null}
           {activeTab === 'destinations' ? <DestinationManager /> : null}
+          {activeTab === 'blogs' ? <BlogManager /> : null}
+          {activeTab === 'rental-vehicles' ? <RentalVehicleManager /> : null}
           {activeTab === 'packages' ? <TourPackageManager /> : null}
           {activeTab === 'tour-types' ? <TourTypeManager /> : null}
           {activeTab === 'featured-tours' ? <FeaturedManager /> : null}
           {activeTab === 'seasonal-tours' ? <SeasonalManager /> : null}
           {activeTab === 'testimonials' ? <TestimonialManager /> : null}
+          {activeTab === 'team' ? <TeamManager /> : null}
           {activeTab === 'promo-modal' ? <PromoModalManager /> : null}
           {activeTab === 'quotes' ? <Quotes /> : null}
-          {activeTab !== 'dashboard' && activeTab !== 'heroes' && activeTab !== 'destinations' && activeTab !== 'packages' && activeTab !== 'tour-types' && activeTab !== 'featured-tours' && activeTab !== 'seasonal-tours' && activeTab !== 'testimonials' && activeTab !== 'promo-modal' && activeTab !== 'quotes' ? (
+          {activeTab !== 'dashboard' && activeTab !== 'heroes' && activeTab !== 'destinations' && activeTab !== 'blogs' && activeTab !== 'rental-vehicles' && activeTab !== 'packages' && activeTab !== 'tour-types' && activeTab !== 'featured-tours' && activeTab !== 'seasonal-tours' && activeTab !== 'testimonials' && activeTab !== 'team' && activeTab !== 'promo-modal' && activeTab !== 'quotes' ? (
             <div className="mx-auto max-w-5xl rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-center shadow-sm">
               <h3 className="font-headings text-3xl">{getPageTitle()}</h3>
               <p className="mt-4 text-sm text-lux-primary/65">
