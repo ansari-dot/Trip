@@ -14,7 +14,6 @@ import {
   MapPin,
   Menu,
   MessageSquare,
-  MoreHorizontal,
   Package,
   Pencil,
   Plus,
@@ -24,8 +23,6 @@ import {
   Star,
   Tags,
   Trash2,
-  TrendingDown,
-  TrendingUp,
   Users,
   UserRound,
   X,
@@ -33,35 +30,20 @@ import {
 import Quotes from './pages/Quotes';
 
 const SIDEBAR_ITEMS = [
-  {id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard},
-  {id: 'heroes', label: 'Hero Slides', icon: ArrowUpRight},
-  {id: 'destinations', label: 'Destinations', icon: MapPin},
-  {id: 'blogs', label: 'Blogs', icon: BookOpen},
-  {id: 'rental-vehicles', label: 'Rental Vehicles', icon: Car},
-  {id: 'packages', label: 'Tour Packages', icon: Package},
-  {id: 'tour-types', label: 'Tour Types', icon: Tags},
-  {id: 'featured-tours', label: 'Featured Tours', icon: Star},
-  {id: 'seasonal-tours', label: 'Seasonal Selection', icon: Snowflake},
-  {id: 'testimonials', label: 'Testimonials', icon: Users},
-  {id: 'team', label: 'Team Members', icon: Briefcase},
-  {id: 'promo-modal', label: 'Promo Modal', icon: AlertCircle},
-  {id: 'quotes', label: 'Quote Requests', icon: MessageSquare},
-  {id: 'settings', label: 'Settings', icon: Settings},
-];
-
-const STATS = [
-  {label: 'Total Revenue', value: 'Rs 845,200', change: '+12.5%', isUp: true},
-  {label: 'Active Packages', value: '14', change: '+2.0%', isUp: true},
-  {label: 'New Guests', value: '28', change: '-2.1%', isUp: false},
-  {label: 'Avg. Package Cost', value: 'Rs 5,950', change: '+8.4%', isUp: true},
-];
-
-const RECENT_PACKAGES = [
-  {id: 'PKG-001', name: 'Swiss Alpine Explorer', location: 'Switzerland', duration: '6 Days / 5 Nights', status: 'Active'},
-  {id: 'PKG-002', name: 'Austrian Majesty', location: 'Austria', duration: '8 Days / 7 Nights', status: 'Draft'},
-  {id: 'PKG-003', name: 'Classic European Tour', location: 'Europe', duration: '12 Days / 11 Nights', status: 'Active'},
-  {id: 'PKG-004', name: 'Italian Romance', location: 'Italy', duration: '7 Days / 6 Nights', status: 'Active'},
-  {id: 'PKG-005', name: 'Scottish Highlands', location: 'Scotland', duration: '7 Days / 6 Nights', status: 'Draft'},
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { id: 'heroes', label: 'Hero Slides', icon: ArrowUpRight },
+  { id: 'destinations', label: 'Destinations', icon: MapPin },
+  { id: 'blogs', label: 'Blogs', icon: BookOpen },
+  { id: 'rental-vehicles', label: 'Rental Vehicles', icon: Car },
+  { id: 'packages', label: 'Tour Packages', icon: Package },
+  { id: 'tour-types', label: 'Tour Types', icon: Tags },
+  { id: 'featured-tours', label: 'Featured Tours', icon: Star },
+  { id: 'seasonal-tours', label: 'Seasonal Selection', icon: Snowflake },
+  { id: 'testimonials', label: 'Testimonials', icon: Users },
+  { id: 'team', label: 'Team Members', icon: Briefcase },
+  { id: 'promo-modal', label: 'Promo Modal', icon: AlertCircle },
+  { id: 'quotes', label: 'Quote Requests', icon: MessageSquare },
+  { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
 const API_BASE = (
@@ -234,18 +216,18 @@ function getValidatedAdmin(data: unknown): AdminUser | null {
     return null;
   }
 
-  const admin = (data as {admin?: unknown}).admin;
+  const admin = (data as { admin?: unknown }).admin;
   if (!admin || typeof admin !== 'object') {
     return null;
   }
 
-  const email = (admin as {email?: unknown}).email;
+  const email = (admin as { email?: unknown }).email;
   if (typeof email !== 'string' || !email.trim()) {
     return null;
   }
 
-  const name = (admin as {name?: unknown}).name;
-  const id = (admin as {_id?: unknown})._id;
+  const name = (admin as { name?: unknown }).name;
+  const id = (admin as { _id?: unknown })._id;
 
   return {
     _id: typeof id === 'string' ? id : undefined,
@@ -340,9 +322,9 @@ function LoginPage({
       <div className="admin-login__shell">
         <div className="admin-login__grid">
           <motion.section
-            initial={{opacity: 0, y: 24}}
-            animate={{opacity: 1, y: 0}}
-            transition={{delay: 0.08}}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
             className="admin-login__panel admin-login__panel--form"
           >
             <div className="admin-login__form-head">
@@ -403,87 +385,222 @@ function LoginPage({
 }
 
 function DashboardOverview() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [stats, setStats] = useState([
+    { label: 'Destinations', value: '0', helper: 'Published travel places', icon: MapPin },
+    { label: 'Tour Packages', value: '0', helper: 'Available package entries', icon: Package },
+    { label: 'Blog Posts', value: '0', helper: 'SEO content articles', icon: BookOpen },
+    { label: 'Rental Vehicles', value: '0', helper: 'Cars and jeeps in fleet', icon: Car },
+  ]);
+  const [moduleSummary, setModuleSummary] = useState<{ label: string; count: string; note: string }[]>([]);
+
+  useEffect(() => {
+    const loadDashboardOverview = async () => {
+      setIsLoading(true);
+      setError('');
+
+      try {
+        const [
+          destinationsResponse,
+          packagesResponse,
+          blogsResponse,
+          rentalsResponse,
+          heroesResponse,
+          teamResponse,
+          testimonialsResponse,
+          quotesResponse,
+        ] = await Promise.all([
+          fetch(getApiUrl('/api/destinations?page=1'), { credentials: 'include' }),
+          fetch(getApiUrl('/api/tour-packages?page=1'), { credentials: 'include' }),
+          fetch(getApiUrl('/api/blogs?page=1'), { credentials: 'include' }),
+          fetch(getApiUrl('/api/rental-vehicles'), { credentials: 'include' }),
+          fetch(getApiUrl('/api/heroes'), { credentials: 'include' }),
+          fetch(getApiUrl('/api/team-members'), { credentials: 'include' }),
+          fetch(getApiUrl('/api/testimonials'), { credentials: 'include' }),
+          fetch(getApiUrl('/api/quotes'), { credentials: 'include' }),
+        ]);
+
+        const [
+          destinationsData,
+          packagesData,
+          blogsData,
+          rentalsData,
+          heroesData,
+          teamData,
+          testimonialsData,
+          quotesData,
+        ] = await Promise.all([
+          parseJsonSafely(destinationsResponse),
+          parseJsonSafely(packagesResponse),
+          parseJsonSafely(blogsResponse),
+          parseJsonSafely(rentalsResponse),
+          parseJsonSafely(heroesResponse),
+          parseJsonSafely(teamResponse),
+          parseJsonSafely(testimonialsResponse),
+          parseJsonSafely(quotesResponse),
+        ]);
+
+        const destinationsCount = Number(destinationsData?.totalItems ?? destinationsData?.count ?? 0);
+        const packagesCount = Number(packagesData?.totalItems ?? packagesData?.count ?? 0);
+        const blogsCount = Number(blogsData?.totalItems ?? blogsData?.count ?? 0);
+        const rentalsCount = Number(rentalsData?.count ?? 0);
+        const heroesCount = Number(heroesData?.count ?? 0);
+        const teamCount = Number(teamData?.count ?? 0);
+        const testimonialsCount = Number(testimonialsData?.count ?? 0);
+        const quotesCount = Number(quotesData?.count ?? 0);
+
+        setStats([
+          { label: 'Destinations', value: String(destinationsCount), helper: 'Published travel places', icon: MapPin },
+          { label: 'Tour Packages', value: String(packagesCount), helper: 'Available package entries', icon: Package },
+          { label: 'Blog Posts', value: String(blogsCount), helper: 'SEO content articles', icon: BookOpen },
+          { label: 'Rental Vehicles', value: String(rentalsCount), helper: 'Cars and jeeps in fleet', icon: Car },
+        ]);
+
+        setModuleSummary([
+          { label: 'Hero Slides', count: String(heroesCount), note: 'Homepage visual slides' },
+          { label: 'Team Members', count: String(teamCount), note: 'About page profiles' },
+          { label: 'Testimonials', count: String(testimonialsCount), note: 'Social proof content' },
+          { label: 'Quote Requests', count: String(quotesCount), note: 'Contact leads received' },
+        ]);
+      } catch {
+        setError('Unable to load dashboard data right now.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadDashboardOverview();
+  }, []);
+
   return (
     <div className="mx-auto max-w-7xl space-y-8">
       <motion.div
-        initial={{opacity: 0, y: 10}}
-        animate={{opacity: 1, y: 0}}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
         className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
       >
-        {STATS.map((stat) => (
-          <div key={stat.label} className="group relative overflow-hidden border border-lux-primary/10 bg-white p-5 shadow-sm lg:p-6">
-            <div className="absolute right-0 top-0 -z-10 h-24 w-24 rounded-bl-full bg-lux-bg transition-transform duration-500 group-hover:scale-110" />
-            <p className="mb-2 text-[10px] uppercase tracking-widest text-lux-primary/60 sm:text-xs">{stat.label}</p>
-            <div className="flex items-end gap-3 lg:gap-4">
-              <h3 className="font-headings text-2xl lg:text-3xl">{stat.value}</h3>
-              <div className={`mb-1 flex items-center gap-1 text-[10px] font-medium lg:text-xs ${stat.isUp ? 'text-emerald-600' : 'text-rose-600'}`}>
-                {stat.isUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                {stat.change}
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div key={stat.label} className="group relative overflow-hidden border border-lux-primary/10 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-lux-accent/30 lg:p-6 rounded-lg">
+              <div className="absolute right-0 top-0 -z-10 h-24 w-24 rounded-bl-full bg-lux-bg transition-transform duration-500 group-hover:scale-110" />
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="mb-2 text-[10px] uppercase tracking-widest text-lux-primary/60 sm:text-xs">{stat.label}</p>
+                  <h3 className="font-headings text-3xl lg:text-4xl font-bold text-lux-primary">{stat.value}</h3>
+                </div>
+                <div className="rounded-lg bg-lux-accent/10 p-3 text-lux-accent transition-colors group-hover:bg-lux-accent/20">
+                  <Icon className="h-6 w-6" />
+                </div>
               </div>
+              <p className="mt-4 text-xs text-lux-primary/55">{stat.helper}</p>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </motion.div>
 
-      <motion.div initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.1}}>
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="flex items-center gap-3 font-headings text-xl lg:text-2xl">
-            <span className="hidden h-px w-6 bg-lux-accent sm:block" />
-            Recent Tour Packages
-          </h3>
-          <button className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-lux-accent transition-colors hover:text-lux-primary lg:text-xs">
-            View All <ArrowUpRight className="h-4 w-4" />
-          </button>
-        </div>
-
-        <div className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[800px] border-collapse text-left">
-              <thead>
-                <tr className="border-b border-lux-primary/10 bg-lux-bg text-[10px] uppercase tracking-widest text-lux-primary/60">
-                  <th className="px-6 py-4 font-medium">Package & ID</th>
-                  <th className="px-6 py-4 font-medium">Destination</th>
-                  <th className="px-6 py-4 font-medium">Duration</th>
-                  <th className="px-6 py-4 font-medium">Status</th>
-                  <th className="px-6 py-4 text-right font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm">
-                {RECENT_PACKAGES.map((pkg, index) => (
-                  <tr key={pkg.id} className={`transition-colors hover:bg-lux-bg/50 ${index === RECENT_PACKAGES.length - 1 ? '' : 'border-b border-lux-primary/5'}`}>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <Package className="h-4 w-4 text-lux-accent/70" />
-                        <div>
-                          <div className="font-bold">{pkg.name}</div>
-                          <div className="mt-0.5 font-mono text-[10px] text-lux-primary/50">{pkg.id}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-lux-primary/70">{pkg.location}</td>
-                    <td className="px-6 py-4">
-                      <div className="font-medium">{pkg.duration}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center rounded-sm px-2 py-1 text-[10px] font-bold uppercase tracking-widest ${
-                        pkg.status === 'Active'
-                          ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20'
-                          : 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20'
-                      }`}>
-                        {pkg.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="p-2 text-lux-primary/40 transition-colors hover:text-lux-primary">
-                        <MoreHorizontal className="h-5 w-5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-10">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="flex items-center gap-4 font-headings text-2xl lg:text-3xl">
+              <span className="hidden h-px w-8 bg-gradient-to-r from-lux-accent to-transparent sm:block" />
+              Content Overview
+            </h3>
+            <p className="mt-2 text-sm text-lux-primary/50 ml-12">Real-time statistics from your backend</p>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-lux-accent/5 border border-lux-accent/20">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lux-accent opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-lux-accent"></span>
+            </span>
+            <span className="text-xs font-bold uppercase tracking-widest text-lux-accent">Live Data</span>
+            <ArrowUpRight className="h-4 w-4 text-lux-accent" />
           </div>
         </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center px-6 py-20 text-sm text-lux-primary/70 border border-lux-primary/10 bg-white rounded-xl shadow-sm">
+            <LoaderCircle className="mr-3 h-5 w-5 animate-spin text-lux-accent" />
+            Loading dashboard content...
+          </div>
+        ) : error ? (
+          <div className="px-6 py-20 text-center text-sm text-rose-700 border border-rose-200 bg-rose-50 rounded-xl">{error}</div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {moduleSummary.map((item, idx) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.08 }}
+                className="group relative overflow-hidden border border-lux-primary/10 bg-white p-8 shadow-sm hover:shadow-xl hover:border-lux-accent/30 transition-all duration-500 rounded-xl"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-lux-accent/5 to-transparent rounded-bl-full transform translate-x-8 -translate-y-8 group-hover:scale-150 transition-transform duration-700" />
+                <div className="relative">
+                  <p className="text-xs font-bold uppercase tracking-[0.24em] text-lux-primary/50 mb-4">{item.label}</p>
+                  <div className="font-headings text-5xl font-bold text-lux-primary mb-3">{item.count}</div>
+                  <p className="text-sm text-lux-primary/60 leading-relaxed">{item.note}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {!isLoading && !error ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="grid grid-cols-1 gap-8 lg:grid-cols-2"
+          >
+            <div className="group relative overflow-hidden border border-lux-primary/10 bg-gradient-to-br from-white via-lux-bg/20 to-lux-bg/40 p-8 shadow-sm hover:shadow-xl transition-all duration-500 rounded-xl">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-lux-accent/10 to-transparent rounded-bl-full transform translate-x-12 -translate-y-12 group-hover:scale-125 transition-transform duration-700" />
+              <div className="relative">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="rounded-xl bg-lux-accent/10 p-4 shadow-inner">
+                    <LayoutDashboard className="h-6 w-6 text-lux-accent" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.24em] text-lux-accent">Dashboard</p>
+                    <h4 className="mt-1 font-headings text-xl">Real-time Overview</h4>
+                  </div>
+                </div>
+                <p className="text-sm leading-relaxed text-lux-primary/60">
+                  This dashboard displays live data from your backend APIs. All statistics update in real-time as you manage your content across destinations, tours, blogs, and more.
+                </p>
+              </div>
+            </div>
+            <div className="group relative overflow-hidden border border-lux-primary/10 bg-gradient-to-br from-white via-lux-bg/20 to-lux-bg/40 p-8 shadow-sm hover:shadow-xl transition-all duration-500 rounded-xl">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-lux-accent/10 to-transparent rounded-bl-full transform translate-x-12 -translate-y-12 group-hover:scale-125 transition-transform duration-700" />
+              <div className="relative">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="rounded-xl bg-lux-accent/10 p-4 shadow-inner">
+                    <Briefcase className="h-6 w-6 text-lux-accent" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.24em] text-lux-accent">Top Modules</p>
+                    <h4 className="mt-1 font-headings text-xl">Most Managed Areas</h4>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  {stats.map((stat) => {
+                    const Icon = stat.icon;
+                    return (
+                      <div key={stat.label} className="flex items-center justify-between py-3 border-b border-lux-primary/5 last:border-0 hover:border-lux-accent/20 transition-colors">
+                        <span className="text-lux-primary/70 flex items-center gap-3 text-sm">
+                          <Icon className="h-5 w-5 text-lux-accent/60" />
+                          {stat.label}
+                        </span>
+                        <span className="font-bold text-lux-primary bg-gradient-to-r from-lux-accent/10 to-lux-accent/5 px-4 py-1.5 rounded-full text-sm border border-lux-accent/10">{stat.value}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ) : null}
       </motion.div>
     </div>
   );
@@ -850,7 +967,7 @@ function HeroManager() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
@@ -925,7 +1042,7 @@ function HeroManager() {
         )}
       </motion.section>
 
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.05}}>
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h3 className="font-headings text-2xl">Saved Hero Slides</h3>
@@ -1067,7 +1184,7 @@ function PromoModalManager() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
           <div>
             <h3 className="font-headings text-2xl">Promo Modal Settings</h3>
@@ -1222,7 +1339,7 @@ function TestimonialManager() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
@@ -1311,7 +1428,7 @@ function TestimonialManager() {
         )}
       </motion.section>
 
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.05}}>
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h3 className="font-headings text-2xl">Saved Testimonials</h3>
@@ -1481,7 +1598,7 @@ function TeamManager() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
@@ -1580,7 +1697,7 @@ function TeamManager() {
         )}
       </motion.section>
 
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.05}}>
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h3 className="font-headings text-2xl">Saved Team Members</h3>
@@ -1784,7 +1901,7 @@ function BlogManager() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
@@ -1904,7 +2021,7 @@ function BlogManager() {
         )}
       </motion.section>
 
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.05}}>
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h3 className="font-headings text-2xl">Published Blogs</h3>
@@ -2071,7 +2188,7 @@ function RentalVehicleManager() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
@@ -2138,7 +2255,7 @@ function RentalVehicleManager() {
         )}
       </motion.section>
 
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.05}}>
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h3 className="font-headings text-2xl">Saved Rental Vehicles</h3>
@@ -2204,10 +2321,10 @@ function FeaturedManager() {
       const response = await fetch(getApiUrl('/api/tour-packages?page=1'), { credentials: 'include' });
       const data = await parseJsonSafely(response);
       if (!response.ok) { setError(data?.message || 'Failed to load tour packages.'); setTours([]); return; }
-      
+
       const totalPages = data.totalPages || 1;
       let allTours = Array.isArray(data?.data) ? data.data : [];
-      
+
       if (totalPages > 1) {
         for (let i = 2; i <= totalPages; i++) {
           const res = await fetch(getApiUrl(`/api/tour-packages?page=${i}`), { credentials: 'include' });
@@ -2249,11 +2366,11 @@ function FeaturedManager() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-6">
           <h3 className="font-headings text-2xl">Landing Page Display</h3>
           <p className="mt-2 text-sm text-lux-primary/65">
-            Select which tour packages should be displayed in the "Popular Tours" section on your homepage. 
+            Select which tour packages should be displayed in the "Popular Tours" section on your homepage.
             Click the star icon to toggle.
           </p>
         </div>
@@ -2321,10 +2438,10 @@ function SeasonalManager() {
       const response = await fetch(getApiUrl('/api/tour-packages?page=1'), { credentials: 'include' });
       const data = await parseJsonSafely(response);
       if (!response.ok) { setError(data?.message || 'Failed to load tour packages.'); setTours([]); return; }
-      
+
       const totalPages = data.totalPages || 1;
       let allTours = Array.isArray(data?.data) ? data.data : [];
-      
+
       if (totalPages > 1) {
         for (let i = 2; i <= totalPages; i++) {
           const res = await fetch(getApiUrl(`/api/tour-packages?page=${i}`), { credentials: 'include' });
@@ -2365,7 +2482,7 @@ function SeasonalManager() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-6">
           <h3 className="font-headings text-2xl">Seasonal Packages Selection</h3>
           <p className="mt-2 text-sm text-lux-primary/65">
@@ -2496,7 +2613,7 @@ function TourTypeManager() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-6">
           <h3 className="font-headings text-2xl">Manage Tour Types</h3>
           <p className="mt-2 text-sm text-lux-primary/65">Define categories for your tour packages.</p>
@@ -2521,7 +2638,7 @@ function TourTypeManager() {
         </form>
       </motion.section>
 
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.1}}>
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
         <div className="grid gap-3">
           {isLoading ? (
             <div className="py-10 text-center text-sm text-lux-primary/50">Loading...</div>
@@ -2585,7 +2702,7 @@ function TourPackageManager() {
     } catch { /* silent */ }
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     void loadTours();
     void loadTourTypes();
   }, []);
@@ -2630,7 +2747,7 @@ function TourPackageManager() {
       payload.append('gallery', form.gallery.trim());
       try { payload.append('itinerary', JSON.stringify(JSON.parse(form.itinerary || '[]'))); } catch { payload.append('itinerary', '[]'); }
       try { payload.append('tourPackages', JSON.stringify(JSON.parse(form.tourPackages || '[]'))); } catch { payload.append('tourPackages', '[]'); }
-      
+
       if (selectedImage) payload.set('image', selectedImage);
       if (selectedGallery.length > 0) {
         selectedGallery.forEach(file => payload.append('gallery', file));
@@ -2671,7 +2788,7 @@ function TourPackageManager() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
@@ -2726,9 +2843,9 @@ function TourPackageManager() {
 
             <label className="block">
               <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Type</span>
-              <select 
-                value={form.type} 
-                onChange={(e) => updateField('type', e.target.value)} 
+              <select
+                value={form.type}
+                onChange={(e) => updateField('type', e.target.value)}
                 className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent appearance-none"
                 required
               >
@@ -2751,12 +2868,12 @@ function TourPackageManager() {
 
             <label className="block lg:col-span-2">
               <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Upload Gallery Images</span>
-              <input 
-                type="file" 
-                multiple 
-                accept="image/png,image/jpeg,image/jpg,image/webp" 
-                onChange={(e) => setSelectedGallery(Array.from(e.target.files || []))} 
-                className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm" 
+              <input
+                type="file"
+                multiple
+                accept="image/png,image/jpeg,image/jpg,image/webp"
+                onChange={(e) => setSelectedGallery(Array.from(e.target.files || []))}
+                className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm"
               />
               <p className="mt-1 text-[10px] text-lux-primary/40 italic">Select multiple images to add to the gallery.</p>
             </label>
@@ -2845,7 +2962,7 @@ function TourPackageManager() {
         )}
       </motion.section>
 
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.05}}>
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h3 className="font-headings text-2xl">Saved Tour Packages</h3>
@@ -2999,7 +3116,7 @@ function DestinationManager() {
     setIsFormOpen(true);
     setSuccessMessage('');
     setError('');
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const submitDestination = async (event: FormEvent<HTMLFormElement>) => {
@@ -3092,7 +3209,7 @@ function DestinationManager() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
         <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
@@ -3339,7 +3456,7 @@ function DestinationManager() {
         )}
       </motion.section>
 
-      <motion.section initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: 0.05}}>
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h3 className="font-headings text-2xl">Saved Destinations</h3>
@@ -3479,7 +3596,7 @@ function Dashboard({
       const res = await fetch(getApiUrl('/api/notifications'), { credentials: 'include' });
       const data = await res.json();
       if (res.ok) setNotifications(data.data || []);
-      
+
       const countRes = await fetch(getApiUrl('/api/notifications/unread-count'), { credentials: 'include' });
       const countData = await countRes.json();
       if (countRes.ok) setUnreadCount(countData.count || 0);
@@ -3548,7 +3665,7 @@ function Dashboard({
           </button>
         </div>
 
-        <nav className="mt-6 flex flex-1 flex-col gap-2 px-4">
+        <nav className="mt-6 flex flex-1 flex-col gap-2 overflow-y-auto px-4 scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-transparent hover:scrollbar-thumb-white/50">
           {SIDEBAR_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -3560,11 +3677,10 @@ function Dashboard({
                   setActiveTab(item.id);
                   setIsMobileMenuOpen(false);
                 }}
-                className={`flex w-full items-center gap-4 rounded-sm border-l-2 px-4 py-3 text-left text-xs font-bold uppercase tracking-widest transition-all duration-300 ${
-                  isActive
+                className={`flex w-full items-center gap-4 rounded-sm border-l-2 px-4 py-3 text-left text-xs font-bold uppercase tracking-widest transition-all duration-300 ${isActive
                     ? 'border-lux-accent bg-white/10 text-lux-accent'
                     : 'border-transparent text-white/60 hover:bg-white/5 hover:text-white'
-                }`}
+                  }`}
               >
                 <Icon className="h-4 w-4" />
                 {item.label}
@@ -3604,7 +3720,7 @@ function Dashboard({
               />
             </div>
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setIsNotifOpen(!isNotifOpen)}
                 className="relative p-2 text-lux-primary/60 transition-colors hover:text-lux-primary"
               >
@@ -3623,7 +3739,7 @@ function Dashboard({
                     <div className="flex items-center justify-between border-b border-lux-primary/5 bg-lux-bg/50 px-4 py-3">
                       <h4 className="text-xs font-bold uppercase tracking-widest">Notifications</h4>
                       {unreadCount > 0 && (
-                        <button 
+                        <button
                           onClick={markAllAsRead}
                           className="text-[10px] font-bold text-lux-accent hover:underline"
                         >
@@ -3638,8 +3754,8 @@ function Dashboard({
                         </div>
                       ) : (
                         notifications.map((notif) => (
-                          <div 
-                            key={notif._id} 
+                          <div
+                            key={notif._id}
                             onClick={() => {
                               if (!notif.isRead) markAsRead(notif._id);
                               if (notif.link) {
@@ -3662,7 +3778,7 @@ function Dashboard({
                       )}
                     </div>
                     {notifications.length > 0 && (
-                      <button 
+                      <button
                         onClick={() => { setActiveTab('dashboard'); setIsNotifOpen(false); }}
                         className="w-full border-t border-lux-primary/5 bg-white py-3 text-center text-[10px] font-bold uppercase tracking-widest text-lux-primary/60 hover:text-lux-accent"
                       >
@@ -3765,7 +3881,7 @@ export default function App() {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({email, password}),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await parseJsonSafely(response);
