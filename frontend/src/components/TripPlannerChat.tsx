@@ -177,8 +177,7 @@ export default function TripPlannerChat() {
   }, [messages, actions, flowStep, open, aiLoading]);
 
   const startCustomTrip = (prefillDest = "") => {
-    setFlowStep("custom_field");
-    setCustomStepIndex(0);
+    setFlowStep("custom_form" as any);
     setCustomForm({
       ...EMPTY_QUOTE,
       destination: prefillDest || selectedPlace || customForm.destination,
@@ -186,12 +185,6 @@ export default function TripPlannerChat() {
         ? `Custom Trip — ${selectedType}${selectedPlace ? ` — ${selectedPlace}` : ""}`
         : EMPTY_QUOTE.serviceType,
     });
-    const field = CUSTOM_STEPS[0];
-    appendAssistant(
-      `Let's build your custom trip. Answer a few questions (same as our quote form).\n\n${field.label}${field.required ? " *" : ""}:`
-    );
-    setActions([]);
-    setStepInput("");
   };
 
   const showTourTypes = () => {
@@ -302,34 +295,7 @@ export default function TripPlannerChat() {
     );
   };
 
-  const advanceCustomField = (value: string) => {
-    const step = CUSTOM_STEPS[customStepIndex];
-    const nextForm = { ...customForm, [step.key]: value };
-    setCustomForm(nextForm);
-    appendUser(value);
 
-    const nextIndex = customStepIndex + 1;
-    if (nextIndex >= CUSTOM_STEPS.length) {
-      setFlowStep("custom_review");
-      setCustomForm(nextForm);
-      appendAssistant(
-        `Please review your trip request:\n\n• Name: ${nextForm.name}\n• Email: ${nextForm.email}\n• WhatsApp: ${nextForm.whatsappNumber}\n• Destination: ${nextForm.destination || "—"}\n• Dates: ${nextForm.travelDates || "—"}\n• Days: ${nextForm.numberOfDays || "—"}\n• Travelers: ${nextForm.travelers || "—"}\n• Notes: ${nextForm.message || "—"}`,
-        [
-          { id: "send_quote", label: "Send quote to admin" },
-          { id: "edit_custom", label: "Edit answers" },
-          { id: "menu", label: "Start over" },
-        ]
-      );
-      setStepInput("");
-      return;
-    }
-
-    setCustomStepIndex(nextIndex);
-    const next = CUSTOM_STEPS[nextIndex];
-    appendAssistant(`${next.label}${next.required ? " *" : ""}:`);
-    setActions([]);
-    setStepInput("");
-  };
 
   const submitQuote = async () => {
     setQuoteSending(true);
@@ -403,13 +369,7 @@ export default function TripPlannerChat() {
       void submitQuote();
       return;
     }
-    if (actionId === "edit_custom") {
-      setCustomStepIndex(0);
-      setFlowStep("custom_field");
-      appendAssistant(`Let's update your answers.\n\n${CUSTOM_STEPS[0].label} *:`);
-      setStepInput(customForm[CUSTOM_STEPS[0].key]);
-      return;
-    }
+
     if (actionId.startsWith("type_")) {
       const typeName = actionId.replace(/^type_/, "");
       appendUser(`${typeName} tours`);
@@ -425,14 +385,7 @@ export default function TripPlannerChat() {
     }
   };
 
-  const submitStepInput = () => {
-    const val = stepInput.trim();
-    if (flowStep === "custom_field") {
-      const step = CUSTOM_STEPS[customStepIndex];
-      if (step.required && !val) return;
-      advanceCustomField(val);
-    }
-  };
+
 
   const toggleRecording = () => {
     if (isRecording) {
@@ -533,9 +486,7 @@ export default function TripPlannerChat() {
     }
   };
 
-  const inCustomStep = flowStep === "custom_field";
-  const inReview = flowStep === "custom_review";
-  const showMainInput = !inCustomStep && !inReview;
+  const showMainInput = flowStep !== ("custom_form" as any);
 
   return (
     <>
@@ -632,53 +583,59 @@ export default function TripPlannerChat() {
               </p>
             )}
 
-            {inCustomStep && (
-              <div className="shrink-0 border-t border-gray-200 bg-white p-4 space-y-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-500">
-                  Step {customStepIndex + 1} of {CUSTOM_STEPS.length}
-                </p>
-                <div className="flex flex-col gap-2">
-                  {CUSTOM_STEPS[customStepIndex].type === "textarea" ? (
-                    <textarea
-                      value={stepInput}
-                      onChange={(e) => setStepInput(e.target.value)}
-                      placeholder={CUSTOM_STEPS[customStepIndex].placeholder}
-                      rows={3}
-                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm resize-none focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
-                    />
-                  ) : (
-                    <input
-                      value={stepInput}
-                      onChange={(e) => setStepInput(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), submitStepInput())}
-                      type={
-                        CUSTOM_STEPS[customStepIndex].type === "email"
-                          ? "email"
-                          : CUSTOM_STEPS[customStepIndex].type === "tel"
-                            ? "tel"
-                            : CUSTOM_STEPS[customStepIndex].type === "number"
-                              ? "number"
-                              : "text"
-                      }
-                      placeholder={CUSTOM_STEPS[customStepIndex].placeholder}
-                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm min-w-0 focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
-                    />
-                  )}
-                  <button
-                    type="button"
-                    onClick={submitStepInput}
-                    className="rounded-xl bg-gray-900 text-white px-4 py-3 text-sm font-medium hover:bg-gray-800 transition-colors"
-                  >
-                    {customStepIndex >= CUSTOM_STEPS.length - 1 ? "Review trip" : "Continue"}
+            {flowStep === ("custom_form" as any) && (
+              <div className="absolute inset-0 z-20 flex flex-col bg-gray-50 animate-in slide-in-from-bottom-4">
+                <header className="shrink-0 border-b border-gray-200 bg-white px-5 py-4 flex items-center justify-between shadow-sm">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Custom Trip Request</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Tell us what you're looking for.</p>
+                  </div>
+                  <button onClick={() => setFlowStep("menu")} className="text-gray-400 hover:text-gray-600 transition-colors bg-gray-100 hover:bg-gray-200 p-2 rounded-full">
+                    <X className="h-5 w-5" strokeWidth={2} />
                   </button>
+                </header>
+                <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                  {CUSTOM_STEPS.map((step) => (
+                    <div key={step.key} className="space-y-1.5">
+                      <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                        {step.label} {step.required && <span className="text-red-500">*</span>}
+                      </label>
+                      {step.type === "textarea" ? (
+                        <textarea
+                          value={customForm[step.key]}
+                          onChange={(e) => setCustomForm({ ...customForm, [step.key]: e.target.value })}
+                          placeholder={step.placeholder}
+                          rows={3}
+                          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm resize-none focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-shadow"
+                        />
+                      ) : (
+                        <input
+                          value={customForm[step.key]}
+                          onChange={(e) => setCustomForm({ ...customForm, [step.key]: e.target.value })}
+                          type={step.type || "text"}
+                          placeholder={step.placeholder}
+                          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-shadow"
+                        />
+                      )}
+                    </div>
+                  ))}
+                  <div className="pt-2 pb-6">
+                    <button
+                      onClick={() => {
+                        if (!customForm.name || !customForm.email || !customForm.whatsappNumber) {
+                          setError("Please fill in required fields (Name, Email, WhatsApp).");
+                          return;
+                        }
+                        void submitQuote();
+                      }}
+                      disabled={quoteSending}
+                      className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white rounded-xl py-3.5 text-sm font-semibold hover:bg-gray-800 disabled:opacity-70 transition-all shadow-md active:scale-[0.98]"
+                    >
+                      {quoteSending ? <LoaderCircle className="h-5 w-5 animate-spin" /> : "Send Request"}
+                    </button>
+                  </div>
                 </div>
               </div>
-            )}
-
-            {inReview && quoteSending && (
-              <p className="px-3 pb-2 text-xs text-gray-500 shrink-0 flex items-center gap-2">
-                <LoaderCircle className="h-3 w-3 animate-spin" /> Sending quote…
-              </p>
             )}
 
             {showMainInput && (
