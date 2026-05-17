@@ -1,13 +1,9 @@
 import { Link, useSearchParams } from "react-router-dom";
+import { getApiUrl, parseJsonSafely, API_BASE } from "../lib/api";
 import { ChevronLeft, Send, LoaderCircle, MapPin, Calendar, Users, Phone, Mail, User, Compass, Clock } from "lucide-react";
 import logo from "../assets/logo.png";
 import { useEffect, useState } from "react";
 import SEO from "../components/SEO";
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
 
 export default function RequestQuote() {
   const [searchParams] = useSearchParams();
@@ -55,7 +51,7 @@ export default function RequestQuote() {
     setSuccessMessage("");
 
     try {
-      const response = await fetch(`${API_BASE}/api/quotes`, {
+      const response = await fetch(getApiUrl("/api/quotes"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

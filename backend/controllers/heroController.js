@@ -1,9 +1,5 @@
 import Hero from "../models/Hero.js";
-
-const buildImageUrl = (req, fileName) => {
-  if (!fileName) return "";
-  return `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
-};
+import { buildUploadUrl } from "../utils/publicUrl.js";
 
 export const createHero = async (req, res) => {
   try {
@@ -15,7 +11,7 @@ export const createHero = async (req, res) => {
       heading,
       subheading,
       description,
-      backgroundImage: req.file ? buildImageUrl(req, req.file.filename) : backgroundImage,
+      backgroundImage: req.file ? buildUploadUrl(req, req.file.filename) : backgroundImage,
     });
     res.status(201).json({ success: true, message: "Hero slide created successfully", data: hero });
   } catch (error) {
@@ -38,7 +34,7 @@ export const updateHero = async (req, res) => {
     if (!existing) return res.status(404).json({ success: false, message: "Hero slide not found" });
 
     const updateData = { ...req.body };
-    if (req.file) updateData.backgroundImage = buildImageUrl(req, req.file.filename);
+    if (req.file) updateData.backgroundImage = buildUploadUrl(req, req.file.filename);
 
     const updated = await Hero.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
     res.status(200).json({ success: true, message: "Hero slide updated successfully", data: updated });

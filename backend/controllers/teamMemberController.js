@@ -1,9 +1,5 @@
 import TeamMember from "../models/TeamMember.js";
-
-const buildImageUrl = (req, fileName) => {
-  if (!fileName) return "";
-  return `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
-};
+import { buildUploadUrl } from "../utils/publicUrl.js";
 
 const normalizeSpecialties = (value) => {
   if (Array.isArray(value)) {
@@ -42,7 +38,7 @@ export const createTeamMember = async (req, res) => {
       name,
       role,
       bio,
-      image: req.file ? buildImageUrl(req, req.file.filename) : image,
+      image: req.file ? buildUploadUrl(req, req.file.filename) : image,
       specialties: normalizeSpecialties(req.body.specialties),
       displayOrder: Number.isFinite(Number(displayOrder)) ? Number(displayOrder) : 0,
     });
@@ -117,7 +113,7 @@ export const updateTeamMember = async (req, res) => {
     };
 
     if (req.file) {
-      updateData.image = buildImageUrl(req, req.file.filename);
+      updateData.image = buildUploadUrl(req, req.file.filename);
     }
 
     if (req.body.displayOrder !== undefined) {

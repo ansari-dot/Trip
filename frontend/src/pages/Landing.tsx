@@ -1,4 +1,6 @@
-import { Search, MapPin, ChevronDown, ChevronLeft, ChevronRight, Package, Star, Compass, ShieldCheck, Headset, CheckCircle, LoaderCircle, Plane, BedDouble, UserCheck, Car, Truck, Calendar, Tag } from "lucide-react";
+import { Search, MapPin, ChevronDown, ChevronLeft, ChevronRight, Package, Star, Compass, ShieldCheck, Headset, CheckCircle, LoaderCircle, Plane, BedDouble, UserCheck, Car, Truck, Calendar, Tag, CloudSun, Wind } from "lucide-react";
+import { getApiUrl, parseJsonSafely, API_BASE } from "../lib/api";
+import { whatsAppUrl } from "../lib/site";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { useEffect, useMemo, useState } from "react";
@@ -20,6 +22,8 @@ type Destination = {
   expertTip?: string;
   cuisine?: string;
   whenToGo?: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 type Blog = {
@@ -33,11 +37,6 @@ type Blog = {
   author?: string;
   publishedAt?: string;
 };
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
 
 const FEATURED_FALLBACKS = [
   {
@@ -62,20 +61,6 @@ const FEATURED_FALLBACKS = [
     image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&q=80&w=800",
   },
 ];
-
-const WA_URL = "https://wa.me/923488142776";
-
-function getApiUrl(path: string) {
-  return `${API_BASE}${path}`;
-}
-
-async function parseJsonSafely(response: Response) {
-  try {
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
 
 function normalizeDestination(input: unknown): Destination | null {
   if (!input || typeof input !== "object") {
@@ -102,6 +87,8 @@ function normalizeDestination(input: unknown): Destination | null {
     expertTip: destination.expertTip || "",
     cuisine: destination.cuisine || "",
     whenToGo: destination.whenToGo || "",
+    latitude: destination.latitude,
+    longitude: destination.longitude,
   };
 }
 
@@ -120,6 +107,67 @@ function normalizeBlog(input: unknown): Blog | null {
     author: blog.author || "",
     publishedAt: blog.publishedAt || "",
   };
+}
+
+// Weather Box Component
+function WeatherBox({ latitude, longitude }: { latitude?: number; longitude?: number }) {
+  const [weather, setWeather] = useState<{ 
+    current: { temperature: number; humidity: number; windSpeed: number; weatherCode: number };
+    daily: { tempMax: number[]; tempMin: number[] };
+  } | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const getWeatherEmoji = (code: number) => {
+    if (code === 0) return '☀️';
+    if (code <= 3) return '⛅';
+    if (code <= 49) return '🌫️';
+    if (code <= 59) return '🌧️';
+    if (code <= 69) return '❄️';
+    if (code <= 79) return '🌧️';
+    if (code <= 99) return '⛈️';
+    return '🌤️';
+  };
+
+  useEffect(() => {
+    if (!latitude || !longitude) return;
+    setLoading(true);
+    fetch(getApiUrl(`/api/weather?latitude=${latitude}&longitude=${longitude}`))
+      .then(res => res.json())
+      .then(data => { if (data?.success) setWeather(data.data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [latitude, longitude]);
+
+  if (!latitude || !longitude) return null;
+
+  return (
+    <div className="bg-gradient-to-br from-blue-600/95 via-cyan-500/95 to-teal-400/95 backdrop-blur-md border border-white/40 rounded-2xl p-4 shadow-2xl text-white min-w-[150px]">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-2xl">{weather ? getWeatherEmoji(weather.current.weatherCode) : '🌤️'}</span>
+        <span className="text-[10px] uppercase tracking-wider font-bold text-white/80">Current</span>
+      </div>
+      {loading ? (
+        <div className="flex items-center justify-center py-2">
+          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        </div>
+      ) : weather ? (
+        <div className="space-y-2">
+          <div className="text-3xl font-bold">{Math.round(weather.current.temperature)}°C</div>
+          <div className="flex items-center gap-3 text-xs text-white/90">
+            <span className="flex items-center gap-1">
+              <Wind className="w-3 h-3" />{Math.round(weather.current.windSpeed)} km/h
+            </span>
+            <span>💧{Math.round(weather.current.humidity)}%</span>
+          </div>
+          {weather.daily?.tempMax?.[0] && weather.daily?.tempMin?.[0] && (
+            <div className="text-xs text-white/70 pt-1 border-t border-white/20">
+              H: {Math.round(weather.daily.tempMax[0])}° L: {Math.round(weather.daily.tempMin[0])}°
+            </div>
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 export default function Landing() {
@@ -527,6 +575,9 @@ export default function Landing() {
                     style={{ backgroundImage: `url('${destination.image || (index < FEATURED_FALLBACKS.length ? FEATURED_FALLBACKS[index].image : FEATURED_FALLBACKS[0].image)}')` }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+                  <div className="absolute top-4 left-4 z-10">
+                    <WeatherBox latitude={destination.latitude} longitude={destination.longitude} />
+                  </div>
                   <div className="absolute bottom-0 left-0 p-5 text-white w-full">
                     <h3 className="font-headings text-xl leading-snug mb-1.5">{destination.name}, {destination.location}</h3>
                     <p className="text-xs font-semibold text-lux-accent tracking-wide">{destination.price || "Contact for pricing"}</p>
@@ -547,6 +598,9 @@ export default function Landing() {
                     style={{ backgroundImage: `url('${destination.image || (index < FEATURED_FALLBACKS.length ? FEATURED_FALLBACKS[index].image : FEATURED_FALLBACKS[0].image)}')` }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  <div className="absolute top-4 left-4 z-10">
+                    <WeatherBox latitude={destination.latitude} longitude={destination.longitude} />
+                  </div>
                   <div className="absolute bottom-0 left-0 p-8 text-white w-full">
                     <h3 className="font-headings text-2xl sm:text-3xl mb-2">{destination.name}, {destination.location}</h3>
                     <p className="text-sm font-medium text-lux-accent">{destination.price || "Contact for pricing"}</p>

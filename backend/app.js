@@ -17,29 +17,19 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import teamMemberRoutes from "./routes/teamMemberRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import rentalVehicleRoutes from "./routes/rentalVehicleRoutes.js";
+import weatherRoutes from "./routes/weatherRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import enquiryRoutes from "./routes/enquiryRoutes.js";
+import aiPackageRoutes from "./routes/aiPackageRoutes.js";
 import { uploadDirectory } from "./utils/multer.js";
+import { getCorsAllowedOrigins } from "./utils/corsOrigins.js";
 
 dotenv.config();
 const app = express();
 
 const PORT = Number(process.env.PORT) || 5000;
 const NODE_ENV = process.env.NODE_ENV || "development";
-const CLIENT_URL = process.env.CLIENT_URL || "*";
-const DEFAULT_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "https://northparadisetreksandtours.com",
-    "https://admin.northparadisetreksandtours.com",
-    "https://www.northparadisetreksandtours.com"
-];
-
-const allowedOrigins =
-    CLIENT_URL === "*" ?
-        "*" :
-        CLIENT_URL
-            .split(",")
-            .map((origin) => origin.trim())
-            .filter(Boolean);
+const corsAllowedOrigins = getCorsAllowedOrigins();
 
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
@@ -52,17 +42,12 @@ app.use(
                 return;
             }
 
-            if (allowedOrigins === "*") {
+            if (corsAllowedOrigins === "*") {
                 callback(null, true);
                 return;
             }
 
-            const finalAllowedOrigins = [
-                ...DEFAULT_ALLOWED_ORIGINS,
-                ...allowedOrigins,
-            ];
-
-            if (finalAllowedOrigins.includes(origin)) {
+            if (corsAllowedOrigins.includes(origin)) {
                 callback(null, true);
                 return;
             }
@@ -93,6 +78,10 @@ app.use("/api/rental-vehicles", rentalVehicleRoutes);
 app.use("/api/promo-modal", promoModalRoutes);
 app.use("/api/quotes", quoteRequestRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/weather", weatherRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/enquiry", enquiryRoutes);
+app.use("/api/packages", aiPackageRoutes);
 
 app.get("/health", (req, res) => {
     res.status(200).json({
@@ -120,8 +109,8 @@ app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     const message =
         NODE_ENV === "production" && statusCode === 500 ?
-            "Internal server error" :
-            err.message || "Something went wrong";
+        "Internal server error" :
+        err.message || "Something went wrong";
 
     if (NODE_ENV !== "production") {
         console.error(err);
@@ -134,7 +123,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-const startServer = async () => {
+const startServer = async() => {
     try {
         await connectDB();
 

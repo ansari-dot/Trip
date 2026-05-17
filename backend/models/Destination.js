@@ -14,6 +14,8 @@ const destinationSchema = new mongoose.Schema({
     expertTip: { type: String },
     cuisine: { type: String },
     whenToGo: { type: String },
+    latitude: { type: Number },
+    longitude: { type: Number },
 });
 
 export default mongoose.model("Destination", destinationSchema);

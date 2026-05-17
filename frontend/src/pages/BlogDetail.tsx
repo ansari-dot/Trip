@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { getApiUrl, parseJsonSafely, API_BASE } from "../lib/api";
 import { Link, useParams } from "react-router-dom";
 import { Calendar, ChevronLeft, LoaderCircle, Tag, UserRound } from "lucide-react";
 import Navbar from "../components/Navbar";
@@ -19,23 +20,6 @@ type Blog = {
   seoKeywords?: string;
   publishedAt?: string;
 };
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
-
-function getApiUrl(path: string) {
-  return `${API_BASE}${path}`;
-}
-
-async function parseJsonSafely(response: Response) {
-  try {
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
 
 function normalizeBlog(input: unknown): Blog | null {
   if (!input || typeof input !== "object") return null;

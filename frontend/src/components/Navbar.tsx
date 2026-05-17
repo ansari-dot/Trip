@@ -1,20 +1,8 @@
 import { useState, useEffect } from "react";
+import { getApiUrl, parseJsonSafely, API_BASE } from "../lib/api";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import logo from "../assets/logo_old.png";
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
-
-async function parseJsonSafely(response: Response) {
-  try {
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
 
 /** Hamburger → X; minimal motion (instant). */
 function LuxMenuIcon({ open }: { open: boolean }) {
@@ -58,7 +46,7 @@ export default function Navbar() {
   useEffect(() => {
     const loadTourTypes = async () => {
       try {
-        const response = await fetch(`${API_BASE}/api/tour-types`);
+        const response = await fetch(getApiUrl("/api/tour-types"));
         const data = await parseJsonSafely(response);
         if (response.ok && Array.isArray(data?.data)) {
           setDynamicTourTypes(data.data);

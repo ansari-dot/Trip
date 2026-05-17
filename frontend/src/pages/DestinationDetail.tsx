@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { getApiUrl, parseJsonSafely } from "../lib/api";
+import { whatsAppUrl } from "../lib/site";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import SEO from "../components/SEO";
-import { MapPin, ChevronLeft, ChevronRight, Calendar, Clock, Check, Utensils, Lightbulb, LoaderCircle } from "lucide-react";
+import { MapPin, ChevronLeft, ChevronRight, Calendar, Clock, Check, Utensils, Lightbulb, LoaderCircle, CloudSun, Wind } from "lucide-react";
 
 type Destination = {
   _id?: string;
@@ -19,26 +21,9 @@ type Destination = {
   expertTip?: string;
   cuisine?: string;
   whenToGo?: string;
+  latitude?: number;
+  longitude?: number;
 };
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
-
-const WA_URL = "https://wa.me/923488142776";
-
-function getApiUrl(path: string) {
-  return `${API_BASE}${path}`;
-}
-
-async function parseJsonSafely(response: Response) {
-  try {
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
 
 function normalizeDestination(input: unknown): Destination | null {
   if (!input || typeof input !== "object") {
@@ -65,6 +50,8 @@ function normalizeDestination(input: unknown): Destination | null {
     expertTip: destination.expertTip || "",
     cuisine: destination.cuisine || "",
     whenToGo: destination.whenToGo || "",
+    latitude: destination.latitude,
+    longitude: destination.longitude,
   };
 }
 
@@ -74,6 +61,11 @@ export default function DestinationDetail() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [weather, setWeather] = useState<{ 
+    current: { temperature: number; humidity: number; windSpeed: number; weatherCode: number };
+    daily: { tempMax: number[]; tempMin: number[]; weatherCode: number[] };
+  } | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
 
 
   useEffect(() => {
@@ -105,6 +97,34 @@ export default function DestinationDetail() {
         }
 
         setDestination(normalizedDestination);
+
+        // Fetch weather if coordinates available
+        if (normalizedDestination.latitude && normalizedDestination.longitude) {
+          setWeatherLoading(true);
+          try {
+            const weatherRes = await fetch(
+              getApiUrl(`/api/weather?latitude=${normalizedDestination.latitude}&longitude=${normalizedDestination.longitude}`)
+            );
+            const weatherData = await parseJsonSafely(weatherRes);
+            if (weatherRes.ok && weatherData?.success) {
+              setWeather(weatherData.data);
+            }
+            const getWeatherEmoji = (code: number) => {
+              if (code === 0) return '☀️';
+              if (code <= 3) return '⛅';
+              if (code <= 49) return '🌫️';
+              if (code <= 59) return '🌧️';
+              if (code <= 69) return '❄️';
+              if (code <= 79) return '🌧️';
+              if (code <= 99) return '⛈️';
+              return '🌤️';
+            };
+          } catch {
+            // silent fail for weather
+          } finally {
+            setWeatherLoading(false);
+          }
+        }
       } catch {
         setError("Unable to load destination details.");
         setDestination(null);
@@ -319,6 +339,66 @@ export default function DestinationDetail() {
               <h3 className="font-headings text-2xl mb-2">Plan Your Voyage</h3>
               <p className="text-muted-foreground text-sm mb-6">Discover the magic of {destination.name} with our curated selection of {(destination.tours || "available tours").toLowerCase()}.</p>
 
+              {/* Weather Box */}
+              {(weatherLoading || weather) && (
+                <div className="mb-6">
+                  <div className="bg-gradient-to-br from-blue-600 via-cyan-500 to-teal-400 rounded-2xl p-6 text-white shadow-xl">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl">
+                          {weather ? (() => {
+                            const code = weather.current.weatherCode;
+                            if (code === 0) return '☀️';
+                            if (code <= 3) return '⛅';
+                            if (code <= 49) return '🌫️';
+                            if (code <= 59) return '🌧️';
+                            if (code <= 69) return '❄️';
+                            if (code <= 79) return '🌧️';
+                            if (code <= 99) return '⛈️';
+                            return '🌤️';
+                          })() : '🌤️'}
+                        </span>
+                        <span className="text-sm uppercase tracking-wider font-bold text-white/90">Current Weather</span>
+                      </div>
+                    </div>
+                    {weatherLoading ? (
+                      <div className="flex items-center justify-center py-6">
+                        <LoaderCircle className="w-8 h-8 animate-spin" />
+                      </div>
+                    ) : weather ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-8">
+                          <div>
+                            <span className="text-5xl font-bold">{Math.round(weather.current.temperature)}°C</span>
+                            <p className="text-white/80 text-sm mt-1">Temperature</p>
+                          </div>
+                          <div className="h-14 w-px bg-white/30" />
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="flex items-center gap-2">
+                              <Wind className="w-5 h-5 text-white/80" />
+                              <div>
+                                <span className="text-lg font-bold">{Math.round(weather.current.windSpeed)}</span>
+                                <span className="text-sm text-white/80 ml-1">km/h</span>
+                                <p className="text-white/70 text-xs">Wind</p>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-lg font-bold">{Math.round(weather.current.humidity)}%</span>
+                              <p className="text-white/70 text-xs">Humidity</p>
+                            </div>
+                          </div>
+                        </div>
+                        {weather.daily?.tempMax?.[0] && weather.daily?.tempMin?.[0] && (
+                          <div className="pt-3 border-t border-white/20 flex items-center gap-6 text-sm">
+                            <span className="text-white/90">H: {Math.round(weather.daily.tempMax[0])}°</span>
+                            <span className="text-white/90">L: {Math.round(weather.daily.tempMin[0])}°</span>
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              )}
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between pb-4 border-b border-border">
                   <span className="text-muted-foreground">Tours Available</span>
@@ -337,7 +417,7 @@ export default function DestinationDetail() {
               <Link to="/request-quote" className="w-full bg-lux-accent text-white px-6 py-4 rounded-sm uppercase tracking-wider hover:bg-lux-accent/90 transition-colors font-medium text-center block">
                 View Available Dates
               </Link>
-              <a href={WA_URL} target="_blank" rel="noreferrer" className="w-full mt-3 border border-lux-primary text-lux-primary px-6 py-4 rounded-sm uppercase tracking-wider hover:bg-lux-bg transition-colors font-medium text-center block">
+              <a href={whatsAppUrl()} target="_blank" rel="noreferrer" className="w-full mt-3 border border-lux-primary text-lux-primary px-6 py-4 rounded-sm uppercase tracking-wider hover:bg-lux-bg transition-colors font-medium text-center block">
                 Talk to an Advisor
               </a>
             </div>

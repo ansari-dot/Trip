@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { getApiUrl, parseJsonSafely, API_BASE } from "../lib/api";
 import { Compass, ShieldCheck, Headset, Star, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
@@ -13,11 +14,6 @@ type TeamMember = {
   specialties: string[];
   displayOrder: number;
 };
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
 
 const TEAM_FALLBACKS: TeamMember[] = [
   {
@@ -48,18 +44,6 @@ const TEAM_FALLBACKS: TeamMember[] = [
     displayOrder: 2,
   },
 ];
-
-function getApiUrl(path: string) {
-  return `${API_BASE}${path}`;
-}
-
-async function parseJsonSafely(response: Response) {
-  try {
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
 
 function normalizeTeamMember(input: unknown): TeamMember | null {
   if (!input || typeof input !== "object") return null;

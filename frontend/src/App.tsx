@@ -21,7 +21,7 @@ import TermsConditions from "./pages/TermsConditions";
 import FAQ from "./pages/FAQ";
 import Footer from "./components/Footer";
 import PromoModal from "./components/PromoModal";
-import WhatsAppButton from "./components/WhatsAppButton";
+import TripPlannerChat from "./components/TripPlannerChat";
 
 /** Reset window scroll when the route path changes (SPA default). */
 function ScrollToTop() {
@@ -63,8 +63,8 @@ export default function App() {
           </main>
           <Footer />
           <PromoModal />
-          <WhatsAppButton />
         </div>
+        <TripPlannerChat />
       </BrowserRouter>
     </HelmetProvider>
   );

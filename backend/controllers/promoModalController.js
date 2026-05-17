@@ -1,9 +1,5 @@
 import PromoModal from "../models/PromoModal.js";
-
-const buildImageUrl = (req, fileName) => {
-  if (!fileName) return "";
-  return `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
-};
+import { buildUploadUrl } from "../utils/publicUrl.js";
 
 export const getPromoModal = async (req, res) => {
   try {
@@ -33,7 +29,7 @@ export const updatePromoModal = async (req, res) => {
     if (updateData.isActive === 'false') updateData.isActive = false;
 
     if (req.file) {
-      updateData.image = buildImageUrl(req, req.file.filename);
+      updateData.image = buildUploadUrl(req, req.file.filename);
     }
 
     if (!promo) {

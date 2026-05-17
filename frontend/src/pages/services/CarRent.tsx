@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { getApiUrl, parseJsonSafely } from "../../lib/api";
 import { Compass, CheckCircle, ShieldCheck, Map, Clock, LoaderCircle, CarFront, Fuel, Users, Settings2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import SEO from "../../components/SEO";
@@ -19,23 +20,6 @@ type RentalVehicle = {
   features?: string[];
   displayOrder?: number;
 };
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
-
-function getApiUrl(path: string) {
-  return `${API_BASE}${path}`;
-}
-
-async function parseJsonSafely(response: Response) {
-  try {
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
 
 function normalizeRentalVehicle(input: unknown): RentalVehicle | null {
   if (!input || typeof input !== "object") return null;

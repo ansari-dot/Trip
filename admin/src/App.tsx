@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   Bell,
   BookOpen,
+  Bot,
   Briefcase,
   Car,
   LayoutDashboard,
@@ -28,6 +29,8 @@ import {
   X,
 } from 'lucide-react';
 import Quotes from './pages/Quotes';
+import Enquiries from './pages/Enquiries';
+import { API_BASE, getApiUrl } from './lib/api';
 
 const SIDEBAR_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -43,13 +46,9 @@ const SIDEBAR_ITEMS = [
   { id: 'team', label: 'Team Members', icon: Briefcase },
   { id: 'promo-modal', label: 'Promo Modal', icon: AlertCircle },
   { id: 'quotes', label: 'Quote Requests', icon: MessageSquare },
+  { id: 'enquiries', label: 'AI Trip Planner', icon: Bot },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? 'http://localhost:5000' : '')
-).replace(/\/$/, '');
 
 type AdminUser = {
   _id?: string;
@@ -167,6 +166,8 @@ type Destination = {
   expertTip?: string;
   cuisine?: string;
   whenToGo?: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 type DestinationFormState = {
@@ -182,6 +183,8 @@ type DestinationFormState = {
   expertTip: string;
   cuisine: string;
   whenToGo: string;
+  latitude: string;
+  longitude: string;
 };
 
 const EMPTY_DESTINATION_FORM: DestinationFormState = {
@@ -197,11 +200,9 @@ const EMPTY_DESTINATION_FORM: DestinationFormState = {
   expertTip: '',
   cuisine: '',
   whenToGo: '',
+  latitude: '',
+  longitude: '',
 };
-
-function getApiUrl(path: string) {
-  return `${API_BASE}${path}`;
-}
 
 async function parseJsonSafely(response: Response) {
   try {
@@ -261,6 +262,8 @@ function normalizeDestination(input: unknown): Destination | null {
     expertTip: destination.expertTip || '',
     cuisine: destination.cuisine || '',
     whenToGo: destination.whenToGo || '',
+    latitude: destination.latitude,
+    longitude: destination.longitude,
   };
 }
 
@@ -278,6 +281,8 @@ function destinationToFormState(destination: Destination): DestinationFormState 
     expertTip: destination.expertTip || '',
     cuisine: destination.cuisine || '',
     whenToGo: destination.whenToGo || '',
+    latitude: destination.latitude?.toString() || '',
+    longitude: destination.longitude?.toString() || '',
   };
 }
 
@@ -3139,6 +3144,8 @@ function DestinationManager() {
       payload.append('expertTip', form.expertTip.trim());
       payload.append('cuisine', form.cuisine.trim());
       payload.append('whenToGo', form.whenToGo.trim());
+      payload.append('latitude', form.latitude.trim());
+      payload.append('longitude', form.longitude.trim());
 
       if (selectedImage) {
         payload.set('image', selectedImage);
@@ -3371,6 +3378,30 @@ function DestinationManager() {
               />
             </label>
 
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Latitude (for weather)</span>
+              <input
+                value={form.latitude}
+                onChange={(event) => updateField('latitude', event.target.value)}
+                className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent"
+                placeholder="35.30"
+                type="number"
+                step="any"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Longitude (for weather)</span>
+              <input
+                value={form.longitude}
+                onChange={(event) => updateField('longitude', event.target.value)}
+                className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent"
+                placeholder="75.57"
+                type="number"
+                step="any"
+              />
+            </label>
+
             <label className="block lg:col-span-2">
               <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Expert Tip</span>
               <textarea
@@ -3523,6 +3554,8 @@ function DestinationManager() {
                     <div><span className="font-bold text-lux-primary">Price:</span> {destination.price || '—'}</div>
                     <div><span className="font-bold text-lux-primary">Duration:</span> {destination.duration || '—'}</div>
                     <div><span className="font-bold text-lux-primary">When To Go:</span> {destination.whenToGo || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Latitude:</span> {destination.latitude || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Longitude:</span> {destination.longitude || '—'}</div>
                   </div>
 
                   <div>
@@ -3816,7 +3849,8 @@ function Dashboard({
           {activeTab === 'team' ? <TeamManager /> : null}
           {activeTab === 'promo-modal' ? <PromoModalManager /> : null}
           {activeTab === 'quotes' ? <Quotes /> : null}
-          {activeTab !== 'dashboard' && activeTab !== 'heroes' && activeTab !== 'destinations' && activeTab !== 'blogs' && activeTab !== 'rental-vehicles' && activeTab !== 'packages' && activeTab !== 'tour-types' && activeTab !== 'featured-tours' && activeTab !== 'seasonal-tours' && activeTab !== 'testimonials' && activeTab !== 'team' && activeTab !== 'promo-modal' && activeTab !== 'quotes' ? (
+          {activeTab === 'enquiries' ? <Enquiries /> : null}
+          {activeTab !== 'dashboard' && activeTab !== 'heroes' && activeTab !== 'destinations' && activeTab !== 'blogs' && activeTab !== 'rental-vehicles' && activeTab !== 'packages' && activeTab !== 'tour-types' && activeTab !== 'featured-tours' && activeTab !== 'seasonal-tours' && activeTab !== 'testimonials' && activeTab !== 'team' && activeTab !== 'promo-modal' && activeTab !== 'quotes' && activeTab !== 'enquiries' ? (
             <div className="mx-auto max-w-5xl rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-center shadow-sm">
               <h3 className="font-headings text-3xl">{getPageTitle()}</h3>
               <p className="mt-4 text-sm text-lux-primary/65">

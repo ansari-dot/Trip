@@ -1,4 +1,5 @@
 import Destination from "../models/Destination.js";
+import { buildUploadUrl } from "../utils/publicUrl.js";
 
 const parseArrayField = (value, fallback = []) => {
   if (!value) {
@@ -17,20 +18,12 @@ const parseArrayField = (value, fallback = []) => {
   }
 };
 
-const buildImageUrl = (req, fileName) => {
-  if (!fileName) {
-    return "";
-  }
-
-  return `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
-};
-
 const buildImageUrls = (req, files = []) => {
   if (!Array.isArray(files) || files.length === 0) {
     return [];
   }
 
-  return files.map((file) => buildImageUrl(req, file.filename)).filter(Boolean);
+  return files.map((file) => buildUploadUrl(req, file.filename)).filter(Boolean);
 };
 
 export const createDestination = async (req, res) => {
@@ -47,6 +40,8 @@ export const createDestination = async (req, res) => {
       expertTip,
       cuisine,
       whenToGo,
+      latitude,
+      longitude,
     } = req.body;
 
     if (!id || !name || !location) {
@@ -74,7 +69,7 @@ export const createDestination = async (req, res) => {
       location,
       tours,
       description,
-      image: primaryImageFile ? buildImageUrl(req, primaryImageFile.filename) : image,
+      image: primaryImageFile ? buildUploadUrl(req, primaryImageFile.filename) : image,
       gallery: galleryFiles.length > 0 ? buildImageUrls(req, galleryFiles) : parseArrayField(req.body.gallery),
       highlights: parseArrayField(req.body.highlights),
       price,
@@ -82,6 +77,8 @@ export const createDestination = async (req, res) => {
       expertTip,
       cuisine,
       whenToGo,
+      latitude: latitude ? Number(latitude) : undefined,
+      longitude: longitude ? Number(longitude) : undefined,
     });
 
     res.status(201).json({
@@ -193,7 +190,7 @@ export const updateDestination = async (req, res) => {
     }
 
     if (primaryImageFile) {
-      updateData.image = buildImageUrl(req, primaryImageFile.filename);
+      updateData.image = buildUploadUrl(req, primaryImageFile.filename);
     }
 
     const updatedDestination = await Destination.findOneAndUpdate(

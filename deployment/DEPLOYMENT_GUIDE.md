@@ -17,23 +17,36 @@ Recommended structure under `/var/www/northparadise`:
 ## 2. Handling the "Missing Images" Issue
 The most common reason images disappear after deployment is hardcoded `localhost` URLs.
 
-### Step A: Backend `.env`
-On your VPS, update the `BACKEND_URL` or similar in your `.env` to your actual domain:
+### Step A: Backend `.env` (on VPS: `/var/www/northparadise/backend/.env`)
+Copy from `backend/.env.example`. No localhost in code — all URLs come from env:
 ```env
 PORT=5000
-MONGODB_URI=mongodb://...
 NODE_ENV=production
-# This ensures images are served correctly if the backend generates URLs
-BASE_URL=https://northparadisetreksandtours.com
+MONGODB_URI=mongodb://127.0.0.1:27017/north-paradise
+JWT_SECRET=your-long-secret
 
-# Important for CORS - origins must NOT have trailing slashes
-CLIENT_URL=https://northparadisetreksandtours.com,https://admin.northparadisetreksandtours.com
+# Public URL for /uploads image links (no trailing slash)
+PUBLIC_URL=https://northparadisetreksandtours.com
+
+# Allowed browser origins, comma-separated (no trailing slashes)
+CLIENT_URL=https://northparadisetreksandtours.com,https://www.northparadisetreksandtours.com,https://admin.northparadisetreksandtours.com
+
+CLIENT_SITE_URL=https://northparadisetreksandtours.com
+
+GROQ_API_KEY=your_groq_key
 ```
 
-### Step B: Frontend/Admin `.env`
-Update your build-time environment variables before running `npm run build`:
+### Step B: Frontend `.env` — build on VPS before `npm run build`
 ```env
-VITE_API_URL=https://api.northparadisetreksandtours.com
+VITE_API_URL=https://northparadisetreksandtours.com
+VITE_SITE_URL=https://northparadisetreksandtours.com
+VITE_WHATSAPP_NUMBER=923488142776
+```
+If nginx on the same domain proxies `/api` to Node, `VITE_API_URL` can match the site URL.
+
+### Step C: Admin `.env` — build before `npm run build`
+```env
+VITE_API_URL=https://northparadisetreksandtours.com
 ```
 
 ### Step C: Folder Permissions

@@ -1,9 +1,5 @@
 import Blog from "../models/Blog.js";
-
-const buildImageUrl = (req, fileName) => {
-  if (!fileName) return "";
-  return `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
-};
+import { buildUploadUrl } from "../utils/publicUrl.js";
 
 const parseArrayField = (value, fallback = []) => {
   if (!value) return fallback;
@@ -55,7 +51,7 @@ export const createBlog = async (req, res) => {
       title,
       excerpt,
       content,
-      image: req.file ? buildImageUrl(req, req.file.filename) : image,
+      image: req.file ? buildUploadUrl(req, req.file.filename) : image,
       category,
       author,
       tags: parseArrayField(req.body.tags),
@@ -149,7 +145,7 @@ export const updateBlog = async (req, res) => {
     }
 
     if (req.file) {
-      updateData.image = buildImageUrl(req, req.file.filename);
+      updateData.image = buildUploadUrl(req, req.file.filename);
     }
 
     const updatedBlog = await Blog.findOneAndUpdate({ id: req.params.id }, updateData, {

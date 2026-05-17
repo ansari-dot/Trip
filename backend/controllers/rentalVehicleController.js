@@ -1,9 +1,5 @@
 import RentalVehicle from "../models/RentalVehicle.js";
-
-const buildImageUrl = (req, fileName) => {
-  if (!fileName) return "";
-  return `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
-};
+import { buildUploadUrl } from "../utils/publicUrl.js";
 
 const parseArrayField = (value, fallback = []) => {
   if (!value) return fallback;
@@ -39,7 +35,7 @@ export const createRentalVehicle = async (req, res) => {
       name,
       type,
       price,
-      image: req.file ? buildImageUrl(req, req.file.filename) : image,
+      image: req.file ? buildUploadUrl(req, req.file.filename) : image,
       description,
       seats,
       transmission,
@@ -87,7 +83,7 @@ export const updateRentalVehicle = async (req, res) => {
         ? Number(req.body.displayOrder)
         : existingVehicle.displayOrder;
     }
-    if (req.file) updateData.image = buildImageUrl(req, req.file.filename);
+    if (req.file) updateData.image = buildUploadUrl(req, req.file.filename);
 
     const updatedVehicle = await RentalVehicle.findOneAndUpdate({ id: req.params.id }, updateData, {
       new: true,

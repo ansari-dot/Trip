@@ -1,12 +1,5 @@
 import Testimonial from "../models/Testimonial.js";
-
-const buildImageUrl = (req, fileName) => {
-  if (!fileName) {
-    return "";
-  }
-
-  return `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
-};
+import { buildUploadUrl } from "../utils/publicUrl.js";
 
 export const createTestimonial = async (req, res) => {
   try {
@@ -23,7 +16,7 @@ export const createTestimonial = async (req, res) => {
       quote,
       name,
       location,
-      image: req.file ? buildImageUrl(req, req.file.filename) : image,
+      image: req.file ? buildUploadUrl(req, req.file.filename) : image,
     });
 
     res.status(201).json({
@@ -95,7 +88,7 @@ export const updateTestimonial = async (req, res) => {
     };
 
     if (req.file) {
-      updateData.image = buildImageUrl(req, req.file.filename);
+      updateData.image = buildUploadUrl(req, req.file.filename);
     }
 
     const updatedTestimonial = await Testimonial.findByIdAndUpdate(

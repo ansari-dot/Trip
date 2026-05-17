@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { SITE_URL } from "../lib/site";
 
 interface SEOProps {
   title?: string;
@@ -14,7 +15,7 @@ const SEO = ({
   description = "North Paradise Treks and Tours offers premium and luxury tour packages to Northern Pakistan, including Hunza, Skardu, Gilgit, and Fairy Meadows. Book your dream trip today!",
   keywords = "Northern Pakistan tours, Gilgit Baltistan trip, Skardu tour packages, Hunza Valley tourism, Fairy Meadows trek, luxury tours Pakistan, adventure trips Pakistan, North Paradise Treks and Tours, Pakistan travel agency, Karakoram Highway tour, K2 base camp trek, Attabad Lake, Khunjerab Pass, Passu Cones, Shangrila Resort, Kachura Lake, Northern Areas Pakistan, family vacation Pakistan, corporate tours Gilgit, honeymoon in Hunza",
   image = "/og-image.jpg",
-  url = "https://northparadisetreksandtours.com",
+  url = SITE_URL || undefined,
   type = "website",
 }: SEOProps) => {
   const siteTitle = title.includes("North Paradise") ? title : `${title} | North Paradise Treks and Tours`;

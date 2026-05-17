@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
 import { MessageSquare, Mail, Phone, Calendar, MapPin, Users, CheckCircle, Clock, Trash2, XCircle, Search } from "lucide-react";
 import axios from "axios";
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
+import { API_BASE } from "../lib/api";
 
 type QuoteRequest = {
   _id: string;

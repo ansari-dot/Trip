@@ -1,4 +1,5 @@
 import { Search, Clock, Map, ChevronLeft, ChevronRight, X, LoaderCircle, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { getApiUrl, parseJsonSafely, API_BASE } from "../lib/api";
 import { Link, useSearchParams } from "react-router-dom";
 import logo from "../assets/logo1.png";
 import { useState, useMemo, useEffect } from "react";
@@ -15,23 +16,6 @@ type TourPackage = {
   type: string;
   description: string;
 };
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
-
-function getApiUrl(path: string) {
-  return `${API_BASE}${path}`;
-}
-
-async function parseJsonSafely(response: Response) {
-  try {
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
 
 function normalizeTourPackage(input: unknown): TourPackage | null {
   if (!input || typeof input !== "object") return null;

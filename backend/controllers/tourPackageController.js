@@ -1,4 +1,5 @@
 import TourPackage from "../models/TourPackage.js";
+import { buildUploadUrl } from "../utils/publicUrl.js";
 
 const parseArrayField = (value, fallback = []) => {
   if (!value) {
@@ -15,14 +16,6 @@ const parseArrayField = (value, fallback = []) => {
   } catch {
     return fallback;
   }
-};
-
-const buildImageUrl = (req, fileName) => {
-  if (!fileName) {
-    return "";
-  }
-
-  return `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
 };
 
 export const createTourPackage = async (req, res) => {
@@ -56,7 +49,7 @@ export const createTourPackage = async (req, res) => {
     const galleryUrls = [];
     if (req.files && req.files.gallery) {
       req.files.gallery.forEach(file => {
-        galleryUrls.push(buildImageUrl(req, file.filename));
+        galleryUrls.push(buildUploadUrl(req, file.filename));
       });
     }
 
@@ -66,7 +59,7 @@ export const createTourPackage = async (req, res) => {
       destinations: parseArrayField(req.body.destinations),
       duration,
       price,
-      image: (req.files && req.files.image) ? buildImageUrl(req, req.files.image[0].filename) : image,
+      image: (req.files && req.files.image) ? buildUploadUrl(req, req.files.image[0].filename) : image,
       type,
       description,
       itinerary: parseArrayField(req.body.itinerary),
@@ -188,11 +181,11 @@ export const updateTourPackage = async (req, res) => {
 
     if (req.files) {
       if (req.files.image) {
-        updateData.image = buildImageUrl(req, req.files.image[0].filename);
+        updateData.image = buildUploadUrl(req, req.files.image[0].filename);
       }
       if (req.files.gallery) {
         const existingGallery = parseArrayField(req.body.gallery);
-        const newGallery = req.files.gallery.map(file => buildImageUrl(req, file.filename));
+        const newGallery = req.files.gallery.map(file => buildUploadUrl(req, file.filename));
         updateData.gallery = [...existingGallery, ...newGallery];
       }
     } else if (req.body.gallery !== undefined) {

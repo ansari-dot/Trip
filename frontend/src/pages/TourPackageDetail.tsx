@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { getApiUrl, parseJsonSafely } from "../lib/api";
+import { whatsAppUrl } from "../lib/site";
 import { useParams, Link } from "react-router-dom";
 import { ChevronLeft, Clock, Check, MapPin, CalendarDays, Star, Info, LoaderCircle, ChevronDown } from "lucide-react";
 import Navbar from "../components/Navbar";
@@ -30,23 +32,6 @@ type TourPackage = {
   gallery?: string[];
 };
 
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
-
-function getApiUrl(path: string) {
-  return `${API_BASE}${path}`;
-}
-
-async function parseJsonSafely(response: Response) {
-  try {
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
-
 function normalizeTourPackage(input: unknown): TourPackage | null {
   if (!input || typeof input !== "object") return null;
   const t = input as TourPackage;
@@ -65,8 +50,6 @@ function normalizeTourPackage(input: unknown): TourPackage | null {
     gallery: Array.isArray(t.gallery) ? t.gallery : [],
   };
 }
-
-const WA_URL = "https://wa.me/923488142776";
 
 const defaultIncluded = [
   "Luxury Accommodations",
@@ -152,11 +135,9 @@ export default function TourPackageDetail() {
   const currentTierData = pkg.tourPackages.find((t) => t.tier === selectedTier) || pkg.tourPackages[0];
 
   const waMessage = pkg
-    ? encodeURIComponent(
-      `Hi, I'm interested in the *${pkg.title}* tour package.${currentTierData ? ` (${currentTierData.tier} tier — ${currentTierData.price})` : pkg.price ? ` Starting from ${pkg.price}` : ''
-      }${pkg.destinations.length > 0 ? `\nDestinations: ${pkg.destinations.join(' → ')}` : ''}${pkg.duration ? `\nDuration: ${pkg.duration}` : ''}\n\nPlease send me the full itinerary and available dates.`
-    )
-    : encodeURIComponent('Hi, I would like to inquire about a tour package.');
+    ? `Hi, I'm interested in the *${pkg.title}* tour package.${currentTierData ? ` (${currentTierData.tier} tier — ${currentTierData.price})` : pkg.price ? ` Starting from ${pkg.price}` : ""
+    }${pkg.destinations.length > 0 ? `\nDestinations: ${pkg.destinations.join(" → ")}` : ""}${pkg.duration ? `\nDuration: ${pkg.duration}` : ""}\n\nPlease send me the full itinerary and available dates.`
+    : "Hi, I would like to inquire about a tour package.";
 
   return (
     <div className="bg-lux-bg text-lux-primary font-body min-h-screen flex flex-col">
@@ -353,7 +334,7 @@ export default function TourPackageDetail() {
                 <Link to="/request-quote" className="w-full bg-lux-accent text-white px-6 py-4 rounded-sm uppercase tracking-wider hover:bg-lux-primary transition-colors font-medium cursor-pointer text-center block">
                   Book This Tour
                 </Link>
-                <a href={`https://wa.me/923488142776?text=${waMessage}`} target="_blank" rel="noreferrer" className="w-full mt-3 border border-lux-primary text-lux-primary px-6 py-4 rounded-sm uppercase tracking-wider hover:bg-lux-bg transition-colors font-medium cursor-pointer text-center block">
+                <a href={whatsAppUrl(waMessage)} target="_blank" rel="noreferrer" className="w-full mt-3 border border-lux-primary text-lux-primary px-6 py-4 rounded-sm uppercase tracking-wider hover:bg-lux-bg transition-colors font-medium cursor-pointer text-center block">
                   Talk to an Advisor
                 </a>
               </div>

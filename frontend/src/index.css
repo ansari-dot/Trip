@@ -26,6 +26,24 @@ body {
   min-height: 100dvh;
 }
 
+/* Fixed navbar clearance for trip planner panel (logo + bar + safe area) */
+:root {
+  --site-nav-height: calc(4.75rem + env(safe-area-inset-top, 0px));
+}
+
+@media (min-width: 640px) {
+  :root {
+    --site-nav-height: calc(5.25rem + env(safe-area-inset-top, 0px));
+  }
+}
+
+/* Trip planner launcher — always above page content */
+#trip-planner-launcher {
+  position: fixed !important;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+}
+
 /* Utility: safe-area padding for notched phones (use with Tailwind arbitrary values where needed) */
 @supports (padding: max(0px)) {
   .pb-safe {

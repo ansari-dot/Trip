@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
+import { getApiUrl, parseJsonSafely, API_BASE } from "../lib/api";
 import { X, Send, LoaderCircle } from "lucide-react";
-
-const API_BASE = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000" : "")
-).replace(/\/$/, "");
 
 export default function QuoteModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +35,7 @@ export default function QuoteModal() {
     setSuccessMessage("");
 
     try {
-      const response = await fetch(`${API_BASE}/api/quotes`, {
+      const response = await fetch(getApiUrl("/api/quotes"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

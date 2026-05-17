@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { getApiUrl, parseJsonSafely } from "../lib/api";
+import { whatsAppUrl } from "../lib/site";
 import { X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -9,8 +11,7 @@ export default function PromoModal() {
   useEffect(() => {
     const fetchPromo = async () => {
       try {
-        const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
-        const res = await fetch(`${API_URL}/api/promo-modal`);
+        const res = await fetch(getApiUrl("/api/promo-modal"));
         const json = await res.json();
         if (json.success && json.data) {
           setPromoData(json.data);
@@ -36,7 +37,7 @@ export default function PromoModal() {
 
   if (!isOpen || !promoData) return null;
 
-  const waMessage = encodeURIComponent("Hi, I'm interested in the " + promoData.title + " offer. Can you provide more details?");
+  const waMessage = `Hi, I'm interested in the ${promoData.title} offer. Can you provide more details?`;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-lux-primary/80 backdrop-blur-sm animate-in fade-in duration-500 pb-[env(safe-area-inset-bottom)] sm:pb-4">
@@ -74,7 +75,7 @@ export default function PromoModal() {
               Explore Offers
             </Link>
             <a 
-              href={`https://wa.me/923488142776?text=${waMessage}`}
+              href={whatsAppUrl(waMessage)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setIsOpen(false)}
