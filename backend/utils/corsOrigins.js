@@ -9,7 +9,10 @@ export function getCorsAllowedOrigins() {
     return "*";
   }
 
-  const origins = new Set();
+  const origins = new Set([
+    "https://northparadisetreksandtours.com",
+    "https://admin.northparadisetreksandtours.com"
+  ]);
 
   if (clientUrl) {
     clientUrl
