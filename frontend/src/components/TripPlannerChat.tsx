@@ -7,6 +7,7 @@ import {
   RotateCcw,
   SendHorizontal,
   X,
+  Mic,
 } from "lucide-react";
 import { getApiUrl, parseJsonSafely } from "../lib/api";
 import ChatActionBar from "./tripPlanner/ChatActionBar";
@@ -22,7 +23,7 @@ import {
 import { useTripCatalog } from "./tripPlanner/useTripCatalog";
 
 const WELCOME =
-  "Welcome! I'm your AI trip advisor for Northern Pakistan. Tell me where you want to go, how many days, or your budget — or tap a button below.";
+  "Welcome to North Paradise! I'm your dedicated AI Travel Expert. I'm here to help you find the perfect tour package, plan a custom itinerary, or answer any questions. Where are you dreaming of going?";
 
 type AiPackageSummary = {
   id: string;
@@ -129,6 +130,8 @@ export default function TripPlannerChat() {
   const [quoteSending, setQuoteSending] = useState(false);
   const [error, setError] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
+  const [isRecording, setIsRecording] = useState(false);
   const catalog = useTripCatalog(true);
   const [pendingBrowse, setPendingBrowse] = useState(false);
 
@@ -431,6 +434,53 @@ export default function TripPlannerChat() {
     }
   };
 
+  const toggleRecording = () => {
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    // @ts-ignore
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setError("Voice input is not supported in this browser.");
+      return;
+    }
+    
+    const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    
+    const initialDraft = draft ? draft + " " : "";
+
+    recognition.onstart = () => setIsRecording(true);
+    
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((r: any) => r[0].transcript)
+        .join("");
+      setDraft(initialDraft + transcript);
+    };
+    
+    recognition.onerror = (event: any) => {
+      setIsRecording(false);
+      if (event.error === "not-allowed") {
+        setError("Please allow microphone access in your browser to use voice.");
+      } else {
+        setError("Voice error: " + event.error);
+      }
+    };
+    
+    recognition.onend = () => setIsRecording(false);
+    
+    try {
+      recognition.start();
+    } catch (e) {
+      console.error(e);
+      setIsRecording(false);
+    }
+  };
+
   const sendAiMessage = async () => {
     const text = draft.trim();
     if (!text || aiLoading || quoteSending) return;
@@ -528,8 +578,14 @@ export default function TripPlannerChat() {
                     <Bot className="h-5 w-5 text-gray-600" strokeWidth={2} />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-base font-semibold text-gray-900 leading-tight">Trip Advisor</p>
-                    <p className="text-xs text-gray-500">Always here to help</p>
+                    <p className="text-base font-semibold text-gray-900 leading-tight">AI Travel Expert</p>
+                    <p className="text-xs text-green-600 font-medium flex items-center gap-1.5">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                      </span>
+                      Online • Ready to plan your trip
+                    </p>
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
@@ -632,11 +688,20 @@ export default function TripPlannerChat() {
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), void sendAiMessage())}
-                    placeholder="Ask anything..."
+                    placeholder="Ask about tours or destinations..."
                     disabled={aiLoading}
                     className="flex-1 min-w-0 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:opacity-60"
                     aria-label="Message trip advisor"
                   />
+                  <button
+                    type="button"
+                    onClick={toggleRecording}
+                    disabled={aiLoading || quoteSending}
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors ${isRecording ? "bg-red-50 text-red-600 animate-pulse" : "text-gray-400 hover:bg-gray-100 hover:text-gray-600"} disabled:opacity-40`}
+                    aria-label="Voice input"
+                  >
+                    <Mic className="h-5 w-5" strokeWidth={2} />
+                  </button>
                   <button
                     type="button"
                     onClick={() => void sendAiMessage()}
