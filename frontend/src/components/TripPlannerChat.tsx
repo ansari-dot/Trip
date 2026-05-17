@@ -78,11 +78,10 @@ function MessageBubble({ role, content }: { role: "user" | "assistant"; content:
         </div>
       )}
       <div
-        className={`max-w-[min(100%,18.5rem)] sm:max-w-[18rem] rounded-2xl px-4 py-3 text-[0.9375rem] leading-relaxed whitespace-pre-wrap break-words ${
-          isUser
+        className={`max-w-[min(100%,18.5rem)] sm:max-w-[18rem] rounded-2xl px-4 py-3 text-[0.9375rem] leading-relaxed whitespace-pre-wrap break-words ${isUser
             ? "rounded-br-sm bg-gray-900 text-white"
             : "rounded-bl-sm border border-gray-100 bg-white text-gray-800 shadow-sm"
-        }`}
+          }`}
       >
         {isUser ? content : parseMessageLinks(content)}
       </div>
@@ -202,13 +201,13 @@ export default function TripPlannerChat() {
     setFlowStep("pick_type");
     const types = catalog.tourTypes.length
       ? catalog.tourTypes.map((t) => ({
-          id: `type_${t.name}`,
-          label: `${t.name} tours`,
-        }))
+        id: `type_${t.name}`,
+        label: `${t.name} tours`,
+      }))
       : Array.from(new Set(catalog.packages.map((p) => p.type).filter(Boolean))).map((t) => ({
-          id: `type_${t}`,
-          label: `${t} tours`,
-        }));
+        id: `type_${t}`,
+        label: `${t} tours`,
+      }));
 
     if (!types.length) {
       const pkgLinks = catalog.packages.length ? "\n\n" + catalog.packages.slice(0, 4).map(p => `• [${p.title}](${p.path})`).join("\n") : "";
@@ -466,7 +465,7 @@ export default function TripPlannerChat() {
 
       const reply = String(data?.reply || "").trim();
       const packages = (Array.isArray(data?.matchedPackages) ? data.matchedPackages : []) as AiPackageSummary[];
-      
+
       let finalReply = reply || "How can I help you plan your trip?";
       if (packages.length) {
         finalReply += "\n\nHere are some tours you might like:\n" + packages.slice(0, 4).map(p => `• [${p.title}](${p.path})`).join("\n");
@@ -494,14 +493,19 @@ export default function TripPlannerChat() {
         type="button"
         id="trip-planner-launcher"
         onClick={() => setOpen((v) => !v)}
-        className={`group fixed z-[9999] right-4 sm:right-6 bottom-[max(1rem,env(safe-area-inset-bottom))] sm:bottom-6 flex h-14 w-14 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition-transform hover:scale-105 active:scale-95`}
+        className={`group fixed z-[9999] right-4 sm:right-6 bottom-[max(1rem,env(safe-area-inset-bottom))] sm:bottom-6 flex h-14 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 active:scale-95 ${open ? "w-14 max-sm:hidden" : "px-4"}`}
         aria-expanded={open}
         aria-label={open ? "Close chat" : "Open chat"}
       >
         {open ? (
-          <X className="h-6 w-6" strokeWidth={2} />
+          <X className="h-6 w-6 shrink-0" strokeWidth={2} />
         ) : (
-          <MessageSquare className="h-6 w-6" strokeWidth={2} />
+          <>
+            <MessageSquare className="h-6 w-6 shrink-0" strokeWidth={2} />
+            <span className="max-w-0 overflow-hidden whitespace-nowrap text-sm font-medium opacity-0 transition-all duration-300 ease-in-out group-hover:max-w-[150px] group-hover:ml-3 group-hover:opacity-100 max-sm:hidden">
+              Talk to AI Bot
+            </span>
+          </>
         )}
       </button>
 
@@ -514,138 +518,138 @@ export default function TripPlannerChat() {
           />
           <div
             className="fixed z-[9998] left-0 right-0 bottom-0 top-[var(--site-nav-height)] flex flex-col overflow-hidden bg-gray-50 animate-in slide-in-from-bottom-4 duration-300 sm:left-auto sm:right-6 sm:bottom-[5.5rem] sm:top-auto sm:h-[40rem] sm:w-[min(100%,24rem)] sm:max-h-[calc(100dvh-7rem)] sm:rounded-2xl sm:border sm:border-gray-200 sm:shadow-2xl"
-          role="dialog"
-          aria-label="Trip planner"
-        >
-          <header className="relative shrink-0 border-b border-gray-200 bg-white px-4 py-3 sm:px-4">
-            <div className="relative flex items-center justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 border border-gray-200">
-                  <Bot className="h-5 w-5 text-gray-600" strokeWidth={2} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-base font-semibold text-gray-900 leading-tight">Trip Advisor</p>
-                  <p className="text-xs text-gray-500">Always here to help</p>
-                </div>
-              </div>
-              <div className="flex shrink-0 items-center gap-1">
-                <button
-                  type="button"
-                  onClick={resetChat}
-                  className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-                  aria-label="Start new chat"
-                  title="New chat"
-                >
-                  <RotateCcw className="h-4 w-4" strokeWidth={2} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-                  aria-label="Close chat"
-                >
-                  <X className="h-5 w-5" strokeWidth={2} />
-                </button>
-              </div>
-            </div>
-          </header>
-
-          <div
-            ref={listRef}
-            className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4 space-y-4 bg-gray-50"
+            role="dialog"
+            aria-label="Trip planner"
           >
-            {messages.map((msg, i) => (
-              <MessageBubble key={`${i}-${msg.role}`} role={msg.role} content={msg.content} />
-            ))}
-            {aiLoading && <TypingIndicator />}
-          </div>
-          <ChatActionBar
-            actions={actions}
-            onAction={handleAction}
-            onNavigate={() => setOpen(false)}
-            disabled={quoteSending || aiLoading}
-          />
-
-          {error && (
-            <p className="mx-3 mb-1 shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">
-              {error}
-            </p>
-          )}
-
-          {inCustomStep && (
-            <div className="shrink-0 border-t border-gray-200 bg-white p-4 space-y-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-500">
-                Step {customStepIndex + 1} of {CUSTOM_STEPS.length}
-              </p>
-              <div className="flex flex-col gap-2">
-                {CUSTOM_STEPS[customStepIndex].type === "textarea" ? (
-                  <textarea
-                    value={stepInput}
-                    onChange={(e) => setStepInput(e.target.value)}
-                    placeholder={CUSTOM_STEPS[customStepIndex].placeholder}
-                    rows={3}
-                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm resize-none focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
-                  />
-                ) : (
-                  <input
-                    value={stepInput}
-                    onChange={(e) => setStepInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), submitStepInput())}
-                    type={
-                      CUSTOM_STEPS[customStepIndex].type === "email"
-                        ? "email"
-                        : CUSTOM_STEPS[customStepIndex].type === "tel"
-                          ? "tel"
-                          : CUSTOM_STEPS[customStepIndex].type === "number"
-                            ? "number"
-                            : "text"
-                    }
-                    placeholder={CUSTOM_STEPS[customStepIndex].placeholder}
-                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm min-w-0 focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
-                  />
-                )}
-                <button
-                  type="button"
-                  onClick={submitStepInput}
-                  className="rounded-xl bg-gray-900 text-white px-4 py-3 text-sm font-medium hover:bg-gray-800 transition-colors"
-                >
-                  {customStepIndex >= CUSTOM_STEPS.length - 1 ? "Review trip" : "Continue"}
-                </button>
+            <header className="relative shrink-0 border-b border-gray-200 bg-white px-4 py-3 sm:px-4">
+              <div className="relative flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 border border-gray-200">
+                    <Bot className="h-5 w-5 text-gray-600" strokeWidth={2} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-base font-semibold text-gray-900 leading-tight">Trip Advisor</p>
+                    <p className="text-xs text-gray-500">Always here to help</p>
+                  </div>
+                </div>
+                <div className="flex shrink-0 items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={resetChat}
+                    className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                    aria-label="Start new chat"
+                    title="New chat"
+                  >
+                    <RotateCcw className="h-4 w-4" strokeWidth={2} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                    aria-label="Close chat"
+                  >
+                    <X className="h-5 w-5" strokeWidth={2} />
+                  </button>
+                </div>
               </div>
+            </header>
+
+            <div
+              ref={listRef}
+              className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4 space-y-4 bg-gray-50"
+            >
+              {messages.map((msg, i) => (
+                <MessageBubble key={`${i}-${msg.role}`} role={msg.role} content={msg.content} />
+              ))}
+              {aiLoading && <TypingIndicator />}
             </div>
-          )}
+            <ChatActionBar
+              actions={actions}
+              onAction={handleAction}
+              onNavigate={() => setOpen(false)}
+              disabled={quoteSending || aiLoading}
+            />
 
-          {inReview && quoteSending && (
-            <p className="px-3 pb-2 text-xs text-gray-500 shrink-0 flex items-center gap-2">
-              <LoaderCircle className="h-3 w-3 animate-spin" /> Sending quote…
-            </p>
-          )}
+            {error && (
+              <p className="mx-3 mb-1 shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">
+                {error}
+              </p>
+            )}
 
-          {showMainInput && (
-            <footer className="shrink-0 bg-white p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-gray-100">
-              <div className="flex gap-2 items-end rounded-2xl border border-gray-200 bg-white p-1.5 focus-within:border-gray-400 focus-within:ring-1 focus-within:ring-gray-400 transition-shadow">
-                <input
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), void sendAiMessage())}
-                  placeholder="Ask anything..."
-                  disabled={aiLoading}
-                  className="flex-1 min-w-0 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:opacity-60"
-                  aria-label="Message trip advisor"
-                />
-                <button
-                  type="button"
-                  onClick={() => void sendAiMessage()}
-                  disabled={!draft.trim() || aiLoading || quoteSending}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-40 disabled:hover:bg-gray-900 transition-colors"
-                  aria-label="Send message"
-                >
-                  {aiLoading ? <LoaderCircle className="h-5 w-5 animate-spin" /> : <SendHorizontal className="h-4 w-4" strokeWidth={2} />}
-                </button>
+            {inCustomStep && (
+              <div className="shrink-0 border-t border-gray-200 bg-white p-4 space-y-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-500">
+                  Step {customStepIndex + 1} of {CUSTOM_STEPS.length}
+                </p>
+                <div className="flex flex-col gap-2">
+                  {CUSTOM_STEPS[customStepIndex].type === "textarea" ? (
+                    <textarea
+                      value={stepInput}
+                      onChange={(e) => setStepInput(e.target.value)}
+                      placeholder={CUSTOM_STEPS[customStepIndex].placeholder}
+                      rows={3}
+                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm resize-none focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                    />
+                  ) : (
+                    <input
+                      value={stepInput}
+                      onChange={(e) => setStepInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), submitStepInput())}
+                      type={
+                        CUSTOM_STEPS[customStepIndex].type === "email"
+                          ? "email"
+                          : CUSTOM_STEPS[customStepIndex].type === "tel"
+                            ? "tel"
+                            : CUSTOM_STEPS[customStepIndex].type === "number"
+                              ? "number"
+                              : "text"
+                      }
+                      placeholder={CUSTOM_STEPS[customStepIndex].placeholder}
+                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm min-w-0 focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={submitStepInput}
+                    className="rounded-xl bg-gray-900 text-white px-4 py-3 text-sm font-medium hover:bg-gray-800 transition-colors"
+                  >
+                    {customStepIndex >= CUSTOM_STEPS.length - 1 ? "Review trip" : "Continue"}
+                  </button>
+                </div>
               </div>
-            </footer>
-          )}
-        </div>
+            )}
+
+            {inReview && quoteSending && (
+              <p className="px-3 pb-2 text-xs text-gray-500 shrink-0 flex items-center gap-2">
+                <LoaderCircle className="h-3 w-3 animate-spin" /> Sending quote…
+              </p>
+            )}
+
+            {showMainInput && (
+              <footer className="shrink-0 bg-white p-3 sm:p-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-gray-100">
+                <div className="flex gap-2 items-end rounded-2xl border border-gray-200 bg-white p-1.5 focus-within:border-gray-400 focus-within:ring-1 focus-within:ring-gray-400 transition-shadow">
+                  <input
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), void sendAiMessage())}
+                    placeholder="Ask anything..."
+                    disabled={aiLoading}
+                    className="flex-1 min-w-0 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none disabled:opacity-60"
+                    aria-label="Message trip advisor"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void sendAiMessage()}
+                    disabled={!draft.trim() || aiLoading || quoteSending}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-40 disabled:hover:bg-gray-900 transition-colors"
+                    aria-label="Send message"
+                  >
+                    {aiLoading ? <LoaderCircle className="h-5 w-5 animate-spin" /> : <SendHorizontal className="h-4 w-4" strokeWidth={2} />}
+                  </button>
+                </div>
+              </footer>
+            )}
+          </div>
         </>
       )}
     </>
