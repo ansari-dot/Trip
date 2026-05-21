@@ -13,8 +13,12 @@ import RequestQuote from "./pages/RequestQuote";
 import AirTicketing from "./pages/services/AirTicketing";
 import JeepSafari from "./pages/services/JeepSafari";
 import Accommodation from "./pages/services/Accommodation";
+import HotelDetail from "./pages/HotelDetail";
+import JeepSafariDetail from "./pages/JeepSafariDetail";
 import TourGuide from "./pages/services/TourGuide";
+import TourGuideDetail from "./pages/TourGuideDetail";
 import CarRent from "./pages/services/CarRent";
+import RentalVehicleDetail from "./pages/RentalVehicleDetail";
 import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
@@ -51,9 +55,13 @@ export default function App() {
               <Route path="/request-quote" element={<RequestQuote />} />
               <Route path="/services/air-ticketing" element={<AirTicketing />} />
               <Route path="/services/jeep-safari" element={<JeepSafari />} />
+              <Route path="/jeep-safaris/:id" element={<JeepSafariDetail />} />
               <Route path="/services/accommodation" element={<Accommodation />} />
+              <Route path="/hotels/:id" element={<HotelDetail />} />
               <Route path="/services/tour-guide" element={<TourGuide />} />
+              <Route path="/tour-guides/:id" element={<TourGuideDetail />} />
               <Route path="/services/car-rent" element={<CarRent />} />
+              <Route path="/rental-vehicles/:id" element={<RentalVehicleDetail />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-conditions" element={<TermsConditions />} />

@@ -53,8 +53,48 @@ export const createRentalVehicle = async (req, res) => {
 
 export const getAllRentalVehicles = async (req, res) => {
   try {
-    const vehicles = await RentalVehicle.find().sort({ displayOrder: 1, createdAt: -1 });
-    res.status(200).json({ success: true, count: vehicles.length, data: vehicles });
+    const featuredOnly = parseBoolean(req.query.featured);
+
+    if (featuredOnly) {
+      const featured = await RentalVehicle.find({ withDriver: true }).sort({
+        displayOrder: 1,
+        createdAt: -1,
+      });
+      return res.status(200).json({
+        success: true,
+        count: featured.length,
+        totalItems: featured.length,
+        data: featured,
+      });
+    }
+
+    if (req.query.page === undefined && req.query.limit === undefined) {
+      const vehicles = await RentalVehicle.find().sort({ displayOrder: 1, createdAt: -1 });
+      return res.status(200).json({
+        success: true,
+        count: vehicles.length,
+        totalItems: vehicles.length,
+        data: vehicles,
+      });
+    }
+
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.max(Number(req.query.limit) || 9, 1);
+    const skip = (page - 1) * limit;
+
+    const [vehicles, total] = await Promise.all([
+      RentalVehicle.find().sort({ displayOrder: 1, createdAt: -1 }).skip(skip).limit(limit),
+      RentalVehicle.countDocuments(),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      count: vehicles.length,
+      currentPage: page,
+      totalPages: Math.max(Math.ceil(total / limit), 1),
+      totalItems: total,
+      data: vehicles,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message || "Failed to fetch rental vehicles" });
   }

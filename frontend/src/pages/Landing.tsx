@@ -1,4 +1,4 @@
-import { Search, MapPin, ChevronDown, ChevronLeft, ChevronRight, Package, Star, Compass, ShieldCheck, Headset, CheckCircle, LoaderCircle, Plane, BedDouble, UserCheck, Car, Truck, Calendar, Tag, CloudSun, Wind } from "lucide-react";
+import { Search, MapPin, ChevronDown, ChevronLeft, ChevronRight, Package, Star, Compass, ShieldCheck, Headset, CheckCircle, LoaderCircle, Calendar, Tag, CloudSun, Wind } from "lucide-react";
 import { getApiUrl, parseJsonSafely, API_BASE } from "../lib/api";
 import { whatsAppUrl } from "../lib/site";
 import { Link, useNavigate } from "react-router-dom";
@@ -36,6 +36,69 @@ type Blog = {
   category?: string;
   author?: string;
   publishedAt?: string;
+};
+
+type Hotel = {
+  _id?: string;
+  id: string;
+  name: string;
+  location: string;
+  category?: string;
+  rating?: number;
+  description?: string;
+  image?: string;
+  priceFrom?: string;
+  featured?: boolean;
+  displayOrder?: number;
+};
+
+type JeepSafariCard = {
+  _id?: string;
+  id: string;
+  name: string;
+  region?: string;
+  duration?: string;
+  pricePerPerson?: string;
+  pricePerJeep?: string;
+  image?: string;
+  description?: string;
+  category?: string;
+  difficulty?: string;
+  featured?: boolean;
+  displayOrder?: number;
+};
+
+type TourGuideCard = {
+  _id?: string;
+  id: string;
+  name: string;
+  image?: string;
+  shortBio?: string;
+  bio?: string;
+  experience?: string;
+  pricePerDay?: string;
+  category?: string;
+  region?: string;
+  baseCity?: string;
+  rating?: number;
+  totalTrips?: number;
+  featured?: boolean;
+  displayOrder?: number;
+};
+
+type RentalVehicleCard = {
+  _id?: string;
+  id: string;
+  name: string;
+  type?: string;
+  price?: string;
+  image?: string;
+  description?: string;
+  seats?: string;
+  transmission?: string;
+  fuelType?: string;
+  withDriver?: boolean;
+  displayOrder?: number;
 };
 
 const FEATURED_FALLBACKS = [
@@ -106,6 +169,89 @@ function normalizeBlog(input: unknown): Blog | null {
     category: blog.category || "",
     author: blog.author || "",
     publishedAt: blog.publishedAt || "",
+  };
+}
+
+function normalizeHotel(input: unknown): Hotel | null {
+  if (!input || typeof input !== "object") return null;
+  const hotel = input as Hotel;
+  if (!hotel.id || !hotel.name || !hotel.location) return null;
+  return {
+    _id: hotel._id,
+    id: hotel.id,
+    name: hotel.name,
+    location: hotel.location,
+    category: hotel.category || "",
+    rating: Number.isFinite(Number(hotel.rating)) ? Number(hotel.rating) : 0,
+    description: hotel.description || "",
+    image: hotel.image || "",
+    priceFrom: hotel.priceFrom || "",
+    featured: Boolean(hotel.featured),
+    displayOrder: Number.isFinite(Number(hotel.displayOrder)) ? Number(hotel.displayOrder) : 0,
+  };
+}
+
+function normalizeSafariCard(input: unknown): JeepSafariCard | null {
+  if (!input || typeof input !== "object") return null;
+  const s = input as JeepSafariCard;
+  if (!s.id || !s.name) return null;
+  return {
+    _id: s._id,
+    id: s.id,
+    name: s.name,
+    region: s.region || "",
+    duration: s.duration || "",
+    pricePerPerson: s.pricePerPerson || "",
+    pricePerJeep: s.pricePerJeep || "",
+    image: s.image || "",
+    description: s.description || "",
+    category: s.category || "",
+    difficulty: s.difficulty || "",
+    featured: Boolean(s.featured),
+    displayOrder: Number.isFinite(Number(s.displayOrder)) ? Number(s.displayOrder) : 0,
+  };
+}
+
+function normalizeGuideCard(input: unknown): TourGuideCard | null {
+  if (!input || typeof input !== "object") return null;
+  const g = input as TourGuideCard;
+  if (!g.id || !g.name) return null;
+  return {
+    _id: g._id,
+    id: g.id,
+    name: g.name,
+    image: g.image || "",
+    shortBio: g.shortBio || "",
+    bio: g.bio || "",
+    experience: g.experience || "",
+    pricePerDay: g.pricePerDay || "",
+    category: g.category || "",
+    region: g.region || "",
+    baseCity: g.baseCity || "",
+    rating: Number.isFinite(Number(g.rating)) ? Number(g.rating) : 0,
+    totalTrips: Number.isFinite(Number(g.totalTrips)) ? Number(g.totalTrips) : 0,
+    featured: Boolean(g.featured),
+    displayOrder: Number.isFinite(Number(g.displayOrder)) ? Number(g.displayOrder) : 0,
+  };
+}
+
+function normalizeRentalVehicleCard(input: unknown): RentalVehicleCard | null {
+  if (!input || typeof input !== "object") return null;
+  const v = input as RentalVehicleCard;
+  if (!v.id || !v.name) return null;
+  return {
+    _id: v._id,
+    id: v.id,
+    name: v.name,
+    type: v.type || "",
+    price: v.price || "",
+    image: v.image || "",
+    description: v.description || "",
+    seats: v.seats || "",
+    transmission: v.transmission || "",
+    fuelType: v.fuelType || "",
+    withDriver: Boolean(v.withDriver),
+    displayOrder: Number.isFinite(Number(v.displayOrder)) ? Number(v.displayOrder) : 0,
   };
 }
 
@@ -190,6 +336,14 @@ export default function Landing() {
   const [isTestimonialsLoading, setIsTestimonialsLoading] = useState(true);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isBlogsLoading, setIsBlogsLoading] = useState(true);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [isHotelsLoading, setIsHotelsLoading] = useState(true);
+  const [safaris, setSafaris] = useState<JeepSafariCard[]>([]);
+  const [isSafarisLoading, setIsSafarisLoading] = useState(true);
+  const [guides, setGuides] = useState<TourGuideCard[]>([]);
+  const [isGuidesLoading, setIsGuidesLoading] = useState(true);
+  const [rentalVehicles, setRentalVehicles] = useState<RentalVehicleCard[]>([]);
+  const [isRentalVehiclesLoading, setIsRentalVehiclesLoading] = useState(true);
 
   // hero slider state
   const [heroSlides, setHeroSlides] = useState<{
@@ -364,6 +518,114 @@ export default function Landing() {
       }
     };
     void loadBlogs();
+  }, []);
+
+  useEffect(() => {
+    const loadHotels = async () => {
+      setIsHotelsLoading(true);
+      try {
+        const featuredRes = await fetch(getApiUrl('/api/hotels?featured=true'));
+        const featuredData = await parseJsonSafely(featuredRes);
+        let collected: Hotel[] = [];
+        if (featuredRes.ok && Array.isArray(featuredData?.data)) {
+          collected = (featuredData.data.map(normalizeHotel).filter(Boolean) as Hotel[]);
+        }
+        if (collected.length === 0) {
+          const allRes = await fetch(getApiUrl('/api/hotels'));
+          const allData = await parseJsonSafely(allRes);
+          if (allRes.ok && Array.isArray(allData?.data)) {
+            collected = (allData.data.map(normalizeHotel).filter(Boolean) as Hotel[]);
+          }
+        }
+        setHotels(collected.slice(0, 4));
+      } catch {
+        setHotels([]);
+      } finally {
+        setIsHotelsLoading(false);
+      }
+    };
+    void loadHotels();
+  }, []);
+
+  useEffect(() => {
+    const loadSafaris = async () => {
+      setIsSafarisLoading(true);
+      try {
+        const featuredRes = await fetch(getApiUrl('/api/jeep-safaris?featured=true'));
+        const featuredData = await parseJsonSafely(featuredRes);
+        let collected: JeepSafariCard[] = [];
+        if (featuredRes.ok && Array.isArray(featuredData?.data)) {
+          collected = (featuredData.data.map(normalizeSafariCard).filter(Boolean) as JeepSafariCard[]);
+        }
+        if (collected.length === 0) {
+          const allRes = await fetch(getApiUrl('/api/jeep-safaris?page=1&limit=4'));
+          const allData = await parseJsonSafely(allRes);
+          if (allRes.ok && Array.isArray(allData?.data)) {
+            collected = (allData.data.map(normalizeSafariCard).filter(Boolean) as JeepSafariCard[]);
+          }
+        }
+        setSafaris(collected.slice(0, 4));
+      } catch {
+        setSafaris([]);
+      } finally {
+        setIsSafarisLoading(false);
+      }
+    };
+    void loadSafaris();
+  }, []);
+
+  useEffect(() => {
+    const loadGuides = async () => {
+      setIsGuidesLoading(true);
+      try {
+        const featuredRes = await fetch(getApiUrl('/api/tour-guides?featured=true'));
+        const featuredData = await parseJsonSafely(featuredRes);
+        let collected: TourGuideCard[] = [];
+        if (featuredRes.ok && Array.isArray(featuredData?.data)) {
+          collected = (featuredData.data.map(normalizeGuideCard).filter(Boolean) as TourGuideCard[]);
+        }
+        if (collected.length === 0) {
+          const allRes = await fetch(getApiUrl('/api/tour-guides?page=1&limit=4'));
+          const allData = await parseJsonSafely(allRes);
+          if (allRes.ok && Array.isArray(allData?.data)) {
+            collected = (allData.data.map(normalizeGuideCard).filter(Boolean) as TourGuideCard[]);
+          }
+        }
+        setGuides(collected.slice(0, 4));
+      } catch {
+        setGuides([]);
+      } finally {
+        setIsGuidesLoading(false);
+      }
+    };
+    void loadGuides();
+  }, []);
+
+  useEffect(() => {
+    const loadRentalVehicles = async () => {
+      setIsRentalVehiclesLoading(true);
+      try {
+        const featuredRes = await fetch(getApiUrl('/api/rental-vehicles?featured=true'));
+        const featuredData = await parseJsonSafely(featuredRes);
+        let collected: RentalVehicleCard[] = [];
+        if (featuredRes.ok && Array.isArray(featuredData?.data)) {
+          collected = (featuredData.data.map(normalizeRentalVehicleCard).filter(Boolean) as RentalVehicleCard[]);
+        }
+        if (collected.length === 0) {
+          const allRes = await fetch(getApiUrl('/api/rental-vehicles?page=1&limit=4'));
+          const allData = await parseJsonSafely(allRes);
+          if (allRes.ok && Array.isArray(allData?.data)) {
+            collected = (allData.data.map(normalizeRentalVehicleCard).filter(Boolean) as RentalVehicleCard[]);
+          }
+        }
+        setRentalVehicles(collected.slice(0, 4));
+      } catch {
+        setRentalVehicles([]);
+      } finally {
+        setIsRentalVehiclesLoading(false);
+      }
+    };
+    void loadRentalVehicles();
   }, []);
 
   const displayedFeaturedDestinations = featuredDestinations.length > 0
@@ -563,7 +825,7 @@ export default function Landing() {
         ) : (
           <>
             {/* Mobile: horizontal snap carousel */}
-            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain touch-pan-x pb-2 px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain [touch-action:pan-x_pan-y] pb-2 px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {displayedFeaturedDestinations.map((destination, index) => (
                 <Link
                   to={`/destinations/${destination.id}`}
@@ -632,7 +894,7 @@ export default function Landing() {
           </div>
         ) : (
           <>
-            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain touch-pan-x pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain [touch-action:pan-x_pan-y] pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {featuredTours.map((tour) => (
                 <Link to={`/tour-packages/${tour.id}`} key={`m-${tour.id}`} className="group relative shrink-0 snap-center w-[min(88vw,20.5rem)] overflow-hidden rounded-2xl bg-white border border-border/70 shadow-sm">
                   <div className="relative h-56 overflow-hidden">
@@ -709,7 +971,7 @@ export default function Landing() {
           </div>
         ) : (
           <>
-            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain touch-pan-x pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain [touch-action:pan-x_pan-y] pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {seasonalTours.map((tour) => (
                 <Link to={`/tour-packages/${tour.id}`} key={`m-${tour.id}`} className="group shrink-0 snap-center w-[min(88vw,20.5rem)] bg-white rounded-2xl overflow-hidden shadow-md border border-border/50 flex flex-col">
                   <div className="relative h-56 overflow-hidden">
@@ -778,7 +1040,492 @@ export default function Landing() {
       </section>
 
 
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-white">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Handpicked Stays</div>
+          <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">Featured Hotels</h2>
+          <p className="text-muted-foreground mt-3 sm:mt-4 max-w-xl mx-auto font-light text-xs sm:text-sm px-2">
+            Stay at the finest hotels and boutique resorts across Northern Pakistan, curated by our team.
+          </p>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-md mx-auto md:hidden">Swipe to browse featured hotels.</p>
+        </div>
+
+        {isHotelsLoading ? (
+          <div className="max-w-7xl mx-auto flex items-center justify-center py-20">
+            <div className="inline-flex items-center gap-3 bg-white border border-border rounded-sm px-5 py-4 shadow-sm">
+              <LoaderCircle className="w-5 h-5 animate-spin text-lux-accent" />
+              <span className="text-sm">Loading hotels...</span>
+            </div>
+          </div>
+        ) : hotels.length === 0 ? null : (
+          <>
+            {/* Mobile carousel */}
+            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain [touch-action:pan-x_pan-y] pb-2 px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              {hotels.map((hotel) => (
+                <Link
+                  to={`/hotels/${hotel.id}`}
+                  key={`m-${hotel.id}`}
+                  className="group shrink-0 snap-center w-[min(88vw,20.5rem)] bg-white rounded-2xl overflow-hidden shadow-md border border-border/50 flex flex-col"
+                >
+                  <div className="relative h-56 overflow-hidden">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                      style={{ backgroundImage: `url('${hotel.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1200"}')` }}
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                    {hotel.category ? (
+                      <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+                        {hotel.category}
+                      </div>
+                    ) : null}
+                    {hotel.rating && hotel.rating > 0 ? (
+                      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-sm text-xs font-bold text-lux-primary inline-flex items-center gap-1">
+                        <Star className="w-3 h-3 text-lux-accent fill-lux-accent" />
+                        {hotel.rating.toFixed(1)}
+                      </div>
+                    ) : null}
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <div className="flex items-center gap-1.5 text-xs font-medium drop-shadow-md">
+                        <MapPin className="w-3 h-3 text-lux-accent" />
+                        {hotel.location}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-headings text-xl mb-2 group-hover:text-lux-accent transition-colors">{hotel.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{hotel.description || "Premium accommodation curated for an unforgettable stay."}</p>
+                    <div className="mt-auto pt-5 border-t border-border flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">Starting From</span>
+                        <span className="text-lg font-bold text-lux-primary">{hotel.priceFrom || "Contact us"}</span>
+                      </div>
+                      <div className="w-10 h-10 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
+                        <ChevronRight className="w-5 h-5" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            {/* Desktop grid */}
+            <div className={`hidden md:grid max-w-7xl mx-auto gap-6 sm:gap-8 ${hotels.length >= 4 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-3"}`}>
+              {hotels.map((hotel) => (
+                <Link
+                  to={`/hotels/${hotel.id}`}
+                  key={hotel.id}
+                  className="group bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 flex flex-col border border-border/60 hover:-translate-y-1"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                      style={{ backgroundImage: `url('${hotel.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=1200"}')` }}
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                    {hotel.category ? (
+                      <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">
+                        {hotel.category}
+                      </div>
+                    ) : null}
+                    {hotel.rating && hotel.rating > 0 ? (
+                      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-sm text-xs font-bold text-lux-primary inline-flex items-center gap-1">
+                        <Star className="w-3 h-3 text-lux-accent fill-lux-accent" />
+                        {hotel.rating.toFixed(1)}
+                      </div>
+                    ) : null}
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <div className="flex items-center gap-1.5 text-xs font-medium drop-shadow-md">
+                        <MapPin className="w-3 h-3 text-lux-accent" />
+                        {hotel.location}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-headings text-xl mb-2 group-hover:text-lux-accent transition-colors">{hotel.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{hotel.description || "Premium accommodation curated for an unforgettable stay."}</p>
+                    <div className="mt-auto pt-5 border-t border-border flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">Starting From</span>
+                        <span className="text-base font-bold text-lux-primary">{hotel.priceFrom || "Contact us"}</span>
+                      </div>
+                      <div className="w-9 h-9 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="flex justify-center mt-12">
+              <Link
+                to="/services/accommodation"
+                className="border border-lux-primary text-lux-primary hover:bg-lux-primary hover:text-white px-8 py-3 rounded-sm text-sm uppercase tracking-widest font-medium transition-colors cursor-pointer"
+              >
+                View All Hotels
+              </Link>
+            </div>
+          </>
+        )}
+      </section>
+
+      {/* Featured Jeep Safaris */}
       <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-lux-bg border-y border-border">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Off-Road Expeditions</div>
+          <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">Featured Jeep Safaris</h2>
+          <p className="text-muted-foreground mt-3 sm:mt-4 max-w-xl mx-auto font-light text-xs sm:text-sm px-2">
+            Hand-driven safaris through Deosai, Shimshal, Khunjerab, and beyond. Every trip curated by our team.
+          </p>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-md mx-auto md:hidden">Swipe to browse featured safaris.</p>
+        </div>
+
+        {isSafarisLoading ? (
+          <div className="max-w-7xl mx-auto flex items-center justify-center py-20">
+            <div className="inline-flex items-center gap-3 bg-white border border-border rounded-sm px-5 py-4 shadow-sm">
+              <LoaderCircle className="w-5 h-5 animate-spin text-lux-accent" />
+              <span className="text-sm">Loading jeep safaris...</span>
+            </div>
+          </div>
+        ) : safaris.length === 0 ? null : (
+          <>
+            {/* Mobile carousel */}
+            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain [touch-action:pan-x_pan-y] pb-2 px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              {safaris.map((safari) => {
+                const priceLabel = safari.pricePerPerson || safari.pricePerJeep || "";
+                return (
+                  <Link
+                    to={`/jeep-safaris/${safari.id}`}
+                    key={`m-${safari.id}`}
+                    className="group shrink-0 snap-center w-[min(88vw,20.5rem)] bg-white rounded-2xl overflow-hidden shadow-md border border-border/50 flex flex-col"
+                  >
+                    <div className="relative h-56 overflow-hidden">
+                      <div
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                        style={{ backgroundImage: `url('${safari.image || "https://images.unsplash.com/photo-1597178454113-be25b884b8a4?auto=format&fit=crop&q=80&w=1200"}')` }}
+                      />
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                      {safari.category ? (
+                        <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">{safari.category}</div>
+                      ) : null}
+                      {safari.difficulty ? (
+                        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-sm text-xs font-bold text-lux-primary">{safari.difficulty}</div>
+                      ) : null}
+                      <div className="absolute bottom-4 left-4 right-4 text-white">
+                        <div className="flex items-center gap-1.5 text-xs font-medium drop-shadow-md">
+                          <MapPin className="w-3 h-3 text-lux-accent" />
+                          {safari.region || "Northern Pakistan"}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="font-headings text-xl mb-2 group-hover:text-lux-accent transition-colors">{safari.name}</h3>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{safari.description || "Spectacular off-road expedition through untouched landscapes."}</p>
+                      <div className="mt-auto pt-5 border-t border-border flex justify-between items-center">
+                        <div>
+                          <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">{safari.duration || "From"}</span>
+                          <span className="text-lg font-bold text-lux-primary">{priceLabel || "Contact us"}</span>
+                        </div>
+                        <div className="w-10 h-10 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
+                          <ChevronRight className="w-5 h-5" />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            {/* Desktop grid */}
+            <div className={`hidden md:grid max-w-7xl mx-auto gap-6 sm:gap-8 ${safaris.length >= 4 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-3"}`}>
+              {safaris.map((safari) => {
+                const priceLabel = safari.pricePerPerson || safari.pricePerJeep || "";
+                return (
+                  <Link
+                    to={`/jeep-safaris/${safari.id}`}
+                    key={safari.id}
+                    className="group bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 flex flex-col border border-border/60 hover:-translate-y-1"
+                  >
+                    <div className="relative h-64 overflow-hidden">
+                      <div
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                        style={{ backgroundImage: `url('${safari.image || "https://images.unsplash.com/photo-1597178454113-be25b884b8a4?auto=format&fit=crop&q=80&w=1200"}')` }}
+                      />
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                      {safari.category ? (
+                        <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">{safari.category}</div>
+                      ) : null}
+                      {safari.difficulty ? (
+                        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-sm text-xs font-bold text-lux-primary">{safari.difficulty}</div>
+                      ) : null}
+                      <div className="absolute bottom-4 left-4 right-4 text-white">
+                        <div className="flex items-center gap-1.5 text-xs font-medium drop-shadow-md">
+                          <MapPin className="w-3 h-3 text-lux-accent" />
+                          {safari.region || "Northern Pakistan"}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="font-headings text-xl mb-2 group-hover:text-lux-accent transition-colors">{safari.name}</h3>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{safari.description || "Spectacular off-road expedition through untouched landscapes."}</p>
+                      <div className="mt-auto pt-5 border-t border-border flex justify-between items-center">
+                        <div>
+                          <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">{safari.duration || "From"}</span>
+                          <span className="text-base font-bold text-lux-primary">{priceLabel || "Contact us"}</span>
+                        </div>
+                        <div className="w-9 h-9 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
+                          <ChevronRight className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-center mt-12">
+              <Link
+                to="/services/jeep-safari"
+                className="border border-lux-primary text-lux-primary hover:bg-lux-primary hover:text-white px-8 py-3 rounded-sm text-sm uppercase tracking-widest font-medium transition-colors cursor-pointer"
+              >
+                View All Jeep Safaris
+              </Link>
+            </div>
+          </>
+        )}
+      </section>
+
+      {/* Featured Tour Guides */}
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-white">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Local Experts</div>
+          <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">Featured Tour Guides</h2>
+          <p className="text-muted-foreground mt-3 sm:mt-4 max-w-xl mx-auto font-light text-xs sm:text-sm px-2">
+            Licensed local guides for trekking, cultural tours, and photography across Northern Pakistan.
+          </p>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-md mx-auto md:hidden">Swipe to browse featured guides.</p>
+        </div>
+
+        {isGuidesLoading ? (
+          <div className="max-w-7xl mx-auto flex items-center justify-center py-20">
+            <div className="inline-flex items-center gap-3 bg-white border border-border rounded-sm px-5 py-4 shadow-sm">
+              <LoaderCircle className="w-5 h-5 animate-spin text-lux-accent" />
+              <span className="text-sm">Loading tour guides...</span>
+            </div>
+          </div>
+        ) : guides.length === 0 ? null : (
+          <>
+            {/* Mobile carousel */}
+            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain [touch-action:pan-x_pan-y] pb-2 px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              {guides.map((guide) => (
+                <Link
+                  to={`/tour-guides/${guide.id}`}
+                  key={`m-${guide.id}`}
+                  className="group shrink-0 snap-center w-[min(88vw,20.5rem)] bg-white rounded-2xl overflow-hidden shadow-md border border-border/50 flex flex-col"
+                >
+                  <div className="relative h-56 overflow-hidden">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                      style={{ backgroundImage: `url('${guide.image || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=1200"}')` }}
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                    {guide.category ? (
+                      <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">{guide.category}</div>
+                    ) : null}
+                    {guide.rating && guide.rating > 0 ? (
+                      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-sm text-xs font-bold text-lux-primary inline-flex items-center gap-1">
+                        <Star className="w-3 h-3 text-lux-accent fill-lux-accent" />
+                        {guide.rating.toFixed(1)}
+                      </div>
+                    ) : null}
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <div className="flex items-center gap-1.5 text-xs font-medium drop-shadow-md">
+                        <MapPin className="w-3 h-3 text-lux-accent" />
+                        {guide.region || guide.baseCity || "Northern Pakistan"}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-headings text-xl mb-2 group-hover:text-lux-accent transition-colors">{guide.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{guide.shortBio || guide.bio || "Experienced local guide for unforgettable journeys."}</p>
+                    <div className="mt-auto pt-5 border-t border-border flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">{guide.experience || "Per Day"}</span>
+                        <span className="text-lg font-bold text-lux-primary">{guide.pricePerDay || "Contact us"}</span>
+                      </div>
+                      <div className="w-10 h-10 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
+                        <ChevronRight className="w-5 h-5" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            {/* Desktop grid */}
+            <div className={`hidden md:grid max-w-7xl mx-auto gap-6 sm:gap-8 ${guides.length >= 4 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-3"}`}>
+              {guides.map((guide) => (
+                <Link
+                  to={`/tour-guides/${guide.id}`}
+                  key={guide.id}
+                  className="group bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 flex flex-col border border-border/60 hover:-translate-y-1"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                      style={{ backgroundImage: `url('${guide.image || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=1200"}')` }}
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                    {guide.category ? (
+                      <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">{guide.category}</div>
+                    ) : null}
+                    {guide.rating && guide.rating > 0 ? (
+                      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-sm text-xs font-bold text-lux-primary inline-flex items-center gap-1">
+                        <Star className="w-3 h-3 text-lux-accent fill-lux-accent" />
+                        {guide.rating.toFixed(1)}
+                      </div>
+                    ) : null}
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <div className="flex items-center gap-1.5 text-xs font-medium drop-shadow-md">
+                        <MapPin className="w-3 h-3 text-lux-accent" />
+                        {guide.region || guide.baseCity || "Northern Pakistan"}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-headings text-xl mb-2 group-hover:text-lux-accent transition-colors">{guide.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{guide.shortBio || guide.bio || "Experienced local guide for unforgettable journeys."}</p>
+                    <div className="mt-auto pt-5 border-t border-border flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">{guide.experience || "Per Day"}</span>
+                        <span className="text-base font-bold text-lux-primary">{guide.pricePerDay || "Contact us"}</span>
+                      </div>
+                      <div className="w-9 h-9 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="flex justify-center mt-12">
+              <Link
+                to="/services/tour-guide"
+                className="border border-lux-primary text-lux-primary hover:bg-lux-primary hover:text-white px-8 py-3 rounded-sm text-sm uppercase tracking-widest font-medium transition-colors cursor-pointer"
+              >
+                View All Tour Guides
+              </Link>
+            </div>
+          </>
+        )}
+      </section>
+
+      {/* Featured Rental Vehicles */}
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-lux-bg border-y border-border">
+        <div className="text-center mb-10 sm:mb-16">
+          <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Premium Fleet</div>
+          <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">Featured Rentals</h2>
+          <p className="text-muted-foreground mt-3 sm:mt-4 max-w-xl mx-auto font-light text-xs sm:text-sm px-2">
+            4x4 jeeps, luxury SUVs, and comfortable sedans for every road in Northern Pakistan.
+          </p>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-md mx-auto md:hidden">Swipe to browse featured vehicles.</p>
+        </div>
+
+        {isRentalVehiclesLoading ? (
+          <div className="max-w-7xl mx-auto flex items-center justify-center py-20">
+            <div className="inline-flex items-center gap-3 bg-white border border-border rounded-sm px-5 py-4 shadow-sm">
+              <LoaderCircle className="w-5 h-5 animate-spin text-lux-accent" />
+              <span className="text-sm">Loading vehicles...</span>
+            </div>
+          </div>
+        ) : rentalVehicles.length === 0 ? null : (
+          <>
+            {/* Mobile carousel */}
+            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain [touch-action:pan-x_pan-y] pb-2 px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              {rentalVehicles.map((vehicle) => (
+                <Link
+                  to={`/rental-vehicles/${vehicle.id}`}
+                  key={`m-${vehicle.id}`}
+                  className="group shrink-0 snap-center w-[min(88vw,20.5rem)] bg-white rounded-2xl overflow-hidden shadow-md border border-border/50 flex flex-col"
+                >
+                  <div className="relative h-56 overflow-hidden">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                      style={{ backgroundImage: `url('${vehicle.image || "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=1200"}')` }}
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                    {vehicle.type ? (
+                      <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">{vehicle.type}</div>
+                    ) : null}
+                    {vehicle.withDriver ? (
+                      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest text-lux-primary">+ Driver</div>
+                    ) : null}
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-headings text-xl mb-2 group-hover:text-lux-accent transition-colors">{vehicle.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{vehicle.description || "Reliable vehicle for mountain roads and city travel."}</p>
+                    <div className="mt-auto pt-5 border-t border-border flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">{vehicle.seats ? `${vehicle.seats} · ${vehicle.transmission || "—"}` : "Per Day"}</span>
+                        <span className="text-lg font-bold text-lux-primary">{vehicle.price || "Contact us"}</span>
+                      </div>
+                      <div className="w-10 h-10 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
+                        <ChevronRight className="w-5 h-5" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            {/* Desktop grid */}
+            <div className={`hidden md:grid max-w-7xl mx-auto gap-6 sm:gap-8 ${rentalVehicles.length >= 4 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-3"}`}>
+              {rentalVehicles.map((vehicle) => (
+                <Link
+                  to={`/rental-vehicles/${vehicle.id}`}
+                  key={vehicle.id}
+                  className="group bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 flex flex-col border border-border/60 hover:-translate-y-1"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                      style={{ backgroundImage: `url('${vehicle.image || "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=1200"}')` }}
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                    {vehicle.type ? (
+                      <div className="absolute top-4 left-4 bg-lux-accent text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-sm">{vehicle.type}</div>
+                    ) : null}
+                    {vehicle.withDriver ? (
+                      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest text-lux-primary">+ Driver</div>
+                    ) : null}
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-headings text-xl mb-2 group-hover:text-lux-accent transition-colors">{vehicle.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-light leading-relaxed">{vehicle.description || "Reliable vehicle for mountain roads and city travel."}</p>
+                    <div className="mt-auto pt-5 border-t border-border flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest block mb-0.5">{vehicle.seats ? `${vehicle.seats} · ${vehicle.transmission || "—"}` : "Per Day"}</span>
+                        <span className="text-base font-bold text-lux-primary">{vehicle.price || "Contact us"}</span>
+                      </div>
+                      <div className="w-9 h-9 rounded-full bg-lux-bg flex items-center justify-center group-hover:bg-lux-accent group-hover:text-white transition-all duration-300">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="flex justify-center mt-12">
+              <Link
+                to="/services/car-rent"
+                className="border border-lux-primary text-lux-primary hover:bg-lux-primary hover:text-white px-8 py-3 rounded-sm text-sm uppercase tracking-widest font-medium transition-colors cursor-pointer"
+              >
+                View All Rentals
+              </Link>
+            </div>
+          </>
+        )}
+      </section>
+
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-white">
         <div className="text-center mb-10 sm:mb-16">
           <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Why Choose Us</div>
           <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">Travel with Confidence</h2>
@@ -823,46 +1570,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Our Services Section */}
-      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-lux-bg">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10 sm:mb-16 px-2">
-            <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Featured Services</div>
-            <h2 className="font-headings text-2xl sm:text-4xl lg:text-5xl text-lux-primary max-w-2xl mx-auto leading-tight">
-              A wide range of travel services
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {[
-              { icon: Plane, title: "Air Ticketing", description: "Domestic and international flight bookings at the best available rates, handled with care and expertise.", href: "/services/air-ticketing" },
-              { icon: Truck, title: "Jeep Safari", description: "Thrilling off-road adventures through Pakistan's most breathtaking mountain passes and terrains.", href: "/services/jeep-safari" },
-              { icon: BedDouble, title: "Accommodation", description: "Carefully selected hotels, guesthouses, and mountain camps tailored to your comfort and budget.", href: "/services/accommodation" },
-              { icon: UserCheck, title: "Tour Guide", description: "Experienced, knowledgeable local guides who bring destinations to life with authentic stories.", href: "/services/tour-guide" },
-              { icon: Car, title: "Jeep / Car Rent", description: "Reliable vehicles for self-drive or chauffeur-driven travel across Pakistan's scenic routes.", href: "/services/car-rent" },
-            ].map((service) => (
-              <Link
-                key={service.title}
-                to={service.href}
-                className="group bg-white rounded-2xl shadow-sm border border-border p-6 sm:p-8 flex flex-col gap-4 sm:gap-6 hover:shadow-lg hover:border-lux-accent/30 transition-all duration-300 active:scale-[0.99]"
-              >
-                <div className="w-16 h-16 bg-lux-accent/10 rounded-xl flex items-center justify-center group-hover:bg-lux-accent/20 transition-colors duration-300">
-                  <service.icon className="w-8 h-8 text-lux-accent" strokeWidth={1.5} />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-headings text-xl text-lux-primary mb-3 group-hover:text-lux-accent transition-colors duration-300">{service.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{service.description}</p>
-                </div>
-                <div className="w-9 h-9 rounded-full border border-border flex items-center justify-center text-lux-primary group-hover:bg-lux-accent group-hover:border-lux-accent group-hover:text-white transition-all duration-300">
-                  <span className="text-sm font-bold group-hover:translate-x-0.5 transition-transform duration-300">→</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
-      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-white">
+      <section className="py-14 sm:py-24 px-4 sm:px-8 lg:px-12 bg-lux-bg border-y border-border">
         <div className="text-center mb-10 sm:mb-16">
           <div className="text-lux-accent text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold mb-2 sm:mb-3">Testimonials</div>
           <h2 className="font-headings text-2xl sm:text-4xl text-lux-primary px-2">What Our Travelers Say</h2>
@@ -919,7 +1627,7 @@ export default function Landing() {
             </div>
           ) : blogs.length === 0 ? null : (
             <>
-              <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain touch-pan-x pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain [touch-action:pan-x_pan-y] pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {blogs.map((blog) => (
                   <Link
                     key={`m-${blog.id}`}

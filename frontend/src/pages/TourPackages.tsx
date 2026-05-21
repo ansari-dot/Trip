@@ -493,7 +493,7 @@ export default function TourPackages() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
               {paginatedPackages.map((pkg, i) => (
                 <Link
                   to={`/tour-packages/${pkg.id}`}
@@ -502,7 +502,7 @@ export default function TourPackages() {
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
                   <div
-                    className="relative h-60 bg-cover bg-center overflow-hidden"
+                    className="relative h-48 bg-cover bg-center overflow-hidden"
                     style={{ backgroundImage: `url('${pkg.image || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200"}')` }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent transition-opacity duration-500 group-hover:opacity-0" />
@@ -510,28 +510,30 @@ export default function TourPackages() {
                       style={{ backgroundImage: `url('${pkg.image || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200"}')`, zIndex: -1 }}
                     />
                     {pkg.type && (
-                      <div className="absolute top-4 left-4 bg-lux-primary text-white text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 font-bold">
+                      <div className="absolute top-3 left-3 bg-lux-primary text-white text-[9px] uppercase tracking-[0.18em] px-2.5 py-1 font-bold">
                         {pkg.type}
                       </div>
                     )}
-                    <div className="absolute bottom-4 right-4 bg-white text-lux-primary px-3 py-1.5">
-                      <p className="text-[9px] uppercase tracking-widest text-lux-primary/50 leading-none mb-0.5">From</p>
-                      <p className="text-sm font-bold leading-none">{pkg.price}</p>
-                    </div>
+                    {pkg.price ? (
+                      <div className="absolute bottom-3 right-3 bg-white text-lux-primary px-2.5 py-1">
+                        <p className="text-[8px] uppercase tracking-widest text-lux-primary/50 leading-none mb-0.5">From</p>
+                        <p className="text-xs font-bold leading-none">{pkg.price}</p>
+                      </div>
+                    ) : null}
                   </div>
-                  <div className="p-6 flex-1 flex flex-col border-b border-l border-r border-border">
-                    <h3 className="font-headings text-xl mb-2 group-hover:text-lux-accent transition-colors duration-300">{pkg.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-5 flex-1 line-clamp-3">{pkg.description}</p>
-                    <div className="flex items-center justify-between pt-4 border-t border-border/60">
-                      <div className="flex items-center gap-1 text-xs text-lux-primary/60">
-                        <Clock className="w-3.5 h-3.5 text-lux-accent" />
-                        <span>{pkg.duration}</span>
+                  <div className="p-4 sm:p-5 flex-1 flex flex-col border-b border-l border-r border-border">
+                    <h3 className="font-headings text-lg leading-snug mb-2 group-hover:text-lux-accent transition-colors duration-300 line-clamp-1">{pkg.title}</h3>
+                    <p className="text-muted-foreground text-xs leading-relaxed mb-4 flex-1 line-clamp-2">{pkg.description}</p>
+                    <div className="flex items-center justify-between pt-3 border-t border-border/60 gap-2">
+                      <div className="flex items-center gap-1 text-[11px] text-lux-primary/60 min-w-0">
+                        <Clock className="w-3 h-3 text-lux-accent shrink-0" />
+                        <span className="truncate">{pkg.duration}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-lux-primary/60">
-                        <Map className="w-3.5 h-3.5 text-lux-accent" />
-                        <span>{pkg.destinations.length} Destination{pkg.destinations.length !== 1 ? "s" : ""}</span>
+                      <div className="flex items-center gap-1 text-[11px] text-lux-primary/60 min-w-0">
+                        <Map className="w-3 h-3 text-lux-accent shrink-0" />
+                        <span className="truncate">{pkg.destinations.length} Dest{pkg.destinations.length !== 1 ? "s" : ""}</span>
                       </div>
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-lux-accent font-bold group-hover:underline">View →</span>
+                      <span className="text-[9px] uppercase tracking-[0.18em] text-lux-accent font-bold group-hover:underline shrink-0">View →</span>
                     </div>
                   </div>
                 </Link>

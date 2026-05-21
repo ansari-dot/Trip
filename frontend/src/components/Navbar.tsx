@@ -29,7 +29,20 @@ function LuxMenuIcon({ open }: { open: boolean }) {
 
 export default function Navbar() {
   const location = useLocation();
-  const isContactPage = location.pathname === "/contact" || location.pathname === "/about" || location.pathname === "/tour-packages" || location.pathname === "/destinations" || location.pathname === "/blogs";
+  const isContactPage =
+    location.pathname === "/contact" ||
+    location.pathname === "/about" ||
+    location.pathname === "/tour-packages" ||
+    location.pathname === "/destinations" ||
+    location.pathname === "/blogs" ||
+    location.pathname === "/services/accommodation" ||
+    location.pathname === "/services/jeep-safari" ||
+    location.pathname === "/services/tour-guide" ||
+    location.pathname === "/services/car-rent" ||
+    location.pathname.startsWith("/hotels/") ||
+    location.pathname.startsWith("/jeep-safaris/") ||
+    location.pathname.startsWith("/tour-guides/") ||
+    location.pathname.startsWith("/rental-vehicles/");
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);

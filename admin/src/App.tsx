@@ -3,11 +3,13 @@ import { motion } from 'motion/react';
 import {
   AlertCircle,
   ArrowUpRight,
+  BedDouble,
   Bell,
   BookOpen,
   Bot,
   Briefcase,
   Car,
+  Compass,
   LayoutDashboard,
   LoaderCircle,
   Lock,
@@ -38,6 +40,13 @@ const SIDEBAR_ITEMS = [
   { id: 'destinations', label: 'Destinations', icon: MapPin },
   { id: 'blogs', label: 'Blogs', icon: BookOpen },
   { id: 'rental-vehicles', label: 'Rental Vehicles', icon: Car },
+  { id: 'vehicle-categories', label: 'Vehicle Categories', icon: Tags },
+  { id: 'jeep-safaris', label: 'Jeep Safaris', icon: Compass },
+  { id: 'safari-categories', label: 'Safari Categories', icon: Tags },
+  { id: 'tour-guides', label: 'Tour Guides', icon: UserRound },
+  { id: 'guide-specialties', label: 'Guide Specialties', icon: Tags },
+  { id: 'hotels', label: 'Hotels', icon: BedDouble },
+  { id: 'hotel-categories', label: 'Hotel Categories', icon: Tags },
   { id: 'packages', label: 'Tour Packages', icon: Package },
   { id: 'tour-types', label: 'Tour Types', icon: Tags },
   { id: 'featured-tours', label: 'Featured Tours', icon: Star },
@@ -848,6 +857,494 @@ function rentalVehicleToFormState(vehicle: RentalVehicle): RentalVehicleFormStat
     withDriver: Boolean(vehicle.withDriver),
     features: (vehicle.features || []).join('\n'),
     displayOrder: String(vehicle.displayOrder ?? 0),
+  };
+}
+
+type JeepSafariItineraryStep = {
+  day?: string;
+  title: string;
+  description?: string;
+};
+
+type JeepSafari = {
+  _id?: string;
+  id: string;
+  name: string;
+  region?: string;
+  duration?: string;
+  pricePerPerson?: string;
+  pricePerJeep?: string;
+  image?: string;
+  gallery?: string[];
+  description?: string;
+  category?: string;
+  difficulty?: string;
+  vehicleType?: string;
+  maxGroupSize?: string;
+  bestSeason?: string;
+  startLocation?: string;
+  endLocation?: string;
+  meetingPoint?: string;
+  highlights?: string[];
+  includes?: string[];
+  excludes?: string[];
+  itinerary?: JeepSafariItineraryStep[];
+  nearbyAttractions?: string[];
+  latitude?: number;
+  longitude?: number;
+  featured?: boolean;
+  displayOrder?: number;
+};
+
+type JeepSafariFormState = {
+  id: string;
+  name: string;
+  region: string;
+  duration: string;
+  pricePerPerson: string;
+  pricePerJeep: string;
+  image: string;
+  description: string;
+  category: string;
+  difficulty: string;
+  vehicleType: string;
+  maxGroupSize: string;
+  bestSeason: string;
+  startLocation: string;
+  endLocation: string;
+  meetingPoint: string;
+  highlights: string;
+  includes: string;
+  excludes: string;
+  itinerary: string;
+  nearbyAttractions: string;
+  latitude: string;
+  longitude: string;
+  featured: boolean;
+  displayOrder: string;
+};
+
+const EMPTY_JEEP_SAFARI_FORM: JeepSafariFormState = {
+  id: '',
+  name: '',
+  region: '',
+  duration: '',
+  pricePerPerson: '',
+  pricePerJeep: '',
+  image: '',
+  description: '',
+  category: '',
+  difficulty: '',
+  vehicleType: '',
+  maxGroupSize: '',
+  bestSeason: '',
+  startLocation: '',
+  endLocation: '',
+  meetingPoint: '',
+  highlights: '',
+  includes: '',
+  excludes: '',
+  itinerary: '',
+  nearbyAttractions: '',
+  latitude: '',
+  longitude: '',
+  featured: false,
+  displayOrder: '0',
+};
+
+function normalizeJeepSafari(input: unknown): JeepSafari | null {
+  if (!input || typeof input !== 'object') return null;
+  const s = input as JeepSafari;
+  if (!s.id || !s.name) return null;
+  return {
+    _id: s._id,
+    id: s.id,
+    name: s.name,
+    region: s.region || '',
+    duration: s.duration || '',
+    pricePerPerson: s.pricePerPerson || '',
+    pricePerJeep: s.pricePerJeep || '',
+    image: s.image || '',
+    gallery: Array.isArray(s.gallery) ? s.gallery : [],
+    description: s.description || '',
+    category: s.category || '',
+    difficulty: s.difficulty || '',
+    vehicleType: s.vehicleType || '',
+    maxGroupSize: s.maxGroupSize || '',
+    bestSeason: s.bestSeason || '',
+    startLocation: s.startLocation || '',
+    endLocation: s.endLocation || '',
+    meetingPoint: s.meetingPoint || '',
+    highlights: Array.isArray(s.highlights) ? s.highlights : [],
+    includes: Array.isArray(s.includes) ? s.includes : [],
+    excludes: Array.isArray(s.excludes) ? s.excludes : [],
+    itinerary: Array.isArray(s.itinerary) ? s.itinerary : [],
+    nearbyAttractions: Array.isArray(s.nearbyAttractions) ? s.nearbyAttractions : [],
+    latitude: Number.isFinite(Number(s.latitude)) ? Number(s.latitude) : undefined,
+    longitude: Number.isFinite(Number(s.longitude)) ? Number(s.longitude) : undefined,
+    featured: Boolean(s.featured),
+    displayOrder: Number.isFinite(Number(s.displayOrder)) ? Number(s.displayOrder) : 0,
+  };
+}
+
+function jeepSafariToFormState(s: JeepSafari): JeepSafariFormState {
+  return {
+    id: s.id,
+    name: s.name,
+    region: s.region || '',
+    duration: s.duration || '',
+    pricePerPerson: s.pricePerPerson || '',
+    pricePerJeep: s.pricePerJeep || '',
+    image: s.image || '',
+    description: s.description || '',
+    category: s.category || '',
+    difficulty: s.difficulty || '',
+    vehicleType: s.vehicleType || '',
+    maxGroupSize: s.maxGroupSize || '',
+    bestSeason: s.bestSeason || '',
+    startLocation: s.startLocation || '',
+    endLocation: s.endLocation || '',
+    meetingPoint: s.meetingPoint || '',
+    highlights: (s.highlights || []).join('\n'),
+    includes: (s.includes || []).join('\n'),
+    excludes: (s.excludes || []).join('\n'),
+    itinerary: (s.itinerary || [])
+      .map((step) => `${step.day || ''} | ${step.title} | ${step.description || ''}`)
+      .join('\n'),
+    nearbyAttractions: (s.nearbyAttractions || []).join('\n'),
+    latitude: s.latitude !== undefined ? String(s.latitude) : '',
+    longitude: s.longitude !== undefined ? String(s.longitude) : '',
+    featured: Boolean(s.featured),
+    displayOrder: String(s.displayOrder ?? 0),
+  };
+}
+
+function parseItineraryFromText(text: string): JeepSafariItineraryStep[] {
+  if (!text || !text.trim()) return [];
+  return text
+    .split('\n')
+    .map((line) => {
+      const parts = line.split('|').map((p) => p.trim());
+      if (parts.length === 1) {
+        return parts[0] ? { day: '', title: parts[0], description: '' } : null;
+      }
+      const title = parts[1] || parts[0];
+      if (!title) return null;
+      return {
+        day: parts[0] || '',
+        title,
+        description: parts.slice(2).join(' | ').trim(),
+      };
+    })
+    .filter(Boolean) as JeepSafariItineraryStep[];
+}
+
+type TourGuide = {
+  _id?: string;
+  id: string;
+  name: string;
+  image?: string;
+  gallery?: string[];
+  shortBio?: string;
+  bio?: string;
+  experience?: string;
+  pricePerDay?: string;
+  languages?: string[];
+  specialties?: string[];
+  category?: string;
+  region?: string;
+  baseCity?: string;
+  certifications?: string[];
+  rating?: number;
+  totalTrips?: number;
+  phoneNumber?: string;
+  email?: string;
+  whatsapp?: string;
+  available?: boolean;
+  featured?: boolean;
+  displayOrder?: number;
+};
+
+type TourGuideFormState = {
+  id: string;
+  name: string;
+  image: string;
+  shortBio: string;
+  bio: string;
+  experience: string;
+  pricePerDay: string;
+  languages: string;
+  specialties: string;
+  category: string;
+  region: string;
+  baseCity: string;
+  certifications: string;
+  rating: string;
+  totalTrips: string;
+  phoneNumber: string;
+  email: string;
+  whatsapp: string;
+  available: boolean;
+  featured: boolean;
+  displayOrder: string;
+};
+
+const EMPTY_TOUR_GUIDE_FORM: TourGuideFormState = {
+  id: '',
+  name: '',
+  image: '',
+  shortBio: '',
+  bio: '',
+  experience: '',
+  pricePerDay: '',
+  languages: '',
+  specialties: '',
+  category: '',
+  region: '',
+  baseCity: '',
+  certifications: '',
+  rating: '',
+  totalTrips: '',
+  phoneNumber: '',
+  email: '',
+  whatsapp: '',
+  available: true,
+  featured: false,
+  displayOrder: '0',
+};
+
+function normalizeTourGuide(input: unknown): TourGuide | null {
+  if (!input || typeof input !== 'object') return null;
+  const g = input as TourGuide;
+  if (!g.id || !g.name) return null;
+  return {
+    _id: g._id,
+    id: g.id,
+    name: g.name,
+    image: g.image || '',
+    gallery: Array.isArray(g.gallery) ? g.gallery : [],
+    shortBio: g.shortBio || '',
+    bio: g.bio || '',
+    experience: g.experience || '',
+    pricePerDay: g.pricePerDay || '',
+    languages: Array.isArray(g.languages) ? g.languages : [],
+    specialties: Array.isArray(g.specialties) ? g.specialties : [],
+    category: g.category || '',
+    region: g.region || '',
+    baseCity: g.baseCity || '',
+    certifications: Array.isArray(g.certifications) ? g.certifications : [],
+    rating: Number.isFinite(Number(g.rating)) ? Number(g.rating) : 0,
+    totalTrips: Number.isFinite(Number(g.totalTrips)) ? Number(g.totalTrips) : 0,
+    phoneNumber: g.phoneNumber || '',
+    email: g.email || '',
+    whatsapp: g.whatsapp || '',
+    available: g.available !== false,
+    featured: Boolean(g.featured),
+    displayOrder: Number.isFinite(Number(g.displayOrder)) ? Number(g.displayOrder) : 0,
+  };
+}
+
+function tourGuideToFormState(g: TourGuide): TourGuideFormState {
+  return {
+    id: g.id,
+    name: g.name,
+    image: g.image || '',
+    shortBio: g.shortBio || '',
+    bio: g.bio || '',
+    experience: g.experience || '',
+    pricePerDay: g.pricePerDay || '',
+    languages: (g.languages || []).join('\n'),
+    specialties: (g.specialties || []).join('\n'),
+    category: g.category || '',
+    region: g.region || '',
+    baseCity: g.baseCity || '',
+    certifications: (g.certifications || []).join('\n'),
+    rating: g.rating !== undefined ? String(g.rating) : '',
+    totalTrips: g.totalTrips !== undefined ? String(g.totalTrips) : '',
+    phoneNumber: g.phoneNumber || '',
+    email: g.email || '',
+    whatsapp: g.whatsapp || '',
+    available: g.available !== false,
+    featured: Boolean(g.featured),
+    displayOrder: String(g.displayOrder ?? 0),
+  };
+}
+
+type HotelRoom = {
+  name: string;
+  description?: string;
+  price?: string;
+  image?: string;
+  capacity?: string;
+  beds?: string;
+  size?: string;
+  amenities?: string[];
+};
+
+type Hotel = {
+  _id?: string;
+  id: string;
+  name: string;
+  location: string;
+  address?: string;
+  category?: string;
+  rating?: number;
+  description?: string;
+  image?: string;
+  gallery?: string[];
+  priceFrom?: string;
+  amenities?: string[];
+  rooms?: HotelRoom[];
+  policies?: string;
+  checkIn?: string;
+  checkOut?: string;
+  nearbyAttractions?: string[];
+  phoneNumber?: string;
+  email?: string;
+  website?: string;
+  latitude?: number;
+  longitude?: number;
+  featured?: boolean;
+  displayOrder?: number;
+};
+
+type HotelRoomFormState = {
+  name: string;
+  description: string;
+  price: string;
+  image: string;
+  capacity: string;
+  beds: string;
+  size: string;
+  amenities: string;
+};
+
+type HotelFormState = {
+  id: string;
+  name: string;
+  location: string;
+  address: string;
+  category: string;
+  rating: string;
+  description: string;
+  image: string;
+  priceFrom: string;
+  amenities: string;
+  rooms: HotelRoomFormState[];
+  policies: string;
+  checkIn: string;
+  checkOut: string;
+  nearbyAttractions: string;
+  phoneNumber: string;
+  email: string;
+  website: string;
+  latitude: string;
+  longitude: string;
+  featured: boolean;
+  displayOrder: string;
+};
+
+const EMPTY_HOTEL_ROOM_FORM: HotelRoomFormState = {
+  name: '',
+  description: '',
+  price: '',
+  image: '',
+  capacity: '',
+  beds: '',
+  size: '',
+  amenities: '',
+};
+
+const EMPTY_HOTEL_FORM: HotelFormState = {
+  id: '',
+  name: '',
+  location: '',
+  address: '',
+  category: '',
+  rating: '',
+  description: '',
+  image: '',
+  priceFrom: '',
+  amenities: '',
+  rooms: [],
+  policies: '',
+  checkIn: '',
+  checkOut: '',
+  nearbyAttractions: '',
+  phoneNumber: '',
+  email: '',
+  website: '',
+  latitude: '',
+  longitude: '',
+  featured: false,
+  displayOrder: '0',
+};
+
+function normalizeHotel(input: unknown): Hotel | null {
+  if (!input || typeof input !== 'object') return null;
+  const hotel = input as Hotel;
+  if (!hotel.id || !hotel.name || !hotel.location) return null;
+  return {
+    _id: hotel._id,
+    id: hotel.id,
+    name: hotel.name,
+    location: hotel.location,
+    address: hotel.address || '',
+    category: hotel.category || '',
+    rating: Number.isFinite(Number(hotel.rating)) ? Number(hotel.rating) : 0,
+    description: hotel.description || '',
+    image: hotel.image || '',
+    gallery: Array.isArray(hotel.gallery) ? hotel.gallery : [],
+    priceFrom: hotel.priceFrom || '',
+    amenities: Array.isArray(hotel.amenities) ? hotel.amenities : [],
+    rooms: Array.isArray(hotel.rooms) ? hotel.rooms : [],
+    policies: hotel.policies || '',
+    checkIn: hotel.checkIn || '',
+    checkOut: hotel.checkOut || '',
+    nearbyAttractions: Array.isArray(hotel.nearbyAttractions) ? hotel.nearbyAttractions : [],
+    phoneNumber: hotel.phoneNumber || '',
+    email: hotel.email || '',
+    website: hotel.website || '',
+    latitude: hotel.latitude,
+    longitude: hotel.longitude,
+    featured: Boolean(hotel.featured),
+    displayOrder: Number.isFinite(Number(hotel.displayOrder)) ? Number(hotel.displayOrder) : 0,
+  };
+}
+
+function hotelToFormState(hotel: Hotel): HotelFormState {
+  return {
+    id: hotel.id,
+    name: hotel.name,
+    location: hotel.location,
+    address: hotel.address || '',
+    category: hotel.category || '',
+    rating: hotel.rating ? String(hotel.rating) : '',
+    description: hotel.description || '',
+    image: hotel.image || '',
+    priceFrom: hotel.priceFrom || '',
+    amenities: (hotel.amenities || []).join('\n'),
+    rooms: (hotel.rooms || []).map((room) => ({
+      name: room.name || '',
+      description: room.description || '',
+      price: room.price || '',
+      image: room.image || '',
+      capacity: room.capacity || '',
+      beds: room.beds || '',
+      size: room.size || '',
+      amenities: (room.amenities || []).join('\n'),
+    })),
+    policies: hotel.policies || '',
+    checkIn: hotel.checkIn || '',
+    checkOut: hotel.checkOut || '',
+    nearbyAttractions: (hotel.nearbyAttractions || []).join('\n'),
+    phoneNumber: hotel.phoneNumber || '',
+    email: hotel.email || '',
+    website: hotel.website || '',
+    latitude: hotel.latitude !== undefined ? String(hotel.latitude) : '',
+    longitude: hotel.longitude !== undefined ? String(hotel.longitude) : '',
+    featured: Boolean(hotel.featured),
+    displayOrder: String(hotel.displayOrder ?? 0),
   };
 }
 
@@ -2077,6 +2574,7 @@ function BlogManager() {
 
 function RentalVehicleManager() {
   const [vehicles, setVehicles] = useState<RentalVehicle[]>([]);
+  const [vehicleCategories, setVehicleCategories] = useState<{ _id: string; name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
@@ -2106,7 +2604,20 @@ function RentalVehicleManager() {
     }
   };
 
-  useEffect(() => { void loadVehicles(); }, []);
+  const loadVehicleCategories = async () => {
+    try {
+      const response = await fetch(getApiUrl('/api/vehicle-categories'), { credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (response.ok && Array.isArray(data?.data)) {
+        setVehicleCategories(data.data.map((c: { _id: string; name: string }) => ({ _id: c._id, name: c.name })));
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    void loadVehicles();
+    void loadVehicleCategories();
+  }, []);
 
   const updateField = (field: keyof RentalVehicleFormState, value: string | boolean) =>
     setForm((current) => ({ ...current, [field]: value }));
@@ -2226,7 +2737,20 @@ function RentalVehicleManager() {
 
             <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Vehicle ID</span><input value={form.id} onChange={(e) => updateField('id', e.target.value)} disabled={Boolean(editingId)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="toyota-prado" required /></label>
             <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Name</span><input value={form.name} onChange={(e) => updateField('name', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Toyota Prado" required /></label>
-            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Type</span><input value={form.type} onChange={(e) => updateField('type', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="4x4 Jeep / SUV / Sedan" /></label>
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Type / Category</span>
+              {vehicleCategories.length > 0 ? (
+                <select value={form.type} onChange={(e) => updateField('type', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent">
+                  <option value="">Select category</option>
+                  {vehicleCategories.map((c) => (<option key={c._id} value={c.name}>{c.name}</option>))}
+                  {form.type && !vehicleCategories.some((c) => c.name === form.type) ? (
+                    <option value={form.type}>{form.type} (legacy)</option>
+                  ) : null}
+                </select>
+              ) : (
+                <input value={form.type} onChange={(e) => updateField('type', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="4x4 Jeep / SUV / Sedan" />
+              )}
+            </label>
             <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Price</span><input value={form.price} onChange={(e) => updateField('price', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="PKR 18,000 / day" /></label>
             <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Seats</span><input value={form.seats} onChange={(e) => updateField('seats', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="7 Seats" /></label>
             <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Transmission</span><input value={form.transmission} onChange={(e) => updateField('transmission', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Automatic" /></label>
@@ -2299,6 +2823,1466 @@ function RentalVehicleManager() {
                       <Pencil className="h-3.5 w-3.5" /> Edit
                     </button>
                     <button type="button" onClick={() => void removeVehicle(vehicle.id)} className="inline-flex items-center gap-1 rounded-sm border border-rose-200 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-50">
+                      <Trash2 className="h-3.5 w-3.5" /> Delete
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </motion.section>
+    </div>
+  );
+}
+
+type SimpleCategory = { _id: string; name: string; description?: string; displayOrder?: number };
+
+function GenericCategoryPanel({
+  endpoint,
+  title,
+  description,
+  itemLabel,
+  placeholder,
+}: {
+  endpoint: string;
+  title: string;
+  description: string;
+  itemLabel: string;
+  placeholder: string;
+}) {
+  const [categories, setCategories] = useState<SimpleCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [name, setName] = useState('');
+  const [descField, setDescField] = useState('');
+  const [displayOrder, setDisplayOrder] = useState('0');
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const loadCategories = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const response = await fetch(getApiUrl(endpoint), { credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (response.ok && Array.isArray(data?.data)) setCategories(data.data);
+      else setCategories([]);
+    } catch {
+      setError(`Failed to fetch ${itemLabel.toLowerCase()}s`);
+      setCategories([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => { void loadCategories(); }, []);
+
+  const resetForm = () => {
+    setName('');
+    setDescField('');
+    setDisplayOrder('0');
+    setEditingId(null);
+  };
+
+  const startEditing = (category: SimpleCategory) => {
+    setName(category.name);
+    setDescField(category.description || '');
+    setDisplayOrder(String(category.displayOrder ?? 0));
+    setEditingId(category._id);
+    setError('');
+    setSuccessMessage('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    setError('');
+    setSuccessMessage('');
+    try {
+      const isEditing = Boolean(editingId);
+      const response = await fetch(
+        getApiUrl(isEditing ? `${endpoint}/${editingId}` : endpoint),
+        {
+          method: isEditing ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            name: name.trim(),
+            description: descField.trim(),
+            displayOrder: Number(displayOrder) || 0,
+          }),
+        },
+      );
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || `Failed to save ${itemLabel.toLowerCase()}`);
+        return;
+      }
+      setSuccessMessage(isEditing ? `${itemLabel} updated successfully` : `${itemLabel} added successfully`);
+      resetForm();
+      await loadCategories();
+    } catch {
+      setError('Network error');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm(`Are you sure you want to delete this ${itemLabel.toLowerCase()}?`)) return;
+    try {
+      const response = await fetch(getApiUrl(`${endpoint}/${id}`), { method: 'DELETE', credentials: 'include' });
+      if (response.ok) {
+        setSuccessMessage('Deleted successfully');
+        if (editingId === id) resetForm();
+        await loadCategories();
+      } else {
+        const data = await parseJsonSafely(response);
+        setError(data?.message || 'Failed to delete');
+      }
+    } catch {
+      setError('Failed to delete');
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-8">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+        <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-6">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-lux-accent">{itemLabel} API</p>
+          <h3 className="mt-2 font-headings text-2xl">{title}</h3>
+          <p className="mt-2 text-sm text-lux-primary/65">{description}</p>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <label className="block sm:col-span-2">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">{itemLabel} Name</span>
+              <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder={placeholder} required />
+            </label>
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Display Order</span>
+              <input type="number" value={displayOrder} onChange={(e) => setDisplayOrder(e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="0" />
+            </label>
+            <label className="block sm:col-span-3">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Description (Optional)</span>
+              <input value={descField} onChange={(e) => setDescField(e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Short description" />
+            </label>
+          </div>
+          {error && <div className="flex items-start gap-2 rounded-sm border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700"><AlertCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" /><span>{error}</span></div>}
+          {successMessage && <div className="rounded-sm border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">{successMessage}</div>}
+          <div className="flex flex-wrap gap-3">
+            <button type="submit" disabled={isSaving} className="inline-flex items-center gap-2 rounded-sm bg-lux-primary px-6 py-3 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-lux-primary/90 disabled:opacity-50">
+              {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              {editingId ? `Update ${itemLabel}` : `Add ${itemLabel}`}
+            </button>
+            {editingId && (
+              <button type="button" onClick={resetForm} className="inline-flex items-center gap-2 rounded-sm border border-lux-primary/15 px-6 py-3 text-xs font-bold uppercase tracking-widest text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      </motion.section>
+
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h3 className="font-headings text-2xl">Saved {itemLabel}s</h3>
+            <p className="mt-1 text-xs text-lux-primary/65">Live data used by the form & public filter sidebar.</p>
+          </div>
+          <button type="button" onClick={() => void loadCategories()} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+            <LoaderCircle className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
+        <div className="grid gap-3">
+          {isLoading ? (
+            <div className="py-10 text-center text-sm text-lux-primary/50">Loading...</div>
+          ) : categories.length === 0 ? (
+            <div className="rounded-sm border border-lux-primary/10 bg-white px-6 py-10 text-center text-sm text-lux-primary/65">No {itemLabel.toLowerCase()}s defined yet. Add one above to get started.</div>
+          ) : (
+            categories.map((c) => (
+              <div key={c._id} className="flex items-center justify-between rounded-sm border border-lux-primary/10 bg-white p-4 shadow-sm">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-lux-primary">{c.name}</h4>
+                    {c.displayOrder !== undefined && c.displayOrder !== 0 && (
+                      <span className="text-[10px] uppercase tracking-widest text-lux-primary/40">Order: {c.displayOrder}</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-lux-primary/60">{c.description || 'No description'}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button type="button" onClick={() => startEditing(c)} className="inline-flex items-center gap-1 rounded-sm border border-lux-primary/15 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                    <Pencil className="h-3 w-3" /> Edit
+                  </button>
+                  <button type="button" onClick={() => void handleDelete(c._id)} className="inline-flex items-center gap-1 rounded-sm border border-rose-200 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-50">
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </motion.section>
+    </div>
+  );
+}
+
+function VehicleCategoryManager() {
+  return (
+    <GenericCategoryPanel
+      endpoint="/api/vehicle-categories"
+      title="Manage Vehicle Categories"
+      description="Define categories like 4x4 Jeep, Luxury SUV, Sedan, Mini Bus. These will appear in the Add Vehicle form and the Car Rent filter sidebar."
+      itemLabel="Vehicle Category"
+      placeholder="e.g. 4x4 Jeep"
+    />
+  );
+}
+
+function JeepSafariCategoryManager() {
+  return (
+    <GenericCategoryPanel
+      endpoint="/api/jeep-safari-categories"
+      title="Manage Jeep Safari Categories"
+      description="Define categories like Adventure, Photography, Cultural, Heritage Safari. These will appear in the Add Jeep Safari form and the public filter sidebar."
+      itemLabel="Safari Category"
+      placeholder="e.g. Adventure Safari"
+    />
+  );
+}
+
+function TourGuideSpecialtyManager() {
+  return (
+    <GenericCategoryPanel
+      endpoint="/api/tour-guide-specialties"
+      title="Manage Tour Guide Specialties"
+      description="Define specialties like Trekking, Cultural, Photography, Wildlife. These will appear in the Add Tour Guide form and the public filter sidebar."
+      itemLabel="Specialty"
+      placeholder="e.g. Trekking Guide"
+    />
+  );
+}
+
+function JeepSafariManager() {
+  const [safaris, setSafaris] = useState<JeepSafari[]>([]);
+  const [categories, setCategories] = useState<{ _id: string; name: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedGalleryFiles, setSelectedGalleryFiles] = useState<File[]>([]);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [form, setForm] = useState<JeepSafariFormState>(EMPTY_JEEP_SAFARI_FORM);
+
+  const loadSafaris = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const first = await fetch(getApiUrl('/api/jeep-safaris?page=1&limit=50'), { credentials: 'include' });
+      const firstData = await parseJsonSafely(first);
+      if (!first.ok) {
+        setError(firstData?.message || 'Failed to load jeep safaris.');
+        setSafaris([]);
+        return;
+      }
+      const totalPages: number = Math.max(Number(firstData?.totalPages) || 1, 1);
+      const collected: JeepSafari[] = (Array.isArray(firstData?.data)
+        ? firstData.data.map(normalizeJeepSafari).filter(Boolean)
+        : []) as JeepSafari[];
+      if (totalPages > 1) {
+        const rest = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, i) =>
+            fetch(getApiUrl(`/api/jeep-safaris?page=${i + 2}&limit=50`), { credentials: 'include' })
+              .then((r) => parseJsonSafely(r))
+              .then((d) => (Array.isArray(d?.data) ? d.data : []))
+              .catch(() => [])
+          )
+        );
+        for (const pageData of rest) {
+          for (const raw of pageData) {
+            const normalized = normalizeJeepSafari(raw);
+            if (normalized) collected.push(normalized);
+          }
+        }
+      }
+      setSafaris(collected);
+    } catch {
+      setError('Unable to fetch jeep safaris.');
+      setSafaris([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const response = await fetch(getApiUrl('/api/jeep-safari-categories'), { credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (response.ok && Array.isArray(data?.data)) {
+        setCategories(data.data.map((c: { _id: string; name: string }) => ({ _id: c._id, name: c.name })));
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    void loadSafaris();
+    void loadCategories();
+  }, []);
+
+  const updateField = (field: keyof JeepSafariFormState, value: string | boolean) =>
+    setForm((current) => ({ ...current, [field]: value }));
+
+  const resetForm = () => {
+    setForm(EMPTY_JEEP_SAFARI_FORM);
+    setEditingId(null);
+    setSelectedImage(null);
+    setSelectedGalleryFiles([]);
+    setIsFormOpen(false);
+  };
+
+  const startEditing = (safari: JeepSafari) => {
+    setForm(jeepSafariToFormState(safari));
+    setEditingId(safari.id);
+    setSelectedImage(null);
+    setSelectedGalleryFiles([]);
+    setIsFormOpen(true);
+    setSuccessMessage('');
+    setError('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const submitSafari = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSaving(true);
+    setError('');
+    setSuccessMessage('');
+    try {
+      const payload = new FormData();
+      payload.append('id', form.id.trim());
+      payload.append('name', form.name.trim());
+      payload.append('region', form.region.trim());
+      payload.append('duration', form.duration.trim());
+      payload.append('pricePerPerson', form.pricePerPerson.trim());
+      payload.append('pricePerJeep', form.pricePerJeep.trim());
+      payload.append('image', form.image.trim());
+      payload.append('description', form.description.trim());
+      payload.append('category', form.category.trim());
+      payload.append('difficulty', form.difficulty.trim());
+      payload.append('vehicleType', form.vehicleType.trim());
+      payload.append('maxGroupSize', form.maxGroupSize.trim());
+      payload.append('bestSeason', form.bestSeason.trim());
+      payload.append('startLocation', form.startLocation.trim());
+      payload.append('endLocation', form.endLocation.trim());
+      payload.append('meetingPoint', form.meetingPoint.trim());
+      payload.append('highlights', JSON.stringify(linesToArray(form.highlights)));
+      payload.append('includes', JSON.stringify(linesToArray(form.includes)));
+      payload.append('excludes', JSON.stringify(linesToArray(form.excludes)));
+      payload.append('itinerary', JSON.stringify(parseItineraryFromText(form.itinerary)));
+      payload.append('nearbyAttractions', JSON.stringify(linesToArray(form.nearbyAttractions)));
+      if (form.latitude.trim()) payload.append('latitude', form.latitude.trim());
+      if (form.longitude.trim()) payload.append('longitude', form.longitude.trim());
+      payload.append('featured', String(form.featured));
+      payload.append('displayOrder', form.displayOrder.trim() || '0');
+      if (selectedImage) payload.set('image', selectedImage);
+      selectedGalleryFiles.forEach((file) => payload.append('galleryFiles', file));
+
+      const isEditing = Boolean(editingId);
+      const response = await fetch(
+        getApiUrl(isEditing ? `/api/jeep-safaris/${editingId}` : '/api/jeep-safaris'),
+        { method: isEditing ? 'PUT' : 'POST', credentials: 'include', body: payload }
+      );
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to save jeep safari.');
+        return;
+      }
+      setSuccessMessage(isEditing ? 'Jeep safari updated successfully.' : 'Jeep safari created successfully.');
+      resetForm();
+      await loadSafaris();
+    } catch {
+      setError('Unable to save jeep safari right now.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const removeSafari = async (safariId: string) => {
+    if (!window.confirm(`Delete jeep safari "${safariId}"?`)) return;
+    try {
+      const response = await fetch(getApiUrl(`/api/jeep-safaris/${safariId}`), { method: 'DELETE', credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to delete jeep safari.');
+        return;
+      }
+      setSuccessMessage('Jeep safari deleted successfully.');
+      if (editingId === safariId) resetForm();
+      await loadSafaris();
+    } catch {
+      setError('Unable to delete jeep safari right now.');
+    }
+  };
+
+  const inputClass = "w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent";
+  const labelSpan = "mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60";
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-8">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+        <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-lux-accent">Jeep Safari API</p>
+              <h3 className="mt-2 font-headings text-2xl">Jeep Safari Manager</h3>
+              <p className="mt-2 text-sm text-lux-primary/65">Manage the jeep safari trips shown on the Jeep Safari service page.</p>
+            </div>
+            <button type="button" onClick={() => { setForm(EMPTY_JEEP_SAFARI_FORM); setEditingId(null); setSelectedImage(null); setSelectedGalleryFiles([]); setError(''); setSuccessMessage(''); setIsFormOpen(true); }} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+              <Plus className="h-4 w-4" /> New Jeep Safari
+            </button>
+          </div>
+        </div>
+
+        {isFormOpen ? (
+          <form className="grid gap-5 p-6 lg:grid-cols-2" onSubmit={submitSafari}>
+            <div className="flex items-center justify-between lg:col-span-2">
+              <div>
+                <h4 className="font-headings text-2xl">{editingId ? 'Edit Jeep Safari' : 'Create Jeep Safari'}</h4>
+                <p className="mt-2 text-sm text-lux-primary/65">All data here is served by the backend REST API.</p>
+              </div>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Close
+              </button>
+            </div>
+
+            <label className="block"><span className={labelSpan}>Safari ID (slug)</span><input value={form.id} onChange={(e) => updateField('id', e.target.value)} disabled={Boolean(editingId)} className={inputClass} placeholder="deosai-day-safari" required /></label>
+            <label className="block"><span className={labelSpan}>Name</span><input value={form.name} onChange={(e) => updateField('name', e.target.value)} className={inputClass} placeholder="Deosai Plains Day Safari" required /></label>
+            <label className="block"><span className={labelSpan}>Region</span><input value={form.region} onChange={(e) => updateField('region', e.target.value)} className={inputClass} placeholder="Skardu / Deosai" /></label>
+            <label className="block"><span className={labelSpan}>Duration</span><input value={form.duration} onChange={(e) => updateField('duration', e.target.value)} className={inputClass} placeholder="Full Day / 2 Days" /></label>
+            <label className="block"><span className={labelSpan}>Price Per Person</span><input value={form.pricePerPerson} onChange={(e) => updateField('pricePerPerson', e.target.value)} className={inputClass} placeholder="PKR 12,000" /></label>
+            <label className="block"><span className={labelSpan}>Price Per Jeep</span><input value={form.pricePerJeep} onChange={(e) => updateField('pricePerJeep', e.target.value)} className={inputClass} placeholder="PKR 45,000" /></label>
+            <label className="block">
+              <span className={labelSpan}>Category</span>
+              {categories.length > 0 ? (
+                <select value={form.category} onChange={(e) => updateField('category', e.target.value)} className={inputClass}>
+                  <option value="">Select category</option>
+                  {categories.map((c) => (<option key={c._id} value={c.name}>{c.name}</option>))}
+                </select>
+              ) : (
+                <input value={form.category} onChange={(e) => updateField('category', e.target.value)} className={inputClass} placeholder="Adventure / Photography" />
+              )}
+            </label>
+            <label className="block"><span className={labelSpan}>Difficulty</span><input value={form.difficulty} onChange={(e) => updateField('difficulty', e.target.value)} className={inputClass} placeholder="Easy / Moderate / Challenging" /></label>
+            <label className="block"><span className={labelSpan}>Vehicle Type</span><input value={form.vehicleType} onChange={(e) => updateField('vehicleType', e.target.value)} className={inputClass} placeholder="Toyota Land Cruiser" /></label>
+            <label className="block"><span className={labelSpan}>Max Group Size</span><input value={form.maxGroupSize} onChange={(e) => updateField('maxGroupSize', e.target.value)} className={inputClass} placeholder="5-6 people" /></label>
+            <label className="block"><span className={labelSpan}>Best Season</span><input value={form.bestSeason} onChange={(e) => updateField('bestSeason', e.target.value)} className={inputClass} placeholder="May - September" /></label>
+            <label className="block"><span className={labelSpan}>Start Location</span><input value={form.startLocation} onChange={(e) => updateField('startLocation', e.target.value)} className={inputClass} placeholder="Skardu" /></label>
+            <label className="block"><span className={labelSpan}>End Location</span><input value={form.endLocation} onChange={(e) => updateField('endLocation', e.target.value)} className={inputClass} placeholder="Skardu" /></label>
+            <label className="block lg:col-span-2"><span className={labelSpan}>Meeting Point</span><input value={form.meetingPoint} onChange={(e) => updateField('meetingPoint', e.target.value)} className={inputClass} placeholder="Hotel pickup / Skardu Bazaar" /></label>
+            <label className="block"><span className={labelSpan}>Image URL</span><input value={form.image} onChange={(e) => updateField('image', e.target.value)} className={inputClass} placeholder="https://..." /></label>
+            <label className="block"><span className={labelSpan}>Upload Main Image</span><input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm" /></label>
+            <label className="block lg:col-span-2"><span className={labelSpan}>Upload Gallery (multiple)</span><input type="file" multiple accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => setSelectedGalleryFiles(Array.from(e.target.files || []))} className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm" /></label>
+            <label className="block lg:col-span-2"><span className={labelSpan}>Description</span><textarea value={form.description} onChange={(e) => updateField('description', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Describe this safari trip..." /></label>
+            <label className="block"><span className={labelSpan}>Highlights (one per line)</span><textarea value={form.highlights} onChange={(e) => updateField('highlights', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Sheosar Lake&#10;Bara Pani crossing" /></label>
+            <label className="block"><span className={labelSpan}>Nearby Attractions (one per line)</span><textarea value={form.nearbyAttractions} onChange={(e) => updateField('nearbyAttractions', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Shangrila Resort&#10;Upper Kachura" /></label>
+            <label className="block"><span className={labelSpan}>Includes (one per line)</span><textarea value={form.includes} onChange={(e) => updateField('includes', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Jeep with driver&#10;Fuel&#10;Park entry fee" /></label>
+            <label className="block"><span className={labelSpan}>Excludes (one per line)</span><textarea value={form.excludes} onChange={(e) => updateField('excludes', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Meals&#10;Personal expenses" /></label>
+            <label className="block lg:col-span-2"><span className={labelSpan}>Itinerary (one step per line in the form: Day | Title | Description)</span><textarea value={form.itinerary} onChange={(e) => updateField('itinerary', e.target.value)} className="min-h-32 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Day 1 | Skardu to Deosai | Drive through scenic landscapes...&#10;Day 1 | Sheosar Lake | Visit the iconic alpine lake..." /></label>
+            <label className="block"><span className={labelSpan}>Latitude</span><input value={form.latitude} onChange={(e) => updateField('latitude', e.target.value)} className={inputClass} placeholder="35.3" /></label>
+            <label className="block"><span className={labelSpan}>Longitude</span><input value={form.longitude} onChange={(e) => updateField('longitude', e.target.value)} className={inputClass} placeholder="75.6" /></label>
+            <label className="block"><span className={labelSpan}>Display Order</span><input type="number" value={form.displayOrder} onChange={(e) => updateField('displayOrder', e.target.value)} className={inputClass} placeholder="0" /></label>
+            <label className="flex items-center gap-3 lg:col-span-2"><input type="checkbox" checked={form.featured} onChange={(e) => updateField('featured', e.target.checked)} className="h-4 w-4" /><span className="text-sm text-lux-primary/70">Featured on landing page</span></label>
+
+            {(error || successMessage) ? (
+              <div className="lg:col-span-2">
+                {error ? <div className="flex items-start gap-3 rounded-sm border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"><AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" /><span>{error}</span></div> : null}
+                {successMessage ? <div className="mt-3 rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{successMessage}</div> : null}
+              </div>
+            ) : null}
+
+            <div className="flex flex-col gap-3 lg:col-span-2 sm:flex-row">
+              <button type="submit" disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-sm bg-lux-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-white transition hover:bg-lux-primary/90 disabled:cursor-not-allowed disabled:opacity-70">
+                {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                {editingId ? 'Update Jeep Safari' : 'Create Jeep Safari'}
+              </button>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="px-6 py-14 text-center text-sm text-lux-primary/65">Click <span className="font-bold text-lux-primary">New Jeep Safari</span> to open the form.</div>
+        )}
+      </motion.section>
+
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="font-headings text-2xl">Saved Jeep Safaris</h3>
+            <p className="mt-2 text-sm text-lux-primary/65">Live data for the /services/jeep-safari listing page.</p>
+          </div>
+          <button type="button" onClick={() => void loadSafaris()} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+            <LoaderCircle className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-sm text-lux-primary/70">
+            <LoaderCircle className="mr-3 h-5 w-5 animate-spin text-lux-accent" /> Loading jeep safaris...
+          </div>
+        ) : safaris.length === 0 ? (
+          <div className="rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-center text-sm text-lux-primary/65">No jeep safaris created yet.</div>
+        ) : (
+          <div className="grid gap-5 lg:grid-cols-3">
+            {safaris.map((safari) => (
+              <article key={safari.id} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+                {safari.image ? <img src={safari.image} alt={safari.name} className="h-48 w-full object-cover" /> : null}
+                <div className="space-y-4 p-5">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-lux-accent">{safari.category || 'Safari'}{safari.featured ? ' · Featured' : ''}</div>
+                    <h4 className="mt-2 font-headings text-xl">{safari.name}</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm text-lux-primary/70">
+                    <div><span className="font-bold text-lux-primary">Region:</span> {safari.region || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Duration:</span> {safari.duration || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Per Person:</span> {safari.pricePerPerson || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Per Jeep:</span> {safari.pricePerJeep || '—'}</div>
+                  </div>
+                  <p className="text-sm text-lux-primary/70 line-clamp-3">{safari.description || 'No description added.'}</p>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => startEditing(safari)} className="inline-flex items-center gap-1 rounded-sm border border-lux-primary/15 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                      <Pencil className="h-3.5 w-3.5" /> Edit
+                    </button>
+                    <button type="button" onClick={() => void removeSafari(safari.id)} className="inline-flex items-center gap-1 rounded-sm border border-rose-200 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-50">
+                      <Trash2 className="h-3.5 w-3.5" /> Delete
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </motion.section>
+    </div>
+  );
+}
+
+function TourGuideManager() {
+  const [guides, setGuides] = useState<TourGuide[]>([]);
+  const [specialties, setSpecialties] = useState<{ _id: string; name: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedGalleryFiles, setSelectedGalleryFiles] = useState<File[]>([]);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [form, setForm] = useState<TourGuideFormState>(EMPTY_TOUR_GUIDE_FORM);
+
+  const loadGuides = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const first = await fetch(getApiUrl('/api/tour-guides?page=1&limit=50'), { credentials: 'include' });
+      const firstData = await parseJsonSafely(first);
+      if (!first.ok) {
+        setError(firstData?.message || 'Failed to load tour guides.');
+        setGuides([]);
+        return;
+      }
+      const totalPages: number = Math.max(Number(firstData?.totalPages) || 1, 1);
+      const collected: TourGuide[] = (Array.isArray(firstData?.data)
+        ? firstData.data.map(normalizeTourGuide).filter(Boolean)
+        : []) as TourGuide[];
+      if (totalPages > 1) {
+        const rest = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, i) =>
+            fetch(getApiUrl(`/api/tour-guides?page=${i + 2}&limit=50`), { credentials: 'include' })
+              .then((r) => parseJsonSafely(r))
+              .then((d) => (Array.isArray(d?.data) ? d.data : []))
+              .catch(() => [])
+          )
+        );
+        for (const pageData of rest) {
+          for (const raw of pageData) {
+            const normalized = normalizeTourGuide(raw);
+            if (normalized) collected.push(normalized);
+          }
+        }
+      }
+      setGuides(collected);
+    } catch {
+      setError('Unable to fetch tour guides.');
+      setGuides([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadSpecialties = async () => {
+    try {
+      const response = await fetch(getApiUrl('/api/tour-guide-specialties'), { credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (response.ok && Array.isArray(data?.data)) {
+        setSpecialties(data.data.map((s: { _id: string; name: string }) => ({ _id: s._id, name: s.name })));
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    void loadGuides();
+    void loadSpecialties();
+  }, []);
+
+  const updateField = (field: keyof TourGuideFormState, value: string | boolean) =>
+    setForm((current) => ({ ...current, [field]: value }));
+
+  const resetForm = () => {
+    setForm(EMPTY_TOUR_GUIDE_FORM);
+    setEditingId(null);
+    setSelectedImage(null);
+    setSelectedGalleryFiles([]);
+    setIsFormOpen(false);
+  };
+
+  const startEditing = (guide: TourGuide) => {
+    setForm(tourGuideToFormState(guide));
+    setEditingId(guide.id);
+    setSelectedImage(null);
+    setSelectedGalleryFiles([]);
+    setIsFormOpen(true);
+    setSuccessMessage('');
+    setError('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const submitGuide = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSaving(true);
+    setError('');
+    setSuccessMessage('');
+    try {
+      const payload = new FormData();
+      payload.append('id', form.id.trim());
+      payload.append('name', form.name.trim());
+      payload.append('image', form.image.trim());
+      payload.append('shortBio', form.shortBio.trim());
+      payload.append('bio', form.bio.trim());
+      payload.append('experience', form.experience.trim());
+      payload.append('pricePerDay', form.pricePerDay.trim());
+      payload.append('languages', JSON.stringify(linesToArray(form.languages)));
+      payload.append('specialties', JSON.stringify(linesToArray(form.specialties)));
+      payload.append('category', form.category.trim());
+      payload.append('region', form.region.trim());
+      payload.append('baseCity', form.baseCity.trim());
+      payload.append('certifications', JSON.stringify(linesToArray(form.certifications)));
+      if (form.rating.trim()) payload.append('rating', form.rating.trim());
+      if (form.totalTrips.trim()) payload.append('totalTrips', form.totalTrips.trim());
+      payload.append('phoneNumber', form.phoneNumber.trim());
+      payload.append('email', form.email.trim());
+      payload.append('whatsapp', form.whatsapp.trim());
+      payload.append('available', String(form.available));
+      payload.append('featured', String(form.featured));
+      payload.append('displayOrder', form.displayOrder.trim() || '0');
+      if (selectedImage) payload.set('image', selectedImage);
+      selectedGalleryFiles.forEach((file) => payload.append('galleryFiles', file));
+
+      const isEditing = Boolean(editingId);
+      const response = await fetch(
+        getApiUrl(isEditing ? `/api/tour-guides/${editingId}` : '/api/tour-guides'),
+        { method: isEditing ? 'PUT' : 'POST', credentials: 'include', body: payload }
+      );
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to save tour guide.');
+        return;
+      }
+      setSuccessMessage(isEditing ? 'Tour guide updated successfully.' : 'Tour guide created successfully.');
+      resetForm();
+      await loadGuides();
+    } catch {
+      setError('Unable to save tour guide right now.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const removeGuide = async (guideId: string) => {
+    if (!window.confirm(`Delete tour guide "${guideId}"?`)) return;
+    try {
+      const response = await fetch(getApiUrl(`/api/tour-guides/${guideId}`), { method: 'DELETE', credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to delete tour guide.');
+        return;
+      }
+      setSuccessMessage('Tour guide deleted successfully.');
+      if (editingId === guideId) resetForm();
+      await loadGuides();
+    } catch {
+      setError('Unable to delete tour guide right now.');
+    }
+  };
+
+  const inputClass = "w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent";
+  const labelSpan = "mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60";
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-8">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+        <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-lux-accent">Tour Guide API</p>
+              <h3 className="mt-2 font-headings text-2xl">Tour Guide Manager</h3>
+              <p className="mt-2 text-sm text-lux-primary/65">Manage the tour guides shown on the Tour Guide service page.</p>
+            </div>
+            <button type="button" onClick={() => { setForm(EMPTY_TOUR_GUIDE_FORM); setEditingId(null); setSelectedImage(null); setSelectedGalleryFiles([]); setError(''); setSuccessMessage(''); setIsFormOpen(true); }} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+              <Plus className="h-4 w-4" /> New Tour Guide
+            </button>
+          </div>
+        </div>
+
+        {isFormOpen ? (
+          <form className="grid gap-5 p-6 lg:grid-cols-2" onSubmit={submitGuide}>
+            <div className="flex items-center justify-between lg:col-span-2">
+              <div>
+                <h4 className="font-headings text-2xl">{editingId ? 'Edit Tour Guide' : 'Create Tour Guide'}</h4>
+                <p className="mt-2 text-sm text-lux-primary/65">All data here is served by the backend REST API.</p>
+              </div>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Close
+              </button>
+            </div>
+
+            <label className="block"><span className={labelSpan}>Guide ID (slug)</span><input value={form.id} onChange={(e) => updateField('id', e.target.value)} disabled={Boolean(editingId)} className={inputClass} placeholder="ali-shahzad" required /></label>
+            <label className="block"><span className={labelSpan}>Name</span><input value={form.name} onChange={(e) => updateField('name', e.target.value)} className={inputClass} placeholder="Ali Shahzad" required /></label>
+            <label className="block">
+              <span className={labelSpan}>Primary Category</span>
+              {specialties.length > 0 ? (
+                <select value={form.category} onChange={(e) => updateField('category', e.target.value)} className={inputClass}>
+                  <option value="">Select specialty</option>
+                  {specialties.map((s) => (<option key={s._id} value={s.name}>{s.name}</option>))}
+                </select>
+              ) : (
+                <input value={form.category} onChange={(e) => updateField('category', e.target.value)} className={inputClass} placeholder="Trekking / Cultural" />
+              )}
+            </label>
+            <label className="block"><span className={labelSpan}>Experience</span><input value={form.experience} onChange={(e) => updateField('experience', e.target.value)} className={inputClass} placeholder="8 years" /></label>
+            <label className="block"><span className={labelSpan}>Region</span><input value={form.region} onChange={(e) => updateField('region', e.target.value)} className={inputClass} placeholder="Hunza Valley" /></label>
+            <label className="block"><span className={labelSpan}>Base City</span><input value={form.baseCity} onChange={(e) => updateField('baseCity', e.target.value)} className={inputClass} placeholder="Gilgit" /></label>
+            <label className="block"><span className={labelSpan}>Price Per Day</span><input value={form.pricePerDay} onChange={(e) => updateField('pricePerDay', e.target.value)} className={inputClass} placeholder="PKR 8,000 / day" /></label>
+            <label className="block"><span className={labelSpan}>Rating (0-5)</span><input value={form.rating} onChange={(e) => updateField('rating', e.target.value)} type="number" step="0.1" min="0" max="5" className={inputClass} placeholder="4.8" /></label>
+            <label className="block"><span className={labelSpan}>Total Trips Completed</span><input value={form.totalTrips} onChange={(e) => updateField('totalTrips', e.target.value)} type="number" className={inputClass} placeholder="120" /></label>
+            <label className="block"><span className={labelSpan}>Phone Number</span><input value={form.phoneNumber} onChange={(e) => updateField('phoneNumber', e.target.value)} className={inputClass} placeholder="+92 300 1234567" /></label>
+            <label className="block"><span className={labelSpan}>Email</span><input value={form.email} onChange={(e) => updateField('email', e.target.value)} className={inputClass} placeholder="ali@example.com" /></label>
+            <label className="block"><span className={labelSpan}>WhatsApp Number</span><input value={form.whatsapp} onChange={(e) => updateField('whatsapp', e.target.value)} className={inputClass} placeholder="+92 300 1234567" /></label>
+            <label className="block"><span className={labelSpan}>Image URL</span><input value={form.image} onChange={(e) => updateField('image', e.target.value)} className={inputClass} placeholder="https://..." /></label>
+            <label className="block"><span className={labelSpan}>Upload Portrait Image</span><input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm" /></label>
+            <label className="block lg:col-span-2"><span className={labelSpan}>Upload Gallery (multiple)</span><input type="file" multiple accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => setSelectedGalleryFiles(Array.from(e.target.files || []))} className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm" /></label>
+            <label className="block lg:col-span-2"><span className={labelSpan}>Short Bio (for card)</span><textarea value={form.shortBio} onChange={(e) => updateField('shortBio', e.target.value)} className="min-h-16 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="One-line headline shown on listing cards." /></label>
+            <label className="block lg:col-span-2"><span className={labelSpan}>Full Bio (for detail page)</span><textarea value={form.bio} onChange={(e) => updateField('bio', e.target.value)} className="min-h-32 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Tell the guide's story, qualifications, and trekking experience." /></label>
+            <label className="block"><span className={labelSpan}>Languages (one per line)</span><textarea value={form.languages} onChange={(e) => updateField('languages', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="English&#10;Urdu&#10;Burushaski" /></label>
+            <label className="block"><span className={labelSpan}>Specialties (one per line)</span><textarea value={form.specialties} onChange={(e) => updateField('specialties', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Trekking&#10;Photography&#10;Cultural Tours" /></label>
+            <label className="block lg:col-span-2"><span className={labelSpan}>Certifications (one per line)</span><textarea value={form.certifications} onChange={(e) => updateField('certifications', e.target.value)} className="min-h-20 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Wilderness First Aid&#10;PTDC Licensed Guide" /></label>
+            <label className="block"><span className={labelSpan}>Display Order</span><input type="number" value={form.displayOrder} onChange={(e) => updateField('displayOrder', e.target.value)} className={inputClass} placeholder="0" /></label>
+            <label className="flex items-center gap-3"><input type="checkbox" checked={form.available} onChange={(e) => updateField('available', e.target.checked)} className="h-4 w-4" /><span className="text-sm text-lux-primary/70">Currently available for bookings</span></label>
+            <label className="flex items-center gap-3 lg:col-span-2"><input type="checkbox" checked={form.featured} onChange={(e) => updateField('featured', e.target.checked)} className="h-4 w-4" /><span className="text-sm text-lux-primary/70">Featured on landing page</span></label>
+
+            {(error || successMessage) ? (
+              <div className="lg:col-span-2">
+                {error ? <div className="flex items-start gap-3 rounded-sm border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"><AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" /><span>{error}</span></div> : null}
+                {successMessage ? <div className="mt-3 rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{successMessage}</div> : null}
+              </div>
+            ) : null}
+
+            <div className="flex flex-col gap-3 lg:col-span-2 sm:flex-row">
+              <button type="submit" disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-sm bg-lux-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-white transition hover:bg-lux-primary/90 disabled:cursor-not-allowed disabled:opacity-70">
+                {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                {editingId ? 'Update Tour Guide' : 'Create Tour Guide'}
+              </button>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="px-6 py-14 text-center text-sm text-lux-primary/65">Click <span className="font-bold text-lux-primary">New Tour Guide</span> to open the form.</div>
+        )}
+      </motion.section>
+
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="font-headings text-2xl">Saved Tour Guides</h3>
+            <p className="mt-2 text-sm text-lux-primary/65">Live data for the /services/tour-guide listing page.</p>
+          </div>
+          <button type="button" onClick={() => void loadGuides()} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+            <LoaderCircle className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-sm text-lux-primary/70">
+            <LoaderCircle className="mr-3 h-5 w-5 animate-spin text-lux-accent" /> Loading tour guides...
+          </div>
+        ) : guides.length === 0 ? (
+          <div className="rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-center text-sm text-lux-primary/65">No tour guides created yet.</div>
+        ) : (
+          <div className="grid gap-5 lg:grid-cols-3">
+            {guides.map((guide) => (
+              <article key={guide.id} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+                {guide.image ? <img src={guide.image} alt={guide.name} className="h-56 w-full object-cover" /> : null}
+                <div className="space-y-4 p-5">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-lux-accent">{guide.category || 'Guide'}{guide.featured ? ' · Featured' : ''}</div>
+                    <h4 className="mt-2 font-headings text-xl">{guide.name}</h4>
+                    <p className="mt-1 text-xs text-lux-primary/60">{guide.region || ''}{guide.baseCity ? ` · ${guide.baseCity}` : ''}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm text-lux-primary/70">
+                    <div><span className="font-bold text-lux-primary">Experience:</span> {guide.experience || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Per Day:</span> {guide.pricePerDay || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Rating:</span> {guide.rating ? guide.rating.toFixed(1) : '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Trips:</span> {guide.totalTrips || '—'}</div>
+                  </div>
+                  <p className="text-sm text-lux-primary/70 line-clamp-3">{guide.shortBio || guide.bio || 'No bio added.'}</p>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => startEditing(guide)} className="inline-flex items-center gap-1 rounded-sm border border-lux-primary/15 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                      <Pencil className="h-3.5 w-3.5" /> Edit
+                    </button>
+                    <button type="button" onClick={() => void removeGuide(guide.id)} className="inline-flex items-center gap-1 rounded-sm border border-rose-200 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-50">
+                      <Trash2 className="h-3.5 w-3.5" /> Delete
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </motion.section>
+    </div>
+  );
+}
+
+function HotelCategoryManager() {
+  const [categories, setCategories] = useState<{ _id: string; name: string; description?: string; displayOrder?: number }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [displayOrder, setDisplayOrder] = useState('0');
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const loadCategories = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const response = await fetch(getApiUrl('/api/hotel-categories'), { credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (response.ok && Array.isArray(data?.data)) {
+        setCategories(data.data);
+      } else {
+        setCategories([]);
+      }
+    } catch {
+      setError('Failed to fetch hotel categories');
+      setCategories([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => { void loadCategories(); }, []);
+
+  const resetForm = () => {
+    setName('');
+    setDescription('');
+    setDisplayOrder('0');
+    setEditingId(null);
+  };
+
+  const startEditing = (category: { _id: string; name: string; description?: string; displayOrder?: number }) => {
+    setName(category.name);
+    setDescription(category.description || '');
+    setDisplayOrder(String(category.displayOrder ?? 0));
+    setEditingId(category._id);
+    setError('');
+    setSuccessMessage('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    setError('');
+    setSuccessMessage('');
+    try {
+      const isEditing = Boolean(editingId);
+      const response = await fetch(
+        getApiUrl(isEditing ? `/api/hotel-categories/${editingId}` : '/api/hotel-categories'),
+        {
+          method: isEditing ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            name: name.trim(),
+            description: description.trim(),
+            displayOrder: Number(displayOrder) || 0,
+          }),
+        },
+      );
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to save hotel category');
+        return;
+      }
+      setSuccessMessage(isEditing ? 'Hotel category updated successfully' : 'Hotel category added successfully');
+      resetForm();
+      await loadCategories();
+    } catch {
+      setError('Network error');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this hotel category?')) return;
+    try {
+      const response = await fetch(getApiUrl(`/api/hotel-categories/${id}`), {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        setSuccessMessage('Deleted successfully');
+        if (editingId === id) resetForm();
+        await loadCategories();
+      } else {
+        const data = await parseJsonSafely(response);
+        setError(data?.message || 'Failed to delete');
+      }
+    } catch {
+      setError('Failed to delete');
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-4xl space-y-8">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+        <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-6">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-lux-accent">Hotel Categories API</p>
+          <h3 className="mt-2 font-headings text-2xl">Manage Hotel Categories</h3>
+          <p className="mt-2 text-sm text-lux-primary/65">Define categories like <em>5-Star Luxury, Boutique Resort, Mountain Lodge</em>. These will appear in the Add Hotel form and on the public filter sidebar.</p>
+        </div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <label className="block sm:col-span-2">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Category Name</span>
+              <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="e.g. 5-Star Luxury" required />
+            </label>
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Display Order</span>
+              <input type="number" value={displayOrder} onChange={(e) => setDisplayOrder(e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="0" />
+            </label>
+            <label className="block sm:col-span-3">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Description (Optional)</span>
+              <input value={description} onChange={(e) => setDescription(e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Short description" />
+            </label>
+          </div>
+          {error && <div className="flex items-start gap-2 rounded-sm border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700"><AlertCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" /><span>{error}</span></div>}
+          {successMessage && <div className="rounded-sm border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">{successMessage}</div>}
+          <div className="flex flex-wrap gap-3">
+            <button type="submit" disabled={isSaving} className="inline-flex items-center gap-2 rounded-sm bg-lux-primary px-6 py-3 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-lux-primary/90 disabled:opacity-50">
+              {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              {editingId ? 'Update Category' : 'Add Category'}
+            </button>
+            {editingId && (
+              <button type="button" onClick={resetForm} className="inline-flex items-center gap-2 rounded-sm border border-lux-primary/15 px-6 py-3 text-xs font-bold uppercase tracking-widest text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      </motion.section>
+
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h3 className="font-headings text-2xl">Saved Categories</h3>
+            <p className="mt-1 text-xs text-lux-primary/65">Live data used by the Add Hotel form and public filter sidebar.</p>
+          </div>
+          <button type="button" onClick={() => void loadCategories()} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+            <LoaderCircle className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
+        <div className="grid gap-3">
+          {isLoading ? (
+            <div className="py-10 text-center text-sm text-lux-primary/50">Loading...</div>
+          ) : categories.length === 0 ? (
+            <div className="rounded-sm border border-lux-primary/10 bg-white px-6 py-10 text-center text-sm text-lux-primary/65">No hotel categories defined yet. Add one above to get started.</div>
+          ) : (
+            categories.map((c) => (
+              <div key={c._id} className="flex items-center justify-between rounded-sm border border-lux-primary/10 bg-white p-4 shadow-sm">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-lux-primary">{c.name}</h4>
+                    {c.displayOrder !== undefined && c.displayOrder !== 0 && (
+                      <span className="text-[10px] uppercase tracking-widest text-lux-primary/40">Order: {c.displayOrder}</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-lux-primary/60">{c.description || 'No description'}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button type="button" onClick={() => startEditing(c)} className="inline-flex items-center gap-1 rounded-sm border border-lux-primary/15 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                    <Pencil className="h-3 w-3" /> Edit
+                  </button>
+                  <button type="button" onClick={() => void handleDelete(c._id)} className="inline-flex items-center gap-1 rounded-sm border border-rose-200 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-50">
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </motion.section>
+    </div>
+  );
+}
+
+function HotelManager() {
+  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [hotelCategories, setHotelCategories] = useState<{ _id: string; name: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedGalleryFiles, setSelectedGalleryFiles] = useState<File[]>([]);
+  const [selectedRoomFiles, setSelectedRoomFiles] = useState<Record<number, File>>({});
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [form, setForm] = useState<HotelFormState>(EMPTY_HOTEL_FORM);
+
+  const loadHotels = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const first = await fetch(getApiUrl('/api/hotels?page=1&limit=50'), { credentials: 'include' });
+      const firstData = await parseJsonSafely(first);
+      if (!first.ok) {
+        setError(firstData?.message || 'Failed to load hotels.');
+        setHotels([]);
+        return;
+      }
+      const totalPages: number = Math.max(Number(firstData?.totalPages) || 1, 1);
+      const collected: Hotel[] = (Array.isArray(firstData?.data)
+        ? firstData.data.map(normalizeHotel).filter(Boolean)
+        : []) as Hotel[];
+
+      if (totalPages > 1) {
+        const rest = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, i) =>
+            fetch(getApiUrl(`/api/hotels?page=${i + 2}&limit=50`), { credentials: 'include' }).then(parseJsonSafely),
+          ),
+        );
+        rest.forEach((data) => {
+          if (Array.isArray(data?.data)) {
+            (data.data.map(normalizeHotel).filter(Boolean) as Hotel[]).forEach((h) => collected.push(h));
+          }
+        });
+      }
+
+      setHotels(collected);
+    } catch {
+      setError('Unable to fetch hotels from the backend.');
+      setHotels([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadHotelCategories = async () => {
+    try {
+      const response = await fetch(getApiUrl('/api/hotel-categories'), { credentials: 'include' });
+      const data = await parseJsonSafely(response);
+      if (response.ok && Array.isArray(data?.data)) {
+        setHotelCategories(data.data);
+      }
+    } catch {
+      /* silent — form falls back gracefully */
+    }
+  };
+
+  useEffect(() => {
+    void loadHotels();
+    void loadHotelCategories();
+  }, []);
+
+  const updateField = (field: keyof HotelFormState, value: string | boolean) =>
+    setForm((current) => ({ ...current, [field]: value }));
+
+  const updateRoom = (index: number, field: keyof HotelRoomFormState, value: string) =>
+    setForm((current) => ({
+      ...current,
+      rooms: current.rooms.map((room, idx) => (idx === index ? { ...room, [field]: value } : room)),
+    }));
+
+  const addRoom = () =>
+    setForm((current) => ({ ...current, rooms: [...current.rooms, { ...EMPTY_HOTEL_ROOM_FORM }] }));
+
+  const removeRoom = (index: number) => {
+    setForm((current) => ({
+      ...current,
+      rooms: current.rooms.filter((_, idx) => idx !== index),
+    }));
+    setSelectedRoomFiles((current) => {
+      const next: Record<number, File> = {};
+      Object.entries(current).forEach(([key, value]) => {
+        const oldIdx = Number(key);
+        if (oldIdx < index) next[oldIdx] = value;
+        else if (oldIdx > index) next[oldIdx - 1] = value;
+      });
+      return next;
+    });
+  };
+
+  const resetForm = () => {
+    setForm(EMPTY_HOTEL_FORM);
+    setEditingId(null);
+    setSelectedImage(null);
+    setSelectedGalleryFiles([]);
+    setSelectedRoomFiles({});
+    setIsFormOpen(false);
+  };
+
+  const startEditing = (hotel: Hotel) => {
+    setForm(hotelToFormState(hotel));
+    setEditingId(hotel.id);
+    setSelectedImage(null);
+    setSelectedGalleryFiles([]);
+    setSelectedRoomFiles({});
+    setIsFormOpen(true);
+    setSuccessMessage('');
+    setError('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const submitHotel = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSaving(true);
+    setError('');
+    setSuccessMessage('');
+    try {
+      const payload = new FormData();
+      payload.append('id', form.id.trim());
+      payload.append('name', form.name.trim());
+      payload.append('location', form.location.trim());
+      payload.append('address', form.address.trim());
+      payload.append('category', form.category.trim());
+      payload.append('rating', form.rating.trim() || '0');
+      payload.append('description', form.description.trim());
+      payload.append('image', form.image.trim());
+      payload.append('priceFrom', form.priceFrom.trim());
+      payload.append('amenities', JSON.stringify(linesToArray(form.amenities)));
+      payload.append('policies', form.policies.trim());
+      payload.append('checkIn', form.checkIn.trim());
+      payload.append('checkOut', form.checkOut.trim());
+      payload.append('nearbyAttractions', JSON.stringify(linesToArray(form.nearbyAttractions)));
+      payload.append('phoneNumber', form.phoneNumber.trim());
+      payload.append('email', form.email.trim());
+      payload.append('website', form.website.trim());
+      payload.append('latitude', form.latitude.trim());
+      payload.append('longitude', form.longitude.trim());
+      payload.append('featured', String(form.featured));
+      payload.append('displayOrder', form.displayOrder.trim() || '0');
+
+      const roomsPayload = form.rooms.map((room) => ({
+        name: room.name.trim(),
+        description: room.description.trim(),
+        price: room.price.trim(),
+        image: room.image.trim(),
+        capacity: room.capacity.trim(),
+        beds: room.beds.trim(),
+        size: room.size.trim(),
+        amenities: linesToArray(room.amenities),
+      }));
+      payload.append('rooms', JSON.stringify(roomsPayload));
+
+      if (selectedImage) payload.set('image', selectedImage);
+      selectedGalleryFiles.forEach((file) => payload.append('galleryFiles', file));
+      Object.entries(selectedRoomFiles).forEach(([roomIdx, file]) => {
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const renamed = new File([file], `room-${roomIdx}-${safeName}`, { type: file.type });
+        payload.append('roomImages', renamed);
+      });
+
+      const isEditing = Boolean(editingId);
+      const response = await fetch(
+        getApiUrl(isEditing ? `/api/hotels/${editingId}` : '/api/hotels'),
+        { method: isEditing ? 'PUT' : 'POST', credentials: 'include', body: payload },
+      );
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to save hotel.');
+        return;
+      }
+      setSuccessMessage(isEditing ? 'Hotel updated successfully.' : 'Hotel created successfully.');
+      resetForm();
+      await loadHotels();
+    } catch {
+      setError('Unable to save hotel right now.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const removeHotel = async (hotelId: string) => {
+    if (!window.confirm(`Delete hotel "${hotelId}"?`)) return;
+    setError('');
+    setSuccessMessage('');
+    try {
+      const response = await fetch(getApiUrl(`/api/hotels/${hotelId}`), {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      const data = await parseJsonSafely(response);
+      if (!response.ok) {
+        setError(data?.message || 'Failed to delete hotel.');
+        return;
+      }
+      setSuccessMessage('Hotel deleted successfully.');
+      if (editingId === hotelId) resetForm();
+      await loadHotels();
+    } catch {
+      setError('Unable to delete hotel right now.');
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-8">
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+        <div className="border-b border-lux-primary/10 bg-lux-bg/70 px-6 py-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-lux-accent">Hotels API</p>
+              <h3 className="mt-2 font-headings text-2xl">Hotel Manager</h3>
+              <p className="mt-2 text-sm text-lux-primary/65">Manage hotels, rooms, pricing, and amenities displayed on the Accommodation service page.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setForm(EMPTY_HOTEL_FORM);
+                setEditingId(null);
+                setSelectedImage(null);
+                setSelectedGalleryFiles([]);
+                setSelectedRoomFiles({});
+                setError('');
+                setSuccessMessage('');
+                setIsFormOpen(true);
+              }}
+              className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent"
+            >
+              <Plus className="h-4 w-4" />
+              New Hotel
+            </button>
+          </div>
+        </div>
+
+        {isFormOpen ? (
+          <form className="grid gap-5 p-6 lg:grid-cols-2" onSubmit={submitHotel}>
+            <div className="flex items-center justify-between lg:col-span-2">
+              <div>
+                <h4 className="font-headings text-2xl">{editingId ? 'Edit Hotel' : 'Create Hotel'}</h4>
+                <p className="mt-2 text-sm text-lux-primary/65">Provide all hotel details — including rooms, prices and amenities.</p>
+              </div>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Close
+              </button>
+            </div>
+
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Hotel ID (slug)</span><input value={form.id} onChange={(e) => updateField('id', e.target.value)} disabled={Boolean(editingId)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="hunza-serena-inn" required /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Hotel Name</span><input value={form.name} onChange={(e) => updateField('name', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Serena Inn Hunza" required /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Location</span><input value={form.location} onChange={(e) => updateField('location', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Hunza Valley, Gilgit-Baltistan" required /></label>
+            <label className="block">
+              <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Category</span>
+              {hotelCategories.length > 0 ? (
+                <select
+                  value={form.category}
+                  onChange={(e) => updateField('category', e.target.value)}
+                  className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent appearance-none"
+                >
+                  <option value="">Select a category...</option>
+                  {hotelCategories.map((cat) => (
+                    <option key={cat._id} value={cat.name}>{cat.name}</option>
+                  ))}
+                  {form.category && !hotelCategories.some((c) => c.name === form.category) ? (
+                    <option value={form.category}>{form.category} (legacy)</option>
+                  ) : null}
+                </select>
+              ) : (
+                <>
+                  <input
+                    value={form.category}
+                    onChange={(e) => updateField('category', e.target.value)}
+                    className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent"
+                    placeholder="5-Star Luxury / Boutique Resort"
+                  />
+                  <p className="mt-1 text-[10px] text-lux-primary/50">Add categories from the <strong>Hotel Categories</strong> tab to get a dropdown here.</p>
+                </>
+              )}
+            </label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Rating (0-5)</span><input type="number" min="0" max="5" step="0.1" value={form.rating} onChange={(e) => updateField('rating', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="4.7" /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Starting Price</span><input value={form.priceFrom} onChange={(e) => updateField('priceFrom', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="From PKR 12,500 / night" /></label>
+            <label className="block lg:col-span-2"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Address</span><input value={form.address} onChange={(e) => updateField('address', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Main Karakoram Highway, Karimabad, Hunza" /></label>
+
+            <label className="block lg:col-span-2"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Description</span><textarea value={form.description} onChange={(e) => updateField('description', e.target.value)} className="min-h-28 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Describe this hotel and its guest experience..." /></label>
+
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Main Image URL</span><input value={form.image} onChange={(e) => updateField('image', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="https://..." /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Upload Main Image</span><input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm" /></label>
+
+            <label className="block lg:col-span-2"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Upload Gallery Images (replaces existing)</span><input type="file" multiple accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => setSelectedGalleryFiles(Array.from(e.target.files || []))} className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-lux-bg px-4 py-3 text-sm" />{selectedGalleryFiles.length > 0 ? <p className="mt-1 text-xs text-lux-primary/65">{selectedGalleryFiles.length} new gallery image(s) ready to upload.</p> : null}</label>
+
+            <label className="block lg:col-span-2"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Amenities (one per line)</span><textarea value={form.amenities} onChange={(e) => updateField('amenities', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder={'Free Wi-Fi\nMountain View\nRestaurant\nSpa & Wellness'} /></label>
+
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Check-in Time</span><input value={form.checkIn} onChange={(e) => updateField('checkIn', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="From 2:00 PM" /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Check-out Time</span><input value={form.checkOut} onChange={(e) => updateField('checkOut', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Until 12:00 PM" /></label>
+
+            <label className="block lg:col-span-2"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Hotel Policies</span><textarea value={form.policies} onChange={(e) => updateField('policies', e.target.value)} className="min-h-24 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="Cancellation policy, child policy, pet policy, etc." /></label>
+
+            <label className="block lg:col-span-2"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Nearby Attractions (one per line)</span><textarea value={form.nearbyAttractions} onChange={(e) => updateField('nearbyAttractions', e.target.value)} className="min-h-20 w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder={'Baltit Fort - 2 km\nAttabad Lake - 25 km'} /></label>
+
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Phone Number</span><input value={form.phoneNumber} onChange={(e) => updateField('phoneNumber', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="+92 ..." /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Email</span><input value={form.email} onChange={(e) => updateField('email', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="reservations@hotel.com" /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Website</span><input value={form.website} onChange={(e) => updateField('website', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="https://..." /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Display Order</span><input type="number" value={form.displayOrder} onChange={(e) => updateField('displayOrder', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="0" /></label>
+
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Latitude</span><input value={form.latitude} onChange={(e) => updateField('latitude', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="36.3167" /></label>
+            <label className="block"><span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary/60">Longitude</span><input value={form.longitude} onChange={(e) => updateField('longitude', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-4 py-3 text-sm outline-none transition focus:border-lux-accent" placeholder="74.6500" /></label>
+
+            <label className="flex items-center gap-3 lg:col-span-2">
+              <input type="checkbox" checked={form.featured} onChange={(e) => updateField('featured', e.target.checked)} className="h-4 w-4" />
+              <span className="text-sm text-lux-primary/70">Mark as featured hotel</span>
+            </label>
+
+            {/* Rooms Editor */}
+            <div className="lg:col-span-2 border-t border-lux-primary/10 pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h5 className="font-headings text-xl">Room Types</h5>
+                  <p className="text-xs text-lux-primary/65 mt-1">Add each room category with its own pricing and amenities.</p>
+                </div>
+                <button type="button" onClick={addRoom} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                  <Plus className="h-3.5 w-3.5" /> Add Room
+                </button>
+              </div>
+
+              {form.rooms.length === 0 ? (
+                <div className="rounded-sm border border-dashed border-lux-primary/20 px-6 py-10 text-center text-xs text-lux-primary/60">No rooms added yet. Click "Add Room" to start.</div>
+              ) : (
+                <div className="space-y-5">
+                  {form.rooms.map((room, idx) => (
+                    <div key={idx} className="rounded-sm border border-lux-primary/15 bg-lux-bg/40 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h6 className="text-[10px] font-bold uppercase tracking-[0.22em] text-lux-accent">Room {idx + 1}</h6>
+                        <button type="button" onClick={() => removeRoom(idx)} className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-700 hover:underline">
+                          <Trash2 className="h-3 w-3" /> Remove
+                        </button>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary/60">Room Name</span><input value={room.name} onChange={(e) => updateRoom(idx, 'name', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-3 py-2 text-sm" placeholder="Deluxe Mountain View" required /></label>
+                        <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary/60">Price</span><input value={room.price} onChange={(e) => updateRoom(idx, 'price', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-3 py-2 text-sm" placeholder="PKR 15,000" /></label>
+                        <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary/60">Capacity</span><input value={room.capacity} onChange={(e) => updateRoom(idx, 'capacity', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-3 py-2 text-sm" placeholder="2 Adults" /></label>
+                        <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary/60">Beds</span><input value={room.beds} onChange={(e) => updateRoom(idx, 'beds', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-3 py-2 text-sm" placeholder="1 King Bed" /></label>
+                        <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary/60">Size</span><input value={room.size} onChange={(e) => updateRoom(idx, 'size', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-3 py-2 text-sm" placeholder="32 m²" /></label>
+                        <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary/60">Image URL</span><input value={room.image} onChange={(e) => updateRoom(idx, 'image', e.target.value)} className="w-full rounded-sm border border-lux-primary/15 bg-white px-3 py-2 text-sm" placeholder="https://..." /></label>
+                        <label className="block sm:col-span-2"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary/60">Upload Room Image (optional)</span><input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          setSelectedRoomFiles((current) => {
+                            const next = { ...current };
+                            if (file) next[idx] = file;
+                            else delete next[idx];
+                            return next;
+                          });
+                        }} className="w-full rounded-sm border border-dashed border-lux-primary/20 bg-white px-3 py-2 text-sm" /></label>
+                        <label className="block sm:col-span-2"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary/60">Description</span><textarea value={room.description} onChange={(e) => updateRoom(idx, 'description', e.target.value)} className="min-h-16 w-full rounded-sm border border-lux-primary/15 bg-white px-3 py-2 text-sm" placeholder="Spacious room with private balcony..." /></label>
+                        <label className="block sm:col-span-2"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary/60">Room Amenities (one per line)</span><textarea value={room.amenities} onChange={(e) => updateRoom(idx, 'amenities', e.target.value)} className="min-h-16 w-full rounded-sm border border-lux-primary/15 bg-white px-3 py-2 text-sm" placeholder={'Air Conditioning\nFlat-screen TV\nMinibar'} /></label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {(error || successMessage) ? (
+              <div className="lg:col-span-2">
+                {error ? <div className="flex items-start gap-3 rounded-sm border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"><AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" /><span>{error}</span></div> : null}
+                {successMessage ? <div className="mt-3 rounded-sm border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{successMessage}</div> : null}
+              </div>
+            ) : null}
+
+            <div className="flex flex-col gap-3 lg:col-span-2 sm:flex-row">
+              <button type="submit" disabled={isSaving} className="inline-flex items-center justify-center gap-2 rounded-sm bg-lux-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-white transition hover:bg-lux-primary/90 disabled:cursor-not-allowed disabled:opacity-70">
+                {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                {editingId ? 'Update Hotel' : 'Create Hotel'}
+              </button>
+              <button type="button" onClick={resetForm} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                <X className="h-4 w-4" /> Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="px-6 py-14 text-center text-sm text-lux-primary/65">Click <span className="font-bold text-lux-primary">New Hotel</span> to open the form.</div>
+        )}
+      </motion.section>
+
+      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="font-headings text-2xl">Saved Hotels</h3>
+            <p className="mt-2 text-sm text-lux-primary/65">Live data for the Accommodation service page.</p>
+          </div>
+          <button type="button" onClick={() => void loadHotels()} className="inline-flex items-center justify-center gap-2 rounded-sm border border-lux-primary/15 px-4 py-3 text-xs font-bold uppercase tracking-[0.22em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+            <LoaderCircle className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-sm text-lux-primary/70">
+            <LoaderCircle className="mr-3 h-5 w-5 animate-spin text-lux-accent" /> Loading hotels...
+          </div>
+        ) : hotels.length === 0 ? (
+          <div className="rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-center text-sm text-lux-primary/65">No hotels found yet.</div>
+        ) : (
+          <div className="grid gap-5 lg:grid-cols-3">
+            {hotels.map((hotel) => (
+              <article key={hotel.id} className="overflow-hidden border border-lux-primary/10 bg-white shadow-sm">
+                {hotel.image ? <img src={hotel.image} alt={hotel.name} className="h-48 w-full object-cover" /> : null}
+                <div className="space-y-4 p-5">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-lux-accent">{hotel.category || 'Hotel'}</div>
+                    <h4 className="mt-2 font-headings text-xl">{hotel.name}</h4>
+                    <p className="mt-1 text-xs text-lux-primary/65">{hotel.location}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm text-lux-primary/70">
+                    <div><span className="font-bold text-lux-primary">Price:</span> {hotel.priceFrom || '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Rating:</span> {hotel.rating ? hotel.rating.toFixed(1) : '—'}</div>
+                    <div><span className="font-bold text-lux-primary">Rooms:</span> {hotel.rooms?.length || 0}</div>
+                    <div><span className="font-bold text-lux-primary">Featured:</span> {hotel.featured ? 'Yes' : 'No'}</div>
+                  </div>
+                  <p className="text-sm text-lux-primary/70 line-clamp-3">{hotel.description || 'No description added.'}</p>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => startEditing(hotel)} className="inline-flex items-center gap-1 rounded-sm border border-lux-primary/15 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-lux-primary transition hover:border-lux-accent hover:text-lux-accent">
+                      <Pencil className="h-3.5 w-3.5" /> Edit
+                    </button>
+                    <button type="button" onClick={() => void removeHotel(hotel.id)} className="inline-flex items-center gap-1 rounded-sm border border-rose-200 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-rose-700 transition hover:bg-rose-50">
                       <Trash2 className="h-3.5 w-3.5" /> Delete
                     </button>
                   </div>
@@ -3841,6 +5825,13 @@ function Dashboard({
           {activeTab === 'destinations' ? <DestinationManager /> : null}
           {activeTab === 'blogs' ? <BlogManager /> : null}
           {activeTab === 'rental-vehicles' ? <RentalVehicleManager /> : null}
+          {activeTab === 'vehicle-categories' ? <VehicleCategoryManager /> : null}
+          {activeTab === 'jeep-safaris' ? <JeepSafariManager /> : null}
+          {activeTab === 'safari-categories' ? <JeepSafariCategoryManager /> : null}
+          {activeTab === 'tour-guides' ? <TourGuideManager /> : null}
+          {activeTab === 'guide-specialties' ? <TourGuideSpecialtyManager /> : null}
+          {activeTab === 'hotels' ? <HotelManager /> : null}
+          {activeTab === 'hotel-categories' ? <HotelCategoryManager /> : null}
           {activeTab === 'packages' ? <TourPackageManager /> : null}
           {activeTab === 'tour-types' ? <TourTypeManager /> : null}
           {activeTab === 'featured-tours' ? <FeaturedManager /> : null}
@@ -3850,7 +5841,7 @@ function Dashboard({
           {activeTab === 'promo-modal' ? <PromoModalManager /> : null}
           {activeTab === 'quotes' ? <Quotes /> : null}
           {activeTab === 'enquiries' ? <Enquiries /> : null}
-          {activeTab !== 'dashboard' && activeTab !== 'heroes' && activeTab !== 'destinations' && activeTab !== 'blogs' && activeTab !== 'rental-vehicles' && activeTab !== 'packages' && activeTab !== 'tour-types' && activeTab !== 'featured-tours' && activeTab !== 'seasonal-tours' && activeTab !== 'testimonials' && activeTab !== 'team' && activeTab !== 'promo-modal' && activeTab !== 'quotes' && activeTab !== 'enquiries' ? (
+          {activeTab !== 'dashboard' && activeTab !== 'heroes' && activeTab !== 'destinations' && activeTab !== 'blogs' && activeTab !== 'rental-vehicles' && activeTab !== 'vehicle-categories' && activeTab !== 'jeep-safaris' && activeTab !== 'safari-categories' && activeTab !== 'tour-guides' && activeTab !== 'guide-specialties' && activeTab !== 'hotels' && activeTab !== 'hotel-categories' && activeTab !== 'packages' && activeTab !== 'tour-types' && activeTab !== 'featured-tours' && activeTab !== 'seasonal-tours' && activeTab !== 'testimonials' && activeTab !== 'team' && activeTab !== 'promo-modal' && activeTab !== 'quotes' && activeTab !== 'enquiries' ? (
             <div className="mx-auto max-w-5xl rounded-sm border border-lux-primary/10 bg-white px-6 py-16 text-center shadow-sm">
               <h3 className="font-headings text-3xl">{getPageTitle()}</h3>
               <p className="mt-4 text-sm text-lux-primary/65">
